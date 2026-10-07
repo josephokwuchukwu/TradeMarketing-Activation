@@ -210,6 +210,9 @@ h1,h2,h3,h4{text-wrap:balance}
 .svpanel header b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .svpanel iframe{flex:1;border:0;width:100%;background:var(--panel-2)}
 .svpanel .svnote{font-size:12px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--line)}
+.slabel{position:absolute;left:0;top:0;white-space:nowrap;font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:color-mix(in srgb,var(--fg) 70%,transparent);text-shadow:0 0 3px var(--stage-bot),0 0 8px var(--stage-bot);pointer-events:none;transition:opacity .3s,color .2s;margin-top:8px}
+.slabel.hot{color:var(--accent-text);font-size:11px}
+@media (max-width:600px){.slabel{font-size:8px;letter-spacing:.04em}}
 .clabel.park{color:#2E8A3E;font-weight:600;font-style:italic;font-size:10px}
 :root[data-theme="dark"] .clabel.park{color:#7FCB7A}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .clabel.park{color:#7FCB7A}}
@@ -1988,7 +1991,7 @@ const city = (() => {
   });
   const stateMeshes = [], stateLines = [], cityPts = [], lakeMeshes = [], riverLines = [];
   let outline = null, outlineGlow = null, built = false, treeMesh = null, treeZ = -1;
-  const parkLabels = [];
+  const parkLabels = [], stateLabels = [];
   const PARKS = [
     { name: "Cross River National Park", lat: 5.4, lng: 8.55, r: .35 }, { name: "Obudu Plateau", lat: 6.37, lng: 9.3, r: .2 },
     { name: "Okomu National Park", lat: 6.38, lng: 5.3, r: .2 }, { name: "Niger Delta mangroves", lat: 4.75, lng: 6.25, r: .5 },
@@ -2052,6 +2055,8 @@ const city = (() => {
     const tc = new THREE.Color();
     trees.forEach((t, i) => { tc.set(t.park ? 0x14592A : t.lat < 7 ? 0x1F7536 : t.lat < 9.5 ? 0x3B8C3A : 0x6E9A3E).offsetHSL(0, 0, (rnd() - .5) * .06); treeMesh.setColorAt(i, tc); });
     treeMesh.userData.trees = trees; mapGroup.add(treeMesh);
+    // a callout for every state at its centre
+    NG.states.forEach(st => { const pp = project(st.c[1], st.c[0]), el = document.createElement("div"); el.className = "slabel"; el.textContent = st.name.replace("FCT Abuja", "FCT"); $("#labels").appendChild(el); stateLabels.push({ el, pos: new THREE.Vector3(pp.x, LAND_H + .5, pp.z), st: st.name }); });
     PARKS.forEach(p => { const pp = project(p.lat, p.lng), el = document.createElement("div"); el.className = "clabel park"; el.textContent = p.name; $("#labels").appendChild(el); parkLabels.push({ el, pos: new THREE.Vector3(pp.x, LAND_H + 1, pp.z), st: stateAt(p.lat, p.lng) }); });
     built = true; theme(); if (pending) { const [l, o] = pending; pending = null; setMarkers(l, o); }
     // land rises out of the sea on first show
@@ -2289,7 +2294,8 @@ const city = (() => {
       b.dots.forEach(d => { const p = ((RM ? .5 : s * .2) + d.userData.o) % 1; d.position.copy(cv.getPoint(p)); d.scale.set(1.1 * zs, 1.1 * zs, 1); d.material.opacity = dim ? .15 : Math.sin(p * Math.PI); });
       place(b.label, b.top, w, h, sel || (!focusId && close && w >= 700));
     });
-    cityLabels.forEach(c => place(c.el, c.pos, w, h, !focusId && (!close || rig.radius < 40 || c.live > 0) && (w >= 600 || c.pop > 1e6 || c.live)));
+    cityLabels.forEach(c => place(c.el, c.pos, w, h, !focusId && (c.live > 0 || rig.radius < 110) && (w >= 600 || c.live)));
+    stateLabels.forEach(c => { c.pos.y = topOf(c.st) + .3; c.el.classList.toggle("hot", hoverState === c.st); place(c.el, c.pos, w, h, !focusId && rig.radius > 22); });
     parkLabels.forEach(c => { c.pos.y = topOf(c.st) + 1.2 * zs; place(c.el, c.pos, w, h, !focusId && rig.radius < 125 && w >= 600); });
     const svOn = !!focusId || rig.radius < 45; if (svBtn.hidden === svOn) svBtn.hidden = !svOn;
     renderer.render(scene, camera);
