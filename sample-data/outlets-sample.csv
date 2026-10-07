@@ -1,7 +1,7 @@
-Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands
-Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
-Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
-Mile 12 Market Bar,Ikorodu Road,Ketu,Beer parlour,,,Kora Field Marketing,Beta Malt;Grand Malt
-Agege Stadium Spot,Old Abeokuta Road,Agege,Bar,,,,
-Okota Chill Zone,Okota Road,Isolo,Lounge,6.5112,3.3121,,
-Obalende Garage Bar,Obalende Road,Obalende,Beer parlour,,,Pinnacle Activations,Trophy Stout
+Outlet name,Address,Area,Channel,Segment,Latitude,Longitude,Vendor,Brands
+Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,Low End,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
+Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,High End,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
+Mile 12 Market Bar,Ikorodu Road,Ketu,Beer parlour,Open Market,,,Kora Field Marketing,Beta Malt;Grand Malt
+Agege Stadium Spot,Old Abeokuta Road,Agege,Bar,Low End,,,,
+Okota Chill Zone,Okota Road,Isolo,Lounge,Mainstream,6.5112,3.3121,,
+Obalende Garage Bar,Obalende Road,Obalende,Beer parlour,Open Market,,,Pinnacle Activations,Trophy Stout
