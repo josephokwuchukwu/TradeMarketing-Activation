@@ -95,6 +95,11 @@ h1,h2,h3,h4{text-wrap:balance}
 .typ{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .t-Activation{color:var(--act)} .t-Sampling{color:var(--samp)} .t-Trade{color:var(--trade)}
 .bdot{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+.bimg{height:24px;width:auto;flex:none;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.bchip .bimg{height:30px;margin:-4px 0}
+.bchip.sm .bimg{height:20px;margin:-3px 0}
+.brandrow .bimg{height:26px;margin:-5px 0}
+.shelf{display:block;width:min(100%,620px);height:auto;margin-top:22px;filter:drop-shadow(0 18px 22px rgba(0,0,0,.35))}
 .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0B0D14;flex:none}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
 .card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
@@ -325,7 +330,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 
 /* ---------- responsive ---------- */
 @media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:900px){.login{grid-template-columns:minmax(0,1fr);overflow-y:auto}.login-hero{padding:24px 20px 0;min-height:300px}.login-panel{padding:16px 16px 32px}}
+@media (max-width:900px){.login{display:block;overflow-y:auto}.login-hero{padding:24px 20px 0;min-height:300px;justify-content:flex-start;gap:14px}.login-hero>*{flex:none}.shelf{margin-top:4px}.login-panel{padding:16px 16px 32px}}
 @media (max-width:820px){
   .app{grid-template-columns:minmax(0,1fr)}
   .rail{position:fixed;left:0;right:0;bottom:0;z-index:30;flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);gap:0}
@@ -362,7 +367,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
       <p>Brand ambassadors log activations with live photos, location and cases sold. Vendor managers and trade marketing see it on the map as it happens.</p>
       <div class="brandrow" id="brandRow"></div>
     </div>
-    <div></div>
+    <div><img class="shelf" src="assets/brands/lineup.png" alt="The brand range: Grand Malt, Trophy, Eagle, Castle Lite, Budweiser, Flying Fish, Beta Malt and more" onerror="this.remove()"></div>
   </div>
   <div class="login-panel">
     <form class="login-card" id="loginForm" novalidate>
@@ -449,18 +454,22 @@ const css = name => getComputedStyle(document.documentElement).getPropertyValue(
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
 /* ---------- reference data ---------- */
+// img: product shot cut from Jay's brand pictures. photos: real field photos used for the example entries.
+const ART = "assets/";
 const BRANDS = [
-  { name: "Trophy Lager", color: "#E3A52B", kind: "bottle" },
-  { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle" },
-  { name: "Budweiser", color: "#C8102E", kind: "can" },
-  { name: "Budweiser Royale", color: "#B8963E", kind: "bottle" },
-  { name: "Beta Malt", color: "#E2601B", kind: "can" },
-  { name: "Grand Malt", color: "#2F8F46", kind: "can" },
-  { name: "Flying Fish", color: "#17A9B5", kind: "bottle" },
-  { name: "Eagle", color: "#8FA31E", kind: "bottle" },
-  { name: "Castle Lite", color: "#2F6FD6", kind: "can" }
+  { name: "Trophy Lager", color: "#E3A52B", kind: "bottle", img: "trophy-lager", photos: ["trophy-lager-1", "trophy-lager-2"] },
+  { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle", img: "trophy-stout", photos: ["trophy-stout-1", "trophy-stout-2"] },
+  { name: "Budweiser", color: "#C8102E", kind: "can", img: "budweiser", photos: ["budweiser-1", "budweiser-2", "budweiser-3"] },
+  { name: "Budweiser Royale", color: "#B8963E", kind: "bottle", img: "budweiser-royale", photos: [] },
+  { name: "Beta Malt", color: "#E2601B", kind: "can", img: "beta-malt", photos: ["beta-malt-1", "brand-range"] },
+  { name: "Grand Malt", color: "#2F8F46", kind: "can", img: "grand-malt", photos: ["grand-malt-1", "brand-range"] },
+  { name: "Flying Fish", color: "#17A9B5", kind: "bottle", img: "flying-fish", photos: ["flying-fish-1", "flying-fish-2"] },
+  { name: "Eagle", color: "#8FA31E", kind: "bottle", img: "eagle", photos: ["eagle-1", "eagle-2"] },
+  { name: "Castle Lite", color: "#2F6FD6", kind: "can", img: "castle-lite", photos: ["castle-lite-1", "castle-lite-2"] }
 ];
 const BC = name => (BRANDS.find(b => b.name === name) || { color: "#999" }).color;
+// Product shot for a brand, falling back to its colour dot if the image can't load.
+const bmark = name => { const b = BRANDS.find(x => x.name === name); return b && b.img ? `<img class="bimg" src="${ART}brands/${b.img}.png" alt="" onerror="this.outerHTML='<i class=&quot;bdot&quot; style=&quot;background:${b.color}&quot;></i>'">` : `<i class="bdot" style="background:${BC(name)}"></i>`; };
 const TYPES = ["Activation", "Sampling", "Trade Activity"];
 const TCLASS = t => "t-" + t.split(" ")[0];
 const TVAR = t => ({ Activation: "--act", Sampling: "--samp", "Trade Activity": "--trade" })[t];
@@ -561,7 +570,18 @@ async function storePhoto(file, stamp) {
   await DB.put("photos", p.id, p); photoCache.set(p.id, p);
   return p;
 }
-function samplePhoto(brand, outlet, time, gps, variant) {
+const artCache = new Map();
+function loadArt(src) {
+  if (!artCache.has(src)) artCache.set(src, new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }));
+  return artCache.get(src);
+}
+// Example entries use real photos of the brand when there are any, stamped like a BA's photo.
+async function samplePhoto(brand, outlet, time, gps, variant) {
+  const b = BRANDS.find(x => x.name === brand);
+  if (b && b.photos.length) { const img = await loadArt(`${ART}field/${b.photos[variant % b.photos.length]}.jpg`); if (img) return stampImage(img, { brand, outlet, time, gps }); }
+  return drawnPhoto(brand, outlet, time, gps, variant);
+}
+function drawnPhoto(brand, outlet, time, gps, variant) {
   const c = document.createElement("canvas"); c.width = 960; c.height = 720; // drawn at 960 and stamped/resized by stampImage
   const g = c.getContext("2d"), col = BC(brand);
   const bg = g.createLinearGradient(0, 0, 960, 720); bg.addColorStop(0, "#151822"); bg.addColorStop(1, col);
@@ -597,6 +617,19 @@ async function paintSamplePhotos() {
     if (i % 6 === 5 || i === list.length - 1) { await new Promise(r => setTimeout(r, 0)); hydrate(); }
   }
   await DB.put("kv", "pendingPhotos", []);
+}
+// Browsers that were seeded before the brand pictures arrived get their example photos redrawn once.
+async function repaintExamplePhotos() {
+  const ids = new Set(pendingPhotos.map(q => q.id));
+  for (const e of S.entries.filter(x => x.demo)) {
+    for (let i = 0; i < e.photos.length; i++) {
+      const id = e.photos[i]; if (ids.has(id)) continue;
+      const p = await DB.get("photos", id); if (!p || !p.sample) continue;
+      p.dataUrl = await samplePhoto(e.brand, e.outletName, p.time, p.gps, i + id.length); await DB.put("photos", id, p); photoCache.set(id, p);
+      $$(`img[data-photo="${id}"]`).forEach(el => el.src = p.dataUrl);
+    }
+  }
+  await DB.put("kv", "artVersion", 1);
 }
 async function seedDemo() {
   seed = 42;
@@ -650,7 +683,7 @@ async function seedDemo() {
   }
   Object.assign(S, { vendors, users, outlets, entries });
   await save(...COLLS);
-  await DB.put("kv", "seeded", 2);
+  await DB.put("kv", "seeded", 2); await DB.put("kv", "artVersion", 1);
 }
 
 /* ---------- auth & session ---------- */
@@ -695,7 +728,7 @@ $("#loginForm").addEventListener("submit", async e => {
   $("#l-err").textContent = ""; $("#l-pw").value = "";
   enter(u.id);
 });
-$("#brandRow").innerHTML = BRANDS.map(b => `<span><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</span>`).join("");
+$("#brandRow").innerHTML = BRANDS.map(b => `<span>${bmark(b.name)}${esc(b.name)}</span>`).join("");
 
 function enter(id) {
   currentId = id; sessionStore.set(id);
@@ -858,7 +891,7 @@ function renderDashboard() {
           ${board.length ? board.map((r, i) => { const ba = userOf(r.id) || { name: "Unknown", id: "x" }, bv = vendorOf(ba.vendorId); return `<div class="lb"><span class="rk r${i + 1}">${i + 1}</span>${avatar(ba)}<div class="nm"><b>${esc(ba.name)}</b><small>${esc(bv ? bv.name : "")} · ${r.n} ${r.n === 1 ? "activity" : "activities"}</small></div><div class="v">${n(r.sold)}<small>${n(r.reached)} reached</small></div></div>`; }).join("") : `<div class="empty">No cases logged yet today.</div>`}
         </div>
         <div class="card"><div class="card-h"><h3>Cases sold today by brand</h3></div>
-          ${byBrand.map(x => `<div class="hbar"><span class="nm"><i class="bdot" style="background:${BC(x.b)}"></i>${esc(x.b)}</span><span class="tr"><i style="width:${x.v / bmax * 100}%;background:${BC(x.b)}"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("")}
+          ${byBrand.map(x => `<div class="hbar"><span class="nm">${bmark(x.b)}${esc(x.b)}</span><span class="tr"><i style="width:${x.v / bmax * 100}%;background:${BC(x.b)}"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("")}
         </div>
         <div class="card"><div class="card-h"><h3>Latest photos from the field</h3></div>
           ${recentPh.length ? `<div class="photostrip">${recentPh.map(({ p, e }) => `<button type="button" data-entry="${e.id}"><img data-photo="${p}" alt="${esc(e.brand)} at ${esc(e.outletName)}"><span>${esc(e.brand)}</span></button>`).join("")}</div>` : `<div class="empty">No photos yet.</div>`}
@@ -929,7 +962,7 @@ function openEntry(id) {
   const closing = Math.max(0, (+e.opening || 0) - (+e.sold || 0));
   $("#drawer").innerHTML = `<div class="dr-h"><button class="x" type="button" id="dx" aria-label="Close">✕</button>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="typ ${TCLASS(e.type)}">${esc(e.type)}</span>${isLive(e) ? `<span class="pill p-live">Running</span>` : `<span class="pill p-closed">Ended</span>`}${e.demo ? `<span class="sample">Example entry</span>` : ""}</div>
-    <h3><i class="bdot" style="background:${BC(e.brand)};width:14px;height:14px;margin-right:8px;vertical-align:1px"></i>${esc(e.brand)} at ${esc(e.outletName)}</h3>
+    <h3><span style="display:inline-flex;vertical-align:-6px;margin-right:8px">${bmark(e.brand).replace('class="bimg"', 'class="bimg" style="height:34px"')}</span>${esc(e.brand)} at ${esc(e.outletName)}</h3>
     <div class="muted">${esc(v.name)} · ${fmtDay(dayKey(e.start))}</div></div>
     <div class="dr-b">
       ${e.photos.length ? `<div class="gallery">${e.photos.map(p => `<button type="button" data-photo-open="${p}"><img data-photo="${p}" alt="Photo from ${esc(e.outletName)}"></button>`).join("")}</div>` : `<div class="empty">No photos uploaded yet.</div>`}
@@ -1077,7 +1110,7 @@ function renderOutlets() {
     <tbody>${list.map(o => `<tr>
       ${admin ? `<td><input type="checkbox" data-sel="${o.id}" ${ol.sel.has(o.id) ? "checked" : ""} aria-label="Select ${esc(o.name)}"></td>` : ""}
       <td><b>${esc(o.name)}</b><small>${esc(o.address)}</small></td><td>${esc(o.area)}${o.located === "area" ? `<small>Placed by area</small>` : o.lat == null ? `<small style="color:var(--warn)">No location</small>` : ""}</td><td>${esc(o.channel)}</td>
-      <td><div class="chips">${(o.brands || []).map(b => `<span class="bchip sm"><i class="bdot" style="background:${BC(b)}"></i>${esc(b)}</span>`).join("") || `<span class="dim">Any</span>`}</div></td>
+      <td><div class="chips">${(o.brands || []).map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("") || `<span class="dim">Any</span>`}</div></td>
       <td>${admin ? `<select class="inline" data-assign="${o.id}" aria-label="Vendor for ${esc(o.name)}">${vopts(o.vendorId)}</select>` : `<span class="pill p-closed">Assigned</span>`}</td>
       <td>${activeToday.has(o.id) ? `<span class="pill p-live">Activated</span>` : `<span class="dim">–</span>`}</td></tr>`).join("") || `<tr><td colspan="7"><div class="empty" style="border:0">No outlets match.</div></td></tr>`}</tbody></table></div>`;
   $("#oq").oninput = e => { ol.q = e.target.value; const pos = e.target.selectionStart; renderOutlets(); const i = $("#oq"); i.focus(); i.setSelectionRange(pos, pos); };
@@ -1135,7 +1168,7 @@ function renderVendors() {
       const es = S.entries.filter(e => e.vendorId === v.id);
       return `<article class="vcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4><i class="bdot" style="background:${v.color};margin-right:8px"></i>${esc(v.name)}</h4>${es.some(isLive) ? `<span class="pill p-live">${es.filter(isLive).length} running</span>` : ""}</div>
         <div class="muted" style="font-size:12.5px">${esc(v.contact)} · ${esc(v.phone)} · ${esc(v.email)}</div>
-        <div class="chips">${v.brands.map(b => `<span class="bchip sm"><i class="bdot" style="background:${BC(b)}"></i>${esc(b)}</span>`).join("")}</div>
+        <div class="chips">${v.brands.map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("")}</div>
         <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b></div><div><label>Ambassadors</label><b>${bas.length}</b></div><div><label>Entries</label><b>${es.length}</b></div></div>
         <div style="font-size:12.5px"><span class="dim">Manager sign-in:</span> ${mgr.map(m => `<span class="num">${esc(m.login)}</span>`).join(", ") || "none"}</div></article>`;
     }).join("")}</div>
@@ -1150,7 +1183,7 @@ function renderVendors() {
     $("#rsYes", m).onclick = async () => { await DB.clear(); photoCache.clear(); await seedDemo(); closeModal(); toast("Example data restored"); refresh(); paintSamplePhotos(); };
   });
 }
-function brandPicker(name, chosen = []) { return `<div class="chips">${BRANDS.map(b => `<label class="bchip"><input type="checkbox" name="${name}" value="${esc(b.name)}" ${chosen.includes(b.name) ? "checked" : ""}><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</label>`).join("")}</div>`; }
+function brandPicker(name, chosen = []) { return `<div class="chips">${BRANDS.map(b => `<label class="bchip"><input type="checkbox" name="${name}" value="${esc(b.name)}" ${chosen.includes(b.name) ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div>`; }
 function vendorForm() {
   openModal(`<h3>Register a vendor</h3>
     <form id="vf" class="fgrid" novalidate>
@@ -1277,7 +1310,7 @@ function renderLog() {
       <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${outlets.map(o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`).join("")}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
       <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"></div>
       <div class="field"><span class="flabel">Activity</span><div class="seg" id="lg-type">${TYPES.map(t => `<button type="button" aria-pressed="${draft.type === t}" data-o="${t}">${t}</button>`).join("")}</div></div>
-      <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</label>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div></div>
       <div class="fgrid">${stepper("lg-open", draft.opening, "Opening cases")}${stepper("lg-sold", draft.sold, "Cases sold")}</div>
       ${stepper("lg-reached", draft.reached, "Consumers reached")}
       <div class="field"><span class="flabel">Live photos of the activation (at least one)</span><div class="shots" id="lgShots">${draft.files.map((f, i) => `<div class="shot"><img src="${f.url}" alt="Selected photo ${i + 1}"><span class="tag">${f.live ? "Live" : "Older photo"}</span><button class="x" type="button" data-rm="${i}" aria-label="Remove photo">✕</button></div>`).join("")}<label class="addshot">${CAM_SVG}Take photo<input type="file" accept="image/*" capture="environment" multiple id="lgPh"></label></div><small class="dim">Each photo is stamped with the time and your location.</small></div>
@@ -1600,6 +1633,7 @@ const ready = new Promise(r => markReady = r);
   if (!(await DB.get("kv", "seeded"))) await seedDemo();
   else { for (const c of COLLS) S[c] = (await DB.get("kv", c)) || []; pendingPhotos = (await DB.get("kv", "pendingPhotos")) || []; }
   await ensureOwner();
+  if ((await DB.get("kv", "artVersion")) !== 1) setTimeout(repaintExamplePhotos, 400);
   readyDone = true; markReady();
   setTimeout(paintSamplePhotos, 50);
   const sid = sessionStore.get();
