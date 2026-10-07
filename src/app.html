@@ -446,7 +446,7 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
   <div class="login-hero">
     <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small>Activations · Sampling · Trade</small></div></div>
     <div class="hero-copy">
-      <span class="kicker"><i></i>Live from 10 brands across Nigeria</span>
+      <span class="kicker"><i></i>Live from 11 brands across Nigeria</span>
       <h1>Every outlet activation, <em>live</em> from the field.</h1>
       <p>Brand ambassadors log activations with live photos, location and cases sold. Vendor managers and trade marketing see it on the map as it happens.</p>
       <div class="brandrow" id="brandRow"></div>
@@ -548,13 +548,16 @@ const BRANDS = [
   { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle", img: "trophy-stout", photos: ["trophy-stout-1", "trophy-stout-2"] },
   { name: "Budweiser", color: "#C8102E", kind: "can", img: "budweiser", photos: ["budweiser-1", "budweiser-2", "budweiser-3"] },
   { name: "Budweiser Royale", color: "#B8963E", kind: "bottle", img: "budweiser-royale", photos: [] },
-  { name: "Hero Lager", color: "#B5121B", kind: "bottle", img: "", photos: [] },
+  { name: "Hero Lager", color: "#B5121B", kind: "bottle", img: "hero-lager", photos: [] },
   { name: "Beta Malt", color: "#E2601B", kind: "can", img: "beta-malt", photos: ["beta-malt-1", "brand-range"] },
   { name: "Grand Malt", color: "#2F8F46", kind: "can", img: "grand-malt", photos: ["grand-malt-1", "brand-range"] },
   { name: "Flying Fish", color: "#17A9B5", kind: "bottle", img: "flying-fish", photos: ["flying-fish-1", "flying-fish-2"] },
   { name: "Eagle", color: "#8FA31E", kind: "bottle", img: "eagle", photos: ["eagle-1", "eagle-2"] },
+  { name: "Eagle Extra Stout", color: "#A0662B", kind: "bottle", img: "eagle-stout", photos: [] },
   { name: "Castle Lite", color: "#2F6FD6", kind: "can", img: "castle-lite", photos: ["castle-lite-1", "castle-lite-2"] }
 ];
+// High-resolution pack shots (assets/products/*.webp) for the sign-in showcase; h is the pack's height relative to a 60cl bottle.
+const PRODUCTS = [["hero-lager", 1], ["budweiser", .92], ["castle-lite", 1], ["eagle-lager", 1], ["beta-malt-pet", .9], ["flying-fish", .94], ["grand-malt-can", .62], ["eagle-stout", 1], ["beta-malt-can", .62], ["grand-malt-bottle", .86], ["beta-malt-bottle", .66], ["grand-malt-pet", .9], ["grand-malt-pet-small", .72]];
 const BC = name => (BRANDS.find(b => b.name === name) || { color: "#999" }).color;
 // Product shot for a brand, falling back to its colour dot if the image can't load.
 const bmark = name => { const b = BRANDS.find(x => x.name === name); return b && b.img ? `<img class="bimg" src="${ART}brands/${b.img}.png" alt="" onerror="this.outerHTML='<i class=&quot;bdot&quot; style=&quot;background:${b.color}&quot;></i>'">` : `<i class="bdot" style="background:${BC(name)}"></i>`; };
@@ -2469,6 +2472,19 @@ const loginScene = (() => {
     loader.load(ART + "login/" + name + ".jpg", t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; mat.map = rmat.map = t; mat.color.set(0xffffff); rmat.color.set(0xffffff); mat.needsUpdate = rmat.needsUpdate = true; });
     ring.add(g); return { g, mat, rmat, a };
   });
+  // the brands' pack shots parade around the outside of the ring, standing on its floor and always turned to face you
+  const PR = R + 3.4, BH = 3.9, bottles = PRODUCTS.map(([name, hk], i) => {
+    const a = (i + .5) / PRODUCTS.length * Math.PI * 2, h = BH * hk;
+    const g = new THREE.Group(); g.position.set(Math.sin(a) * PR, -H / 2 - .06, Math.cos(a) * PR);
+    const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });
+    const geo = new THREE.PlaneGeometry(1, 1); geo.translate(0, .5, 0);
+    const m = new THREE.Mesh(geo, mat); g.add(m);
+    const rmat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, alphaMap: reflMask });
+    const rm = new THREE.Mesh(geo, rmat); rm.scale.y = -1; rm.position.y = -.04; g.add(rm);
+    loader.load(ART + "products/" + name + ".webp", t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; const ar = t.image.width / t.image.height; m.scale.set(h * ar, h, 1); rm.scale.set(h * ar, -h * .7, 1); mat.map = rmat.map = t; mat.needsUpdate = rmat.needsUpdate = true; mat.userData.ok = 1; });
+    ring.add(g); return { g, m, rm, mat, rmat, a, h };
+  });
+  const qInv = new THREE.Quaternion();
   // glowing floor disc under the ring and drifting amber bokeh
   const gc = document.createElement("canvas"); gc.width = gc.height = 128;
   const g2 = gc.getContext("2d"), grd = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
@@ -2514,6 +2530,17 @@ const loginScene = (() => {
       const f = fwd.dot(toCam), k = THREE.MathUtils.clamp(f * .8 + .35, .12, 1);
       c.mat.opacity = k; c.rmat.opacity = k * (isDark() ? .32 : .22);
       c.g.position.y = RM ? 0 : Math.sin(t / 1000 * .8 + c.a * 2) * .12;
+    });
+    // bottles: billboard toward the camera, the front ones grow and brighten, a gentle bob out of step with each other
+    ring.getWorldQuaternion(qInv); qInv.invert();
+    bottles.forEach((b, i) => {
+      b.g.quaternion.copy(qInv).multiply(cam.quaternion);
+      b.g.getWorldPosition(wp); toCam.subVectors(cam.position, wp).normalize();
+      fwd.set(Math.sin(b.a + spin), 0, Math.cos(b.a + spin));
+      const f = fwd.dot(toCam), k = THREE.MathUtils.clamp(f * .9 + .3, .08, 1), pop = 1 + Math.max(0, f - .85) * 1.6;
+      if (b.mat.userData.ok) { b.mat.opacity += (k - b.mat.opacity) * .1; b.rmat.opacity = b.mat.opacity * (isDark() ? .28 : .18); }
+      b.g.scale.setScalar(pop);
+      b.m.position.y = RM ? 0 : Math.abs(Math.sin(t / 1000 * 1.1 + i * 1.7)) * .12;
     });
     if (!RM) { bokeh.rotation.y = t / 1000 * .01; bokeh.position.y = Math.sin(t / 3000) * .4; }
     r.render(sc, cam);
