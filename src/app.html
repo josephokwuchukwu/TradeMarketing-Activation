@@ -90,6 +90,16 @@ h1,h2,h3,h4{text-wrap:balance}
 .card-h .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .empty{color:var(--muted);padding:28px;text-align:center;border:1px dashed var(--line-2);border-radius:14px}
 .sample{font-size:11px;color:var(--dim)}
+.beta{font-family:var(--body);font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;vertical-align:2px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent-text)}
+.lb{display:grid;grid-template-columns:28px 32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:13px}
+.lb:first-of-type{border-top:0}
+.lb .rk{font-family:var(--mono);font-weight:800;text-align:center;color:var(--muted)}
+.lb .rk.r1{color:#E3A52B}.lb .rk.r2{color:#9AA4B2}.lb .rk.r3{color:#C07A45}
+.lb .nm{min-width:0}.lb .nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb .nm small{color:var(--muted);font-size:11.5px}
+.lb .v{font-family:var(--mono);font-weight:800;text-align:right}.lb .v small{display:block;font-family:var(--body);font-weight:500;color:var(--muted);font-size:11px}
+.radios{display:flex;flex-direction:column;gap:8px}
+.radios label{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;cursor:pointer;font-size:13.5px}
+.radios label:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
 /* ---------- login ---------- */
@@ -358,7 +368,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 <!-- ============ APP ============ -->
 <div class="app" id="app" hidden>
   <aside class="rail">
-    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small id="roleLabel">Admin</small></div></div>
+    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate <span class="beta">Beta</span></b><small id="roleLabel">Admin</small></div></div>
     <nav class="nav" id="nav" aria-label="Sections"></nav>
     <div class="me" id="me"></div>
   </aside>
@@ -368,6 +378,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
       <div class="top-right">
         <span class="chip"><span class="dot"></span><span id="clock"></span></span>
         <button class="iconbtn themeBtn" type="button" aria-label="Switch light or dark mode"></button>
+        <button class="iconbtn" type="button" id="acctBtn" aria-label="My account" title="My account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
         <button class="btn sm" type="button" id="logout">Sign out</button>
       </div>
     </header>
@@ -554,6 +565,15 @@ function samplePhoto(brand, outlet, time, gps, variant) {
   return stampImage(c, { brand, outlet, time, gps });
 }
 
+/* ---------- owner account ----------
+   Jay's own admin sign-in. Only the password hash is stored here; the
+   password itself was shared with Jay privately. Change it under My account. */
+const OWNER = { id: "u_jay", role: "admin", name: "Jay", login: "jay@tradeactivate.app", pw: "d58a4b20dad9e715679d0c0fc83fe093295fc86afcb8e06e2eeee409aa489cad", owner: true };
+async function ensureOwner() {
+  if (S.users.some(u => u.id === OWNER.id)) return;
+  S.users.unshift({ ...OWNER }); await save("users");
+}
+
 /* ---------- demo data (first run only) ---------- */
 let pendingPhotos = [];
 async function paintSamplePhotos() {
@@ -573,7 +593,7 @@ async function seedDemo() {
     { id: "v_blu", name: "BlueWave Experiential", contact: "Nkechi Umeh", phone: "0805 555 0177", email: "nkechi@bluewave.ng", brands: ["Budweiser", "Budweiser Royale", "Castle Lite"], color: "#2F6FD6" },
     { id: "v_kor", name: "Kora Field Marketing", contact: "Musa Garba", phone: "0809 555 0123", email: "musa@kora.ng", brands: ["Beta Malt", "Grand Malt", "Flying Fish"], color: "#2F8F46" }
   ].map(v => ({ ...v, createdAt: Date.now() - 20 * 864e5 }));
-  const users = [{ id: "u_admin", role: "admin", name: "Trade Marketing Admin", login: "admin@tradeactivate.app", pw: await sha("Admin@123") }];
+  const users = [{ ...OWNER }, { id: "u_admin", role: "admin", name: "Trade Marketing Admin", login: "admin@tradeactivate.app", pw: await sha("Admin@123") }];
   for (const v of vendors) users.push({ id: "u_" + v.id, role: "manager", name: v.contact, login: v.email, phone: v.phone, vendorId: v.id, pw: await sha("Manager@123") });
   const baNames = { v_pin: ["Adaeze Okafor", "Tunde Bakare", "Chiamaka Eze", "Ibrahim Musa"], v_blu: ["Funmi Adeyemi", "Emeka Nwosu", "Zainab Bello", "Kelechi Obi"], v_kor: ["Damilola Ogun", "Ngozi Ike", "Segun Alabi", "Halima Yusuf"] };
   let baNo = 1001; const pin = await sha("1234");
@@ -607,6 +627,7 @@ async function seedDemo() {
     const opening = 20 + Math.floor(rnd() * 40);
     await mk(ba, o, v.brands[i % 3], TYPES[i % 3], now - (25 + rnd() * 200) * 60000, null, opening, Math.floor(opening * (.2 + rnd() * .5)), 40 + Math.floor(rnd() * 160), 1 + (i % 3));
   }
+  entries[entries.length - 1].gps = null; // one phone that hasn't shared a location, so the location check shows
   // the past six days
   for (let dday = 1; dday <= 6; dday++) for (let j = 0; j < 7; j++) {
     const ba = bas[(dday * 5 + j) % bas.length]; const v = vendors.find(x => x.id === ba.vendorId);
@@ -672,7 +693,33 @@ function enter(id) {
   try { const v = localStorage.getItem("ta.view." + me().role); if (v && NAV[me().role].some(x => x[0] === v)) view = v; } catch (e) { }
   renderShell(); go(view);
 }
-$("#logout").onclick = () => { currentId = null; sessionStore.set(null); closeDrawer(); $("#app").hidden = true; $("#login").hidden = false; loginRole = "admin"; renderLogin(); loginScene.start(); };
+$("#logout").onclick = () => { draft.files.forEach(f => URL.revokeObjectURL(f.url)); Object.assign(draft, { outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", gps: null, files: [], status: "running", locMsg: "" }); currentId = null; sessionStore.set(null); closeDrawer(); $("#app").hidden = true; $("#login").hidden = false; loginRole = "admin"; renderLogin(); loginScene.start(); };
+
+/* ---------- my account: change password or PIN ---------- */
+$("#acctBtn").onclick = () => {
+  const u = me(); if (!u) return;
+  const isBA = u.role === "ba", word = isBA ? "PIN" : "password", vend = vendorOf(u.vendorId);
+  openModal(`<h3>My account</h3>
+    <div style="display:flex;gap:12px;align-items:center">${avatar(u, 44)}<div><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${ROLE_INFO[u.role].label}${vend ? " · " + esc(vend.name) : ""} · <span class="num">${esc(u.login)}</span></div></div></div>
+    <form id="pwf" class="fgrid" novalidate>
+      <div class="field full"><label for="pw-old">Current ${word}</label><input id="pw-old" type="password" autocomplete="current-password" ${isBA ? 'inputmode="numeric"' : ""}></div>
+      <div class="field"><label for="pw-new">New ${word}</label><input id="pw-new" type="password" autocomplete="new-password" ${isBA ? 'inputmode="numeric"' : ""}><small>${isBA ? "4 to 6 digits." : "At least 8 characters, with a number."}</small></div>
+      <div class="field"><label for="pw-new2">Type it again</label><input id="pw-new2" type="password" autocomplete="new-password" ${isBA ? 'inputmode="numeric"' : ""}></div>
+      <div class="err full" id="pw-err" role="alert"></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="pwCancel">Close</button><button class="btn primary" type="submit">Change ${word}</button></div>
+    </form>
+    <p class="muted" style="font-size:12px;margin:0">The change applies on this device. Until the shared backend is connected, each phone or laptop keeps its own copy of the accounts.</p>`, m => {
+    $("#pwCancel", m).onclick = closeModal;
+    $("#pwf", m).onsubmit = async e => {
+      e.preventDefault();
+      const old = $("#pw-old").value, nw = $("#pw-new").value, nw2 = $("#pw-new2").value, err = t => $("#pw-err").textContent = t;
+      if (u.pw !== await sha(old)) return err(`Your current ${word} isn't right.`);
+      if (isBA ? !/^\d{4,6}$/.test(nw) : (nw.length < 8 || !/\d/.test(nw))) return err(isBA ? "The new PIN must be 4 to 6 digits." : "Use at least 8 characters, including a number.");
+      if (nw !== nw2) return err(`The two new ${word}s don't match.`);
+      u.pw = await sha(nw); await save("users"); closeModal(); toast(`${isBA ? "PIN" : "Password"} changed`);
+    };
+  });
+};
 
 /* ---------- theme ---------- */
 const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -750,6 +797,9 @@ tick(); setInterval(() => { tick(); if (me() && (view === "log" || view === "das
 function scopeEntries() { const u = me(); if (!u) return []; if (u.role === "admin") return S.entries; if (u.role === "manager") return S.entries.filter(e => e.vendorId === u.vendorId); return S.entries.filter(e => e.baId === u.id); }
 function scopeOutlets() { const u = me(); if (!u) return []; if (u.role === "admin") return S.outlets; return S.outlets.filter(o => o.vendorId === u.vendorId); }
 const isLive = e => !e.end;
+// A location check is due when the phone shared no location, or when it was
+// more than 500 m from the outlet's listed position.
+const locIssue = e => { if (!e.gps) return "No location"; const o = outletOf(e.outletId); return o && o.lat != null && km(e.gps, o) > .5 ? "Away from outlet" : ""; };
 const posOf = e => e.gps || outletOf(e.outletId) || HUB;
 
 /* ---------- dashboard ---------- */
@@ -771,12 +821,15 @@ function renderDashboard() {
   const byType = TYPES.map(t => ({ t, c: all.filter(e => isLive(e) && e.type === t && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor)).length }));
   const byBrand = brandsInScope.map(b => ({ b, v: todays.filter(e => e.brand === b).reduce((a, e) => a + (+e.sold || 0), 0) })).sort((a, b) => b.v - a.v);
   const bmax = Math.max(1, ...byBrand.map(x => x.v));
+  const flagged = live.filter(locIssue).length;
+  const board = Object.values(todays.reduce((m, e) => { const r = m[e.baId] || (m[e.baId] = { id: e.baId, sold: 0, reached: 0, n: 0 }); r.sold += +e.sold || 0; r.reached += +e.reached || 0; r.n++; return m; }, {})).sort((a, b) => b.sold - a.sold || b.reached - a.reached).slice(0, 5);
   const recentPh = all.filter(pass).flatMap(e => e.photos.map(p => ({ p, e }))).slice(-400).sort((a, b) => b.e.start - a.e.start).slice(0, 12);
   $("#dashBody").innerHTML = `
     <div class="toolbar">
       <div class="seg" id="dType">${["All", ...TYPES].map(t => `<button type="button" aria-pressed="${dash.type === t}" data-o="${t}">${t === "All" ? "All activities" : t}</button>`).join("")}</div>
       <select class="inline" id="dBrand" aria-label="Filter by brand"><option value="All">All brands</option>${brandsInScope.map(b => `<option ${dash.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select>
       ${u.role === "admin" ? `<select class="inline" id="dVendor" aria-label="Filter by vendor"><option value="All">All vendors</option>${S.vendors.map(v => `<option value="${v.id}" ${dash.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      <button class="btn sm" type="button" id="dExport" style="margin-left:auto"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download report</button>
     </div>
     <div class="kpis">
       <div class="kpi"><label>Running now</label><div class="v">${live.length}</div><div class="d">${byType.map(x => `${x.c} ${x.t === "Trade Activity" ? "trade" : x.t.toLowerCase()}`).join(" · ")}</div></div>
@@ -786,9 +839,12 @@ function renderDashboard() {
       <div class="kpi"><label>Live photos today</label><div class="v">${nPhotos}</div><div class="d">stamped with time and location</div></div>
     </div>
     <div class="split">
-      <div class="card"><div class="card-h"><h3>Running now</h3><div class="right"><span class="chip"><span class="dot"></span>Updates as ambassadors log</span></div></div>
+      <div class="card"><div class="card-h"><h3>Running now</h3><div class="right">${flagged ? `<span class="pill p-warn">${flagged} need a location check</span>` : ""}<span class="chip"><span class="dot"></span>Updates as ambassadors log</span></div></div>
         <div id="liveList">${live.length ? live.map(e => liveRow(e)).join("") : `<div class="empty">Nothing is running for this filter. When an ambassador starts an activation it appears here and on the map.</div>`}</div></div>
       <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div class="card"><div class="card-h"><h3>Top ambassadors today</h3><div class="right"><span class="chip">by cases sold</span></div></div>
+          ${board.length ? board.map((r, i) => { const ba = userOf(r.id) || { name: "Unknown", id: "x" }, bv = vendorOf(ba.vendorId); return `<div class="lb"><span class="rk r${i + 1}">${i + 1}</span>${avatar(ba)}<div class="nm"><b>${esc(ba.name)}</b><small>${esc(bv ? bv.name : "")} · ${r.n} ${r.n === 1 ? "activity" : "activities"}</small></div><div class="v">${n(r.sold)}<small>${n(r.reached)} reached</small></div></div>`; }).join("") : `<div class="empty">No cases logged yet today.</div>`}
+        </div>
         <div class="card"><div class="card-h"><h3>Cases sold today by brand</h3></div>
           ${byBrand.map(x => `<div class="hbar"><span class="nm"><i class="bdot" style="background:${BC(x.b)}"></i>${esc(x.b)}</span><span class="tr"><i style="width:${x.v / bmax * 100}%;background:${BC(x.b)}"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("")}
         </div>
@@ -800,6 +856,7 @@ function renderDashboard() {
   $("#dType").onclick = e => { const b = e.target.closest("button"); if (b) { dash.type = b.dataset.o; renderDashboard(); } };
   $("#dBrand").onchange = e => { dash.brand = e.target.value; renderDashboard(); };
   if ($("#dVendor")) $("#dVendor").onchange = e => { dash.vendor = e.target.value; renderDashboard(); };
+  $("#dExport").onclick = () => exportReport(pass);
   hydrate($("#dashBody"));
   city.setMarkers(live, scopeOutlets());
 }
@@ -809,8 +866,43 @@ function liveRow(e) {
     ${e.photos[0] ? `<img class="thumb" data-photo="${e.photos[e.photos.length - 1]}" alt="">` : `<span class="thumb" style="display:grid;place-items:center">${avatar(ba)}</span>`}
     <div style="min-width:0"><div class="t"><i class="bdot" style="background:${BC(e.brand)}"></i>${esc(e.brand)} <span class="typ ${TCLASS(e.type)}">${esc(e.type)}</span></div>
     <div class="m">${esc(e.outletName)} · ${esc(ba.name)}${me().role === "admin" ? " · " + esc(v.name) : ""}</div>
+    ${locIssue(e) ? `<div class="m"><span class="pill p-warn" style="font-size:10.5px;padding:1px 7px">${locIssue(e)}</span></div>` : ""}
     <div class="m">Running <span data-since="${e.start}">${dur(Date.now() - e.start)}</span> · ${e.gps ? "location recorded" : "no location yet"}</div></div>
     <div class="r"><b>${n(e.sold)}</b>cases sold</div></div>`;
+}
+
+/* ---------- report download (Excel, or CSV when Excel support didn't load) ---------- */
+function exportReport(pass) {
+  const RANGES = [["today", "Today"], ["7", "Last 7 days"], ["30", "Last 30 days"], ["all", "Everything"]];
+  const filters = [dash.type !== "All" && dash.type, dash.brand !== "All" && dash.brand, dash.vendor !== "All" && (vendorOf(dash.vendor) || {}).name].filter(Boolean);
+  openModal(`<h3>Download a report</h3>
+    <div class="muted">One row per activation with ambassador, outlet, cases and location, plus a summary sheet by vendor and brand.${filters.length ? ` Uses your dashboard filters: ${esc(filters.join(", "))}.` : ""}</div>
+    <div class="radios" id="rgRange">${RANGES.map(([k, l], i) => `<label><input type="radio" name="rg" value="${k}" ${i === 1 ? "checked" : ""}>${l}</label>`).join("")}</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rgNo">Cancel</button><button class="btn primary" type="button" id="rgGo">Download</button></div>`, m => {
+    $("#rgNo", m).onclick = closeModal;
+    $("#rgGo", m).onclick = () => {
+      const r = $("input[name=rg]:checked", m).value;
+      const from = r === "all" ? 0 : r === "today" ? new Date(new Date().setHours(0, 0, 0, 0)).getTime() : Date.now() - +r * 864e5;
+      const es = scopeEntries().filter(e => pass(e) && e.start >= from).sort((a, b) => a.start - b.start);
+      if (!es.length) return toast("Nothing logged in that period.", true);
+      const rows = es.map(e => {
+        const ba = userOf(e.baId) || {}, v = vendorOf(e.vendorId) || {}, o = outletOf(e.outletId) || {};
+        return { Date: dayKey(e.start), Start: hm(e.start), End: e.end ? hm(e.end) : "Running", Vendor: v.name || "", "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Outlet: e.outletName, Area: o.area || "", Activity: e.type, Brand: e.brand, "Opening cases": +e.opening || 0, "Cases sold": +e.sold || 0, "Closing cases": Math.max(0, (+e.opening || 0) - (+e.sold || 0)), "Consumers reached": +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", "Location check": locIssue(e) || "OK", Notes: e.notes || "" };
+      });
+      const sum = {}; es.forEach(e => { const k = ((vendorOf(e.vendorId) || {}).name || "") + "|" + e.brand; const x = sum[k] || (sum[k] = { Vendor: k.split("|")[0], Brand: e.brand, Activities: 0, "Cases sold": 0, "Consumers reached": 0 }); x.Activities++; x["Cases sold"] += +e.sold || 0; x["Consumers reached"] += +e.reached || 0; });
+      const fname = `trade-activate-${r === "all" ? "all" : r === "today" ? dayKey(Date.now()) : "last-" + r + "-days"}`;
+      if (window.XLSX) {
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Activations");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.values(sum).sort((a, b) => b["Cases sold"] - a["Cases sold"])), "Summary");
+        XLSX.writeFile(wb, fname + ".xlsx");
+      } else {
+        const cols = Object.keys(rows[0]), q = x => /[",\n]/.test(String(x)) ? `"${String(x).replace(/"/g, '""')}"` : x;
+        const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([[cols.join(","), ...rows.map(r => cols.map(c => q(r[c])).join(","))].join("\n")], { type: "text/csv" })); a.download = fname + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+      closeModal(); toast(`Report downloaded: ${rows.length} activations`);
+    };
+  });
 }
 document.addEventListener("click", e => { const t = e.target.closest("[data-entry]"); if (t && !e.target.closest("[data-photo-open]")) openEntry(t.dataset.entry); });
 document.addEventListener("keydown", e => { if (e.key === "Enter") { const t = e.target.closest && e.target.closest("[data-entry]"); if (t) openEntry(t.dataset.entry); } });
@@ -1126,7 +1218,7 @@ const PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6
 const CAM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 function stepper(id, val, label) { return `<div class="field"><label for="${id}">${label}</label><div class="stepper"><button type="button" data-step="${id}" data-d="-1" aria-label="Decrease ${label}">−</button><input id="${id}" class="input" type="number" inputmode="numeric" min="0" value="${val}"><button type="button" data-step="${id}" data-d="1" aria-label="Increase ${label}">+</button></div></div>`; }
 function renderLog() {
-  const u = me(), v = vendorOf(u.vendorId), el = $("#v-log");
+  const u = me(), v = vendorOf(u.vendorId) || { name: "No vendor", brands: BRANDS.map(b => b.name) }, el = $("#v-log");
   const live = S.entries.find(e => e.baId === u.id && isLive(e));
   const firstName = u.name.split(" ")[0];
   if (live) {
@@ -1205,8 +1297,7 @@ function renderLog() {
     const start = Date.now();
     const photos = [];
     for (const f of draft.files) { const p = await storePhoto(f.file, { brand: draft.brand, outlet: outletName, time: start, gps: draft.gps }); photos.push(p.id); URL.revokeObjectURL(f.url); }
-    let gps = draft.gps;
-    if (!gps && o && o.lat != null) gps = null;
+    const gps = draft.gps;
     const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim() };
     if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
     S.entries.push(entry); await save("entries");
@@ -1496,6 +1587,7 @@ const ready = new Promise(r => markReady = r);
   await DB.open();
   if (!(await DB.get("kv", "seeded"))) await seedDemo();
   else { for (const c of COLLS) S[c] = (await DB.get("kv", c)) || []; pendingPhotos = (await DB.get("kv", "pendingPhotos")) || []; }
+  await ensureOwner();
   readyDone = true; markReady();
   setTimeout(paintSamplePhotos, 50);
   const sid = sessionStore.get();
