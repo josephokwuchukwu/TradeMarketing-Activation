@@ -1992,6 +1992,13 @@ const city = (() => {
   const stateMeshes = [], stateLines = [], cityPts = [], lakeMeshes = [], riverLines = [];
   let outline = null, outlineGlow = null, built = false, treeMesh = null, treeZ = -1;
   const parkLabels = [], stateLabels = [];
+  const HB = (() => { const a = project(14.2, 2.4), b = project(3.9, 15); return { x0: a.x, w: b.x - a.x, y0: -b.z, h: -a.z - -b.z }; })();
+  const heatCv = document.createElement("canvas"); heatCv.width = 1024; heatCv.height = Math.round(1024 * HB.h / HB.w);
+  const heatAcc = document.createElement("canvas"); heatAcc.width = heatCv.width; heatAcc.height = heatCv.height;
+  const heatCtx = heatCv.getContext("2d"); heatCtx.fillStyle = "#000"; heatCtx.fillRect(0, 0, heatCv.width, heatCv.height);
+  const heatTex = new THREE.CanvasTexture(heatCv); heatTex.encoding = THREE.sRGBEncoding;
+  // state tops carry their shape coordinates as UVs (world x, -z); map those onto the heat canvas
+  heatTex.repeat.set(1 / HB.w, 1 / HB.h); heatTex.offset.set(-HB.x0 / HB.w, -HB.y0 / HB.h);
   const PARKS = [
     { name: "Cross River National Park", lat: 5.4, lng: 8.55, r: .35 }, { name: "Obudu Plateau", lat: 6.37, lng: 9.3, r: .2 },
     { name: "Okomu National Park", lat: 6.38, lng: 5.3, r: .2 }, { name: "Niger Delta mangroves", lat: 4.75, lng: 6.25, r: .5 },
@@ -2015,7 +2022,7 @@ const city = (() => {
     NG.neighbours.forEach(n => { if (n.poly.length) { const m = slab(n.poly, .5, neighbourMat); mapGroup.add(m); } });
     // states
     NG.states.forEach(s => {
-      const top = new THREE.MeshStandardMaterial({ color: 0x1b2236, roughness: .8, metalness: .05 });
+      const top = new THREE.MeshStandardMaterial({ color: 0x1b2236, roughness: .8, metalness: .05, emissive: 0xffffff, emissiveMap: heatTex, emissiveIntensity: 1 });
       const side = new THREE.MeshStandardMaterial({ color: 0x0e1322, roughness: .9 });
       const m = slab(s.poly, LAND_H, [top, side], true);
       // realistic tint: rainforest green on the coast, savanna through the middle belt, Sahel sand in the far north
@@ -2095,10 +2102,32 @@ const city = (() => {
     beacons = [];
   }
   let sig = "", pending = null, heatMax = 1, drapeDirty = true;
+  // heat map: a glow painted onto the state tops wherever activations happened this week
+  function drawHeat(es) {
+    const W = heatCv.width, H = heatCv.height, g = heatAcc.getContext("2d");
+    g.globalCompositeOperation = "source-over"; g.fillStyle = "#000"; g.fillRect(0, 0, W, H); g.globalCompositeOperation = "lighter";
+    const now = Date.now();
+    es.forEach(e => {
+      const pos = posOf(e), q = project(pos.lat, pos.lng), x = (q.x - HB.x0) / HB.w * W, y = H - (-q.z - HB.y0) / HB.h * H;
+      const w8 = Math.min(1, .18 + (+e.sold || 0) / 80) * (isLive(e) ? 1.5 : 1) * (1 - Math.min(.6, (now - e.start) / (7 * 864e5)));
+      const r = 34 + Math.min(40, (+e.sold || 0) * .9), gr = g.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, `rgba(255,255,255,${(w8 * .8).toFixed(3)})`); gr.addColorStop(.35, `rgba(255,255,255,${(w8 * .45).toFixed(3)})`); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
+    });
+    const src = g.getImageData(0, 0, W, H).data, out = heatCtx.createImageData(W, H), d = out.data;
+    for (let i = 0; i < src.length; i += 4) {
+      const t = Math.min(1, src[i] / 255); if (t < .02) continue;
+      // ramp: soft yellow -> orange -> red -> deep red, darker where it's cooler
+      const r = 255, gg = t < .5 ? 230 - t * 2 * 110 : 120 - (t - .5) * 2 * 110, b = t < .3 ? 60 * (1 - t / .3) : 0, a = Math.min(1, t * 1.6);
+      d[i] = r * a; d[i + 1] = gg * a; d[i + 2] = b * a; d[i + 3] = 255;
+    }
+    heatCtx.putImageData(out, 0, 0); heatTex.needsUpdate = true;
+  }
   function setHeat() {
     // this week's cases sold per state, from everything in scope
     const since = Date.now() - 7 * 864e5, heat = {};
-    scopeEntries().filter(e => e.start >= since).forEach(e => { const p = posOf(e), s = stateAt(p.lat, p.lng); if (s) heat[s] = (heat[s] || 0) + (+e.sold || 0) + 1; });
+    const wk = scopeEntries().filter(e => e.start >= since); drawHeat(wk);
+    wk.forEach(e => { const p = posOf(e), s = stateAt(p.lat, p.lng); if (s) heat[s] = (heat[s] || 0) + (+e.sold || 0) + 1; });
     heatMax = Math.max(1, ...Object.values(heat));
     stateMeshes.forEach(m => { const v = heat[m.userData.state] || 0; m.userData.heat = Math.sqrt(v / heatMax); m.userData.cases = v; m.userData.h = 1 + m.userData.heat * RAISE / LAND_H; });
     paintStates();
@@ -2121,11 +2150,11 @@ const city = (() => {
       cLand.copy(m.userData.base);
       if (dark) { cLand.multiplyScalar(.62); } else cLand.lerp(new THREE.Color(0xF3F0E6), .04);
       cHot.set(dark ? 0xD9A02A : 0xE3AE3A);
-      cLand.lerp(cHot, h ? .08 + h * .32 : 0);
+      cLand.lerp(cHot, h ? .04 + h * .1 : 0);
       if (hov) cLand.lerp(new THREE.Color(dark ? 0x7d8fd0 : 0xffffff), .35);
       m.userData.top.color.copy(cLand);
       cSide.copy(cLand).multiplyScalar(dark ? .55 : .78); m.userData.side.color.copy(cSide);
-      m.userData.top.emissive.set(dark && h ? 0x2a1500 : 0x000000); m.userData.top.emissiveIntensity = h;
+      m.userData.top.emissiveIntensity = dark ? 1.3 : 1.05;
     });
   }
   function setMarkers(live, outlets) {
