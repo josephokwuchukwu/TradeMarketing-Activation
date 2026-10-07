@@ -5,37 +5,43 @@
 /* Layout: login splash over a 3D field of brand bottles; inside, a left rail + workspace whose panes change by role
    (Admin, Vendor Manager, Brand Ambassador). Light and dark palettes share one token set. */
 :root{
-  --bg:#F2F3F7; --panel:#FFFFFF; --panel-2:#F6F7FB; --raise:#EBEDF4;
-  --line:rgba(22,28,58,.10); --line-2:rgba(22,28,58,.18);
-  --fg:#151A2B; --muted:#596079; --dim:#8A90A5;
-  --accent:#FFB547; --accent-ink:#1E1404; --accent-text:#B76A00;
-  --act:#D98500; --samp:#0E9C8F; --trade:#7357F0;
-  --good:#1B9653; --warn:#C77700; --bad:#D13A3A;
-  --stage-top:#DCE3F3; --stage-bot:#EEF1F8;
-  --shadow:0 18px 50px -24px rgba(20,28,60,.35);
+  --bg:#F6F3EC; --panel:#FFFFFF; --panel-2:#FAF8F3; --raise:#F0EBDF;
+  --line:rgba(58,42,10,.10); --line-2:rgba(58,42,10,.18);
+  --fg:#1F1A10; --muted:#665C48; --dim:#968B74;
+  --accent:#C68D16; --accent-ink:#1E1404; --accent-text:#8A5F08;
+  --grad:linear-gradient(135deg,#F2C14E 0%,#C68D16 52%,#8E5E0A 100%);
+  --grad-soft:linear-gradient(135deg,rgba(242,193,78,.22),rgba(198,141,22,.10) 55%,rgba(142,94,10,.04));
+  --act:#C68D16; --samp:#0E9C8F; --trade:#7357F0;
+  --good:#1B9653; --warn:#B86E00; --bad:#D13A3A;
+  --stage-top:#F1E6CC; --stage-bot:#F8F4EA;
+  --shadow:0 18px 50px -24px rgba(60,40,8,.35);
   --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
   --body:"Figtree","Segoe UI",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   --r:14px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0A0C13; --panel:#11141F; --panel-2:#171B29; --raise:#1E2334;
-  --line:rgba(150,162,210,.13); --line-2:rgba(150,162,210,.24);
-  --fg:#EAEDF6; --muted:#8C93AB; --dim:#5F6680;
-  --accent-text:#FFB547;
-  --act:#FFB547; --samp:#4FD8CB; --trade:#A78BFF;
-  --good:#5BD68A; --warn:#FFB547; --bad:#FF6B6B;
-  --stage-top:#18203A; --stage-bot:#0B0E18;
+  --bg:#0D0B08; --panel:#16130D; --panel-2:#1D1910; --raise:#272115;
+  --line:rgba(214,180,110,.13); --line-2:rgba(214,180,110,.24);
+  --fg:#F3EDE0; --muted:#A99D85; --dim:#6F6552;
+  --accent:#D9A02A; --accent-text:#E8B54A;
+  --grad:linear-gradient(135deg,#F5CB62 0%,#D9A02A 50%,#9A660C 100%);
+  --grad-soft:linear-gradient(135deg,rgba(245,203,98,.16),rgba(217,160,42,.07) 55%,rgba(154,102,12,.02));
+  --act:#B88214; --samp:#14988D; --trade:#8B6CF0;
+  --good:#5BD68A; --warn:#E8B54A; --bad:#FF6B6B;
+  --stage-top:#2A2110; --stage-bot:#0E0C08;
   --shadow:0 30px 80px -30px rgba(0,0,0,.8);
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0A0C13; --panel:#11141F; --panel-2:#171B29; --raise:#1E2334;
-  --line:rgba(150,162,210,.13); --line-2:rgba(150,162,210,.24);
-  --fg:#EAEDF6; --muted:#8C93AB; --dim:#5F6680;
-  --accent-text:#FFB547;
-  --act:#FFB547; --samp:#4FD8CB; --trade:#A78BFF;
-  --good:#5BD68A; --warn:#FFB547; --bad:#FF6B6B;
-  --stage-top:#18203A; --stage-bot:#0B0E18;
+  --bg:#0D0B08; --panel:#16130D; --panel-2:#1D1910; --raise:#272115;
+  --line:rgba(214,180,110,.13); --line-2:rgba(214,180,110,.24);
+  --fg:#F3EDE0; --muted:#A99D85; --dim:#6F6552;
+  --accent:#D9A02A; --accent-text:#E8B54A;
+  --grad:linear-gradient(135deg,#F5CB62 0%,#D9A02A 50%,#9A660C 100%);
+  --grad-soft:linear-gradient(135deg,rgba(245,203,98,.16),rgba(217,160,42,.07) 55%,rgba(154,102,12,.02));
+  --act:#B88214; --samp:#14988D; --trade:#8B6CF0;
+  --good:#5BD68A; --warn:#E8B54A; --bad:#FF6B6B;
+  --stage-top:#2A2110; --stage-bot:#0E0C08;
   --shadow:0 30px 80px -30px rgba(0,0,0,.8);
   color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
@@ -51,7 +57,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:9px 15px;font-weight:700;font-size:13.5px;border:1px solid var(--line-2);background:var(--panel-2);transition:transform .15s,background .2s,border-color .2s;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 24px -10px rgba(255,181,71,.8)}
+.btn.primary{background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 24px -10px rgba(198,141,22,.8)}
 .btn.primary:hover{filter:brightness(1.05)}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
@@ -106,7 +112,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .live-note{margin-top:16px;padding:13px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
 .code{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:300px;overflow:auto}
 .sect{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:4px 0 -8px}
-.folder.custom .ficon::after{background:linear-gradient(transparent 56%,rgba(255,255,255,.6) 56% 68%,transparent 68%),linear-gradient(160deg,var(--fc,#FFB547),color-mix(in srgb,var(--fc,#FFB547) 60%,#000))}
+.folder.custom .ficon::after{background:linear-gradient(transparent 56%,rgba(255,255,255,.6) 56% 68%,transparent 68%),linear-gradient(160deg,var(--fc,#E0A82E),color-mix(in srgb,var(--fc,#E0A82E) 60%,#000))}
 .beta{font-family:var(--body);font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;vertical-align:2px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent-text)}
 .lb{display:grid;grid-template-columns:28px 32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:13px}
 .lb:first-of-type{border-top:0}
@@ -149,7 +155,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .login-top{position:absolute;right:20px;top:18px;z-index:2}
 
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg,#FFB547,#C8102E,#17A9B5,#2F8F46,#FFB547);position:relative;box-shadow:0 0 24px rgba(255,181,71,.35);flex:none}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg,#F5CB62,#C68D16,#8E5E0A,#E9B949,#F5CB62);position:relative;box-shadow:0 0 24px rgba(198,141,22,.35);flex:none}
 .brand-mark::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--panel)}
 .brand b{font-family:var(--display);font-size:19px;letter-spacing:-.02em;font-weight:800}
 .brand small{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:-3px}
@@ -184,6 +190,17 @@ h1,h2,h3,h4{text-wrap:balance}
 .mapviews{position:absolute;right:16px;bottom:12px;z-index:3;background:color-mix(in srgb,var(--panel) 75%,transparent);backdrop-filter:blur(8px)}
 .maptip{position:absolute;left:0;top:0;z-index:4;pointer-events:none;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line-2);border-radius:10px;padding:8px 11px;font-size:12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 30px -12px rgba(0,0,0,.5)}
 .maptip span{color:var(--muted)}
+.svbtn{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 10px 30px -10px rgba(198,141,22,.8)}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent-text);font-weight:600;cursor:pointer;font:inherit;font-weight:600}
+.svpanel{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(10,8,4,.55);backdrop-filter:blur(6px);padding:16px}
+.svpanel .svbox{width:min(1000px,100%);height:min(680px,86vh);background:var(--panel);border:1px solid var(--line-2);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.svpanel header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.svpanel header b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svpanel iframe{flex:1;border:0;width:100%;background:var(--panel-2)}
+.svpanel .svnote{font-size:12px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--line)}
+.clabel.park{color:#2E8A3E;font-weight:600;font-style:italic;font-size:10px}
+:root[data-theme="dark"] .clabel.park{color:#7FCB7A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .clabel.park{color:#7FCB7A}}
 .clabel{position:absolute;left:0;top:0;white-space:nowrap;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:var(--fg);text-shadow:0 1px 6px var(--stage-bot),0 0 2px var(--stage-bot);transition:opacity .3s;pointer-events:none;margin-top:-6px}
 .clabel.cap::before{content:"★ ";color:var(--accent-text)}
 .clabel b{margin-left:6px;font-size:9.5px;padding:1px 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);text-shadow:none}
@@ -206,6 +223,43 @@ h1,h2,h3,h4{text-wrap:balance}
 .kpi label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .kpi .v{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
 .kpi .d{font-size:12px;color:var(--muted)}
+:root{--k1:#C68D16;--k2:#0E9C8F;--k3:#D9534F;--k4:#7357F0;--k5:#2E8A3E}
+:root[data-theme="dark"]{--k1:#E0A82E;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k1:#E0A82E;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}}
+.kpi{position:relative;overflow:hidden;isolation:isolate}
+.kpi::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--kc) 22%,transparent),transparent 60%),linear-gradient(180deg,transparent 60%,color-mix(in srgb,var(--kc) 7%,transparent))}
+.kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--kc),color-mix(in srgb,var(--kc) 30%,transparent))}
+.kpi.k1{--kc:var(--k1)}.kpi.k2{--kc:var(--k2)}.kpi.k3{--kc:var(--k3)}.kpi.k4{--kc:var(--k4)}.kpi.k5{--kc:var(--k5)}
+.kpi label{color:color-mix(in srgb,var(--kc) 55%,var(--muted))}
+.kpi .spark{width:100%;height:34px;display:block;margin-top:2px}
+.kpi.bump{animation:bump .7s ease}
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.035);box-shadow:0 0 0 3px color-mix(in srgb,var(--kc) 40%,transparent)}100%{transform:scale(1)}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pulse{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+.mix{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.donut{width:130px;height:130px;flex:none}.donut .dv,.ring .dv{font-family:var(--display);font-weight:800;font-size:26px;fill:var(--fg)}.donut .dl{font-size:10px;fill:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.donut circle{transition:stroke-dasharray .8s cubic-bezier(.2,.8,.2,1)}
+.legend2{display:flex;flex-direction:column;gap:8px;flex:1;min-width:120px}
+.legend2 div{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:13px}.legend2 i{width:12px;height:12px;border-radius:4px}.legend2 b{font-family:var(--mono)}
+.cols{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px;align-items:end;padding-top:6px}
+.col{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;outline:none}
+.col i{width:100%;max-width:38px;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#F2C14E,#C68D16 70%,#A8740F);opacity:.55;transition:height .8s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.col.today i{opacity:1;box-shadow:0 8px 20px -8px rgba(198,141,22,.9)}
+.col:hover i,.col:focus i{opacity:1}
+.col small{font-size:11px;color:var(--muted)}.col.today small{color:var(--accent-text);font-weight:700}
+.col .cv{font-size:10.5px;font-family:var(--mono);color:var(--muted)}
+.hbar .tr i.gold{background:linear-gradient(90deg,#F2C14E,#C68D16)}
+[data-tip]{position:relative}
+[data-tip]:hover::after,[data-tip]:focus::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:11.5px;font-weight:600;padding:6px 9px;border-radius:8px;white-space:nowrap;z-index:5;pointer-events:none}
+.vscore{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.vs{text-align:left;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,color-mix(in srgb,var(--vc) 14%,var(--panel)),var(--panel) 70%);display:flex;flex-direction:column;gap:8px;color:var(--fg);transition:transform .15s,border-color .2s}
+.vs:hover{transform:translateY(-2px);border-color:var(--vc)}
+.vs-h{display:flex;justify-content:space-between;gap:8px;align-items:center}.vs-h b{font-family:var(--display)}
+.vs-n{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}.vs-n b{color:var(--fg);font-family:var(--mono)}
+.vs-bar{height:8px;border-radius:4px;background:var(--raise);overflow:hidden}.vs-bar i{display:block;height:100%;border-radius:4px;background:var(--vc);transition:width .8s}
+.vs small{color:var(--muted);font-size:11.5px}
+.cover{display:flex;gap:20px;align-items:center;flex-wrap:wrap}.ring{width:130px;height:130px;flex:none}.ring circle{transition:stroke-dasharray .9s cubic-bezier(.2,.8,.2,1)}
+.cover-t{display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--muted)}.cover-t b{color:var(--fg);font-family:var(--mono)}
 .split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
 .lrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);cursor:pointer;border-radius:10px;transition:background .2s}
 .lrow:first-child{border-top:0}
@@ -237,8 +291,8 @@ h1,h2,h3,h4{text-wrap:balance}
 .folder{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:10px;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden}
 .folder:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:var(--shadow)}
 .folder .ficon{width:54px;height:44px;position:relative}
-.folder .ficon::before{content:"";position:absolute;left:0;top:0;width:24px;height:10px;border-radius:5px 5px 0 0;background:var(--fc,#FFB547);opacity:.8}
-.folder .ficon::after{content:"";position:absolute;left:0;top:7px;right:0;bottom:0;border-radius:4px 8px 8px 8px;background:linear-gradient(160deg,var(--fc,#FFB547),color-mix(in srgb,var(--fc,#FFB547) 60%,#000));box-shadow:0 6px 16px -6px var(--fc,#FFB547)}
+.folder .ficon::before{content:"";position:absolute;left:0;top:0;width:24px;height:10px;border-radius:5px 5px 0 0;background:var(--fc,#E0A82E);opacity:.8}
+.folder .ficon::after{content:"";position:absolute;left:0;top:7px;right:0;bottom:0;border-radius:4px 8px 8px 8px;background:linear-gradient(160deg,var(--fc,#E0A82E),color-mix(in srgb,var(--fc,#E0A82E) 60%,#000));box-shadow:0 6px 16px -6px var(--fc,#E0A82E)}
 .folder h4{margin:0;font-family:var(--display);font-size:17px}
 .folder .meta{font-size:12px;color:var(--muted)}
 .folder .live{position:absolute;right:14px;top:14px}
@@ -273,6 +327,13 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 .vcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .vcard h4{margin:0;font-family:var(--display);font-size:18px}
 .hint{font-size:13px;color:var(--muted);padding:10px 14px;border-radius:12px;border:1px dashed var(--line-2);background:var(--panel)}
+.seg-pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--grad-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);color:var(--accent-text);white-space:nowrap}
+td .seg-pill+small,td select+small{display:block}
+.segnote{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:-6px}
+.ogal{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.ogal button{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);padding:0;display:flex;flex-direction:column;text-align:left}
+.ogal img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--raise)}
+.ogal span{font-size:11px;font-family:var(--mono);padding:6px 8px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vactions{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
 .stats3 small{display:block;font-size:11px;font-weight:500}
 .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
@@ -288,7 +349,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 .ba-wrap{max-width:760px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 .hello{display:flex;gap:14px;align-items:center}
 .hello h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:-.02em}
-.livecard{border-radius:20px;padding:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--bc,#FFB547) 22%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--bc,#FFB547) 45%,transparent);display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.livecard{border-radius:20px;padding:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--bc,#E0A82E) 22%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--bc,#E0A82E) 45%,transparent);display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
 .livecard h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em}
 .timer{font-family:var(--mono);font-size:26px;font-weight:600}
 .locbox{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);flex-wrap:wrap}
@@ -345,7 +406,8 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 .toast.bad::before{background:var(--bad)}
 
 /* ---------- responsive ---------- */
-@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}.pulse{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pulse>:last-child{grid-column:1/-1}}
+@media (max-width:700px){.pulse{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){.login{display:block;overflow-y:auto}.login-hero{padding:24px 20px 0;min-height:420px;justify-content:space-between;gap:14px}.login::before{background:linear-gradient(0deg,var(--stage-bot) 0%,color-mix(in srgb,var(--stage-bot) 85%,transparent) 45%,transparent 75%)}.login-card{transform:none}.login-hero>*{flex:none}.hero-copy{margin-top:min(62vw,280px)}.shelf{margin-top:4px}.login-panel{padding:16px 16px 32px}}
 @media (max-width:820px){
   .app{grid-template-columns:minmax(0,1fr)}
@@ -379,7 +441,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
   <div class="login-hero">
     <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small>Activations · Sampling · Trade</small></div></div>
     <div class="hero-copy">
-      <span class="kicker"><i></i>Live from 9 brands across Nigeria</span>
+      <span class="kicker"><i></i>Live from 10 brands across Nigeria</span>
       <h1>Every outlet activation, <em>live</em> from the field.</h1>
       <p>Brand ambassadors log activations with live photos, location and cases sold. Vendor managers and trade marketing see it on the map as it happens.</p>
       <div class="brandrow" id="brandRow"></div>
@@ -427,6 +489,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
           <div class="stage-tip">Drag to orbit · scroll or pinch to zoom · tap a state to fly in</div>
           <div class="seg mapviews" id="mapViews" aria-label="Map view"><button type="button" data-mv="nigeria" aria-pressed="true">Nigeria</button><button type="button" data-mv="lagos" aria-pressed="false">Lagos</button></div>
           <div class="maptip" id="mapTip" hidden></div>
+          <button class="btn sm svbtn" type="button" id="svBtn" hidden><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="12" cy="5" r="2.5" fill="currentColor"/><path d="M9 9h6l-1 6h-4zM10 15l-1 6M14 15l1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Street view here</button>
         </div>
         <div id="dashBody" style="display:flex;flex-direction:column;gap:20px"></div>
       </div>
@@ -480,6 +543,7 @@ const BRANDS = [
   { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle", img: "trophy-stout", photos: ["trophy-stout-1", "trophy-stout-2"] },
   { name: "Budweiser", color: "#C8102E", kind: "can", img: "budweiser", photos: ["budweiser-1", "budweiser-2", "budweiser-3"] },
   { name: "Budweiser Royale", color: "#B8963E", kind: "bottle", img: "budweiser-royale", photos: [] },
+  { name: "Hero Lager", color: "#B5121B", kind: "bottle", img: "", photos: [] },
   { name: "Beta Malt", color: "#E2601B", kind: "can", img: "beta-malt", photos: ["beta-malt-1", "brand-range"] },
   { name: "Grand Malt", color: "#2F8F46", kind: "can", img: "grand-malt", photos: ["grand-malt-1", "brand-range"] },
   { name: "Flying Fish", color: "#17A9B5", kind: "bottle", img: "flying-fish", photos: ["flying-fish-1", "flying-fish-2"] },
@@ -490,11 +554,31 @@ const BC = name => (BRANDS.find(b => b.name === name) || { color: "#999" }).colo
 // Product shot for a brand, falling back to its colour dot if the image can't load.
 const bmark = name => { const b = BRANDS.find(x => x.name === name); return b && b.img ? `<img class="bimg" src="${ART}brands/${b.img}.png" alt="" onerror="this.outerHTML='<i class=&quot;bdot&quot; style=&quot;background:${b.color}&quot;></i>'">` : `<i class="bdot" style="background:${BC(name)}"></i>`; };
 const TYPES = ["Activation", "Sampling", "Trade Activity"];
+// Trade segments for outlets. The first seven are trade marketing's own list; the last four are recommended additions.
+const SEGMENTS = [
+  ["Mainstream", "Neighbourhood bars and lounges selling core brands at standard prices"],
+  ["Low End", "Value beer parlours and kiosks where price drives choice"],
+  ["High End", "Premium lounges, clubs and rooftop bars"],
+  ["Key Account", "Strategic outlets and chains with a negotiated agreement"],
+  ["Open Market", "Market bars and traders in open markets and motor parks"],
+  ["Spiritual Home", "Iconic outlets that are a brand's home turf and drive its image"],
+  ["Out of Home", "Beer gardens, viewing centres and outdoor drinking spots"],
+  ["Modern Trade", "Supermarkets, malls and convenience chains"],
+  ["HoReCa", "Hotels, restaurants and cafés"],
+  ["Events & Festivals", "Concerts, sports events, owambe parties and festivals"],
+  ["Wholesale", "Distributors and stockists who supply other outlets"]
+];
+const SEG_NAMES = SEGMENTS.map(x => x[0]);
+const matchSegment = t => { const k = String(t || "").toLowerCase().replace(/[^a-z]/g, ""); if (!k) return ""; const al = { lowend: "Low End", value: "Low End", premium: "High End", highend: "High End", ka: "Key Account", keyaccount: "Key Account", openmarket: "Open Market", market: "Open Market", spiritualhome: "Spiritual Home", spiritualhomes: "Spiritual Home", ooh: "Out of Home", outofhome: "Out of Home", moderntrade: "Modern Trade", supermarket: "Modern Trade", horeca: "HoReCa", hotel: "HoReCa", events: "Events & Festivals", eventsfestivals: "Events & Festivals", festival: "Events & Festivals", wholesale: "Wholesale", distributor: "Wholesale", mainstream: "Mainstream" }; return al[k] || SEG_NAMES.find(n => n.toLowerCase().replace(/[^a-z]/g, "") === k) || ""; };
+// A first guess for outlets that come without a segment; trade marketing can change it.
+const guessSegment = (channel, area, name) => { const t = `${channel} ${area} ${name}`.toLowerCase(); if (/market|motor park|garage/.test(t)) return "Open Market"; if (/mall|supermarket|shoprite|spar/.test(t)) return "Modern Trade"; if (/hotel|restaurant|grill|cafe/.test(t)) return "HoReCa"; if (/garden|viewing|park/.test(t)) return "Out of Home"; if (/lounge/.test(t) && /lekki|victoria|ikoyi|vi\b|wuse|gra|maitama|banana/.test(t)) return "High End"; if (/parlour|kiosk|joint|spot/.test(t)) return "Low End"; return "Mainstream"; };
+const segOf = e => e.segment || (outletOf(e.outletId) || {}).segment || "Unclassified";
+const segSelect = (id, val, attrs = "") => `<select ${id ? `id="${id}"` : ""} ${attrs}><option value="">No segment</option>${SEGMENTS.map(([n, d]) => `<option value="${esc(n)}" title="${esc(d)}" ${val === n ? "selected" : ""}>${esc(n)}</option>`).join("")}</select>`;
 const TCLASS = t => "t-" + t.split(" ")[0];
 const TVAR = t => ({ Activation: "--act", Sampling: "--samp", "Trade Activity": "--trade" })[t];
 const AREAS = { ikeja: [6.6018, 3.3515], yaba: [6.5095, 3.3711], surulere: [6.5, 3.354], lekki: [6.4474, 3.4723], "victoria island": [6.4281, 3.4219], vi: [6.4281, 3.4219], ikoyi: [6.45, 3.435], festac: [6.4667, 3.2833], oshodi: [6.555, 3.343], ikorodu: [6.6194, 3.5105], ajah: [6.468, 3.57], apapa: [6.449, 3.359], ojota: [6.585, 3.38], maryland: [6.57, 3.367], gbagada: [6.556, 3.388], ogba: [6.63, 3.34], egbeda: [6.61, 3.29], "lagos island": [6.455, 3.394], agege: [6.618, 3.32], ikotun: [6.55, 3.27], magodo: [6.62, 3.39], ojo: [6.46, 3.18], mushin: [6.53, 3.35], isolo: [6.53, 3.32], ketu: [6.597, 3.39], ojodu: [6.64, 3.37], berger: [6.64, 3.37], ilupeju: [6.553, 3.357], anthony: [6.56, 3.37], ebute: [6.48, 3.38], obalende: [6.448, 3.41], sangotedo: [6.47, 3.63], wuse: [9.0795, 7.471], garki: [9.0333, 7.489], abuja: [9.0765, 7.3986], "port harcourt": [4.8156, 7.0498], ibadan: [7.3775, 3.947], enugu: [6.4584, 7.5464], "benin city": [6.335, 5.6037], calabar: [4.9757, 8.3417], jos: [9.8965, 8.8583], warri: [5.5167, 5.75], uyo: [5.0377, 7.9128], onitsha: [6.1413, 6.8029], abeokuta: [7.1475, 3.3619], kaduna: [10.5105, 7.4165] };
 const HUB = { lat: 6.5965, lng: 3.3421 };
-const AV_COL = ["#FFB547", "#4FD8CB", "#A78BFF", "#FF8A5B", "#5BD68A", "#FF7EB6", "#7CB8FF", "#E3C64B"];
+const AV_COL = ["#E0A82E", "#4FD8CB", "#A78BFF", "#FF8A5B", "#5BD68A", "#FF7EB6", "#7CB8FF", "#E3C64B"];
 const initials = s => s.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 const avColor = id => AV_COL[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % AV_COL.length];
 const avatar = (u, size) => `<span class="av" style="background:${avColor(u.id)}${size ? `;width:${size}px;height:${size}px;font-size:${size / 2.7}px` : ""}" title="${esc(u.name)}">${esc(initials(u.name))}</span>`;
@@ -573,7 +657,7 @@ async function stampImage(source, stamp) {
   g.font = `500 ${Math.round(fs * .82)}px "JetBrains Mono", monospace`; g.fillStyle = "rgba(255,255,255,.85)";
   const where = stamp.gps ? `${stamp.gps.lat.toFixed(5)}, ${stamp.gps.lng.toFixed(5)}` : "location not recorded";
   g.fillText(`${new Date(stamp.time).toLocaleString("en-GB")} · ${where}`, fs * .8, h - bar * .18);
-  g.textAlign = "right"; g.fillStyle = "#FFB547"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
+  g.textAlign = "right"; g.fillStyle = "#E0A82E"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
   g.fillText("TRADE ACTIVATE", w - fs * .8, h - bar * .18);
   return c.toDataURL("image/jpeg", .8);
 }
@@ -585,9 +669,58 @@ async function storePhoto(file, stamp) {
   const img = await fileToImage(file);
   const ageMin = (Date.now() - (file.lastModified || Date.now())) / 60000;
   const dataUrl = await stampImage(img, stamp);
-  const p = { id: uid("ph_"), dataUrl, time: Date.now(), gps: stamp.gps || null, live: ageMin < 15, ageMin: Math.round(ageMin) };
+  const p = { id: uid("ph_"), dataUrl, time: Date.now(), gps: stamp.gps || null, live: ageMin < 15, ageMin: Math.round(ageMin), outlet: stamp.outlet, name: photoName(stamp.outlet, Date.now()) };
   await DB.put("photos", p.id, p); photoCache.set(p.id, p);
   return p;
+}
+// Every photo is named after its outlet, e.g. "Mama Tee Lounge 2026-10-07 14.32.05.jpg".
+const safeName = t => String(t || "Unknown outlet").replace(/[\\/:*?"<>|\u0000-\u001f]+/g, "-").replace(/\s+/g, " ").trim().slice(0, 80) || "Unknown outlet";
+const stampTime = t => { const d = new Date(t), z = x => String(x).padStart(2, "0"); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} ${z(d.getHours())}.${z(d.getMinutes())}.${z(d.getSeconds())}`; };
+const photoName = (outlet, t) => `${safeName(outlet)} ${stampTime(t)}.jpg`;
+
+/* ---------- zip (no library: photos are already JPEG, so files are stored, not compressed) ---------- */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function makeZip(files) { // files: [{name, data: Uint8Array, time}]
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  for (const f of files) {
+    const nm = enc.encode(f.name), crc = crc32(f.data), d = new Date(f.time || Date.now());
+    const dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF, dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true); h.setUint16(10, dt, true); h.setUint16(12, dd, true);
+    h.setUint32(14, crc, true); h.setUint32(18, f.data.length, true); h.setUint32(22, f.data.length, true); h.setUint16(26, nm.length, true); h.setUint16(28, 0, true);
+    parts.push(new Uint8Array(h.buffer), nm, f.data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true); c.setUint16(12, dt, true); c.setUint16(14, dd, true);
+    c.setUint32(16, crc, true); c.setUint32(20, f.data.length, true); c.setUint32(24, f.data.length, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cen.push(new Uint8Array(c.buffer), nm);
+    off += 30 + nm.length + f.data.length;
+  }
+  const cs = cen.reduce((a, x) => a + x.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...cen, new Uint8Array(e.buffer)], { type: "application/zip" });
+}
+const b64bytes = url => { const s = atob(url.slice(url.indexOf(",") + 1)), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; };
+// Zip the photos of some entries as Vendor / Outlet / "<Outlet> <date time>.jpg", plus an index sheet.
+async function zipPhotos(entries, base) {
+  const withPh = entries.filter(e => e.photos.length);
+  if (!withPh.length) return toast("There are no photos here to download yet.", true);
+  toast(`Packing ${withPh.reduce((a, e) => a + e.photos.length, 0)} photos…`);
+  const files = [], used = new Set(), index = [];
+  for (const e of withPh.sort((a, b) => a.start - b.start)) {
+    const v = vendorOf(e.vendorId), ba = userOf(e.baId) || {};
+    for (const id of e.photos) {
+      const p = photoCache.get(id) || await DB.get("photos", id); if (!p || !p.dataUrl) continue;
+      const dir = `${safeName(v ? v.name : "No vendor")}/${safeName(e.outletName)}/`;
+      let nm = photoName(e.outletName, p.time || e.start), k = 2;
+      while (used.has(dir + nm)) nm = photoName(e.outletName, p.time || e.start).replace(/\.jpg$/, ` (${k++}).jpg`);
+      used.add(dir + nm); files.push({ name: dir + nm, data: b64bytes(p.dataUrl), time: p.time || e.start });
+      index.push({ File: dir + nm, Vendor: v ? v.name : "", Outlet: e.outletName, Segment: segOf(e), Brand: e.brand, Activity: e.type, "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Taken: new Date(p.time || e.start).toLocaleString("en-GB"), Latitude: p.gps ? p.gps.lat.toFixed(6) : "", Longitude: p.gps ? p.gps.lng.toFixed(6) : "" });
+    }
+  }
+  files.push({ name: "photo-index.csv", data: new TextEncoder().encode(csvOf(index)), time: Date.now() });
+  const ok = await saveFile(`${base}.zip`, makeZip(files), "application/zip");
+  if (ok) toast(`${index.length} photos downloaded. Unzip to get a folder per outlet.`);
 }
 const artCache = new Map();
 function loadArt(src) {
@@ -705,9 +838,15 @@ async function seedDemo() {
   entries.forEach(e => { const f = folders.find(x => x.vendorId === e.vendorId && x.brand === e.brand); if (f) e.folderId = f.id; });
   folders.forEach(f => delete f.brand);
   Object.assign(S, { vendors, users, outlets, entries, folders });
-  await seedNational(); await seedStaffing();
+  await seedNational(); await seedStaffing(); await seedSegments();
   await save(...COLLS);
   await DB.put("kv", "seeded", 2); await DB.put("kv", "artVersion", 1);
+}
+// Example trade segments for the demo outlets.
+async function seedSegments() {
+  const pick = { "City Mall Bar": "Key Account", "Ajose Adeogun Hub": "Key Account", "Mama Tee Lounge": "Spiritual Home", "Ring Road Joint": "Spiritual Home", "Falomo Bar": "High End", "Admiralty Way Lounge": "High End", "Oshodi Market Bar": "Open Market", "Ogba Retail Bar": "Wholesale", "Garki Beer Garden": "Out of Home", "Sabo Beer Garden": "Out of Home", "Phase 1 Bar & Grill": "HoReCa", "Bodija Lounge": "Events & Festivals" };
+  S.outlets.filter(o => o.source === "Demo list" && !o.segment).forEach(o => { o.segment = pick[o.name] || guessSegment(o.channel, o.area, o.name); });
+  await DB.put("kv", "segVersion", 1);
 }
 // Example ambassador assignments: each demo outlet gets one of its vendor's ambassadors.
 async function seedStaffing() {
@@ -923,11 +1062,35 @@ const locIssue = e => { if (!e.gps) return "No location"; const o = outletOf(e.o
 const posOf = e => e.gps || outletOf(e.outletId) || HUB;
 
 /* ---------- dashboard ---------- */
-const dash = { type: "All", brand: "All", vendor: "All" };
+const dash = { type: "All", brand: "All", vendor: "All", seg: "All" };
+/* small chart helpers (inline SVG, no library) */
+const sparkSVG = (vals, col) => {
+  const w = 120, h = 34, mx = Math.max(1, ...vals), st = w / Math.max(1, vals.length - 1);
+  const pts = vals.map((v, i) => [i * st, h - 3 - (v / mx) * (h - 8)]);
+  const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const id = "sg" + Math.random().toString(36).slice(2, 7);
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".35"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><path d="${line} L${w} ${h} L0 ${h} Z" fill="url(#${id})"/><path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><circle cx="${pts[pts.length - 1][0]}" cy="${pts[pts.length - 1][1]}" r="3" fill="${col}"/></svg>`;
+};
+const donutSVG = parts => {
+  const tot = parts.reduce((a, p) => a + p.v, 0), r = 42, c = 2 * Math.PI * r; let off = 0;
+  const segs = tot ? parts.filter(p => p.v).map(p => { const len = p.v / tot * c, gap = parts.filter(q => q.v).length > 1 ? 2 : 0; const el = `<circle r="${r}" cx="60" cy="60" fill="none" stroke="${p.col}" stroke-width="16" stroke-dasharray="${Math.max(0, len - gap)} ${c}" stroke-dashoffset="${-off}" transform="rotate(-90 60 60)"><title>${esc(p.label)}: ${p.v}</title></circle>`; off += len; return el; }).join("") : `<circle r="${r}" cx="60" cy="60" fill="none" stroke="var(--raise)" stroke-width="16"/>`;
+  return `<svg class="donut" viewBox="0 0 120 120" role="img" aria-label="${parts.map(p => `${p.label} ${p.v}`).join(", ")}">${segs}<text x="60" y="58" text-anchor="middle" class="dv">${tot}</text><text x="60" y="75" text-anchor="middle" class="dl">running</text></svg>`;
+};
+// Animate numbers from their last shown value, so the dashboard visibly ticks when something changes.
+const lastNum = {};
+function countUp(root) {
+  $$("[data-count]", root).forEach(el => {
+    const key = el.dataset.key, to = +el.dataset.count, from = lastNum[key] ?? 0; lastNum[key] = to;
+    if (RM || from === to) { el.textContent = n(to); return; }
+    const t0 = performance.now(), d = 900; el.textContent = n(from);
+    const step = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3); el.textContent = n(Math.round(from + (to - from) * e)); if (k < 1) requestAnimationFrame(step); else if (from !== to) { el.closest(".kpi") && el.closest(".kpi").classList.add("bump"); setTimeout(() => el.closest(".kpi") && el.closest(".kpi").classList.remove("bump"), 700); } };
+    requestAnimationFrame(step);
+  });
+}
 function renderDashboard() {
   const u = me();
   const all = scopeEntries();
-  const pass = e => (dash.type === "All" || e.type === dash.type) && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor);
+  const pass = e => (dash.type === "All" || e.type === dash.type) && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor) && (dash.seg === "All" || segOf(e) === dash.seg);
   const live = all.filter(e => isLive(e) && pass(e)).sort((a, b) => a.start - b.start);
   const today = dayKey(Date.now());
   const todays = all.filter(e => dayKey(e.start) === today && pass(e));
@@ -943,21 +1106,37 @@ function renderDashboard() {
   const bmax = Math.max(1, ...byBrand.map(x => x.v));
   const flagged = live.filter(locIssue).length;
   const board = Object.values(todays.reduce((m, e) => { const r = m[e.baId] || (m[e.baId] = { id: e.baId, sold: 0, reached: 0, n: 0 }); r.sold += +e.sold || 0; r.reached += +e.reached || 0; r.n++; return m; }, {})).sort((a, b) => b.sold - a.sold || b.reached - a.reached).slice(0, 5);
+  const week = [...Array(7)].map((_, i) => { const d0 = new Date(); d0.setHours(0, 0, 0, 0); const st = +d0 - (6 - i) * 864e5, es = all.filter(e => e.start >= st && e.start < st + 864e5 && pass(e)); return { label: new Date(st).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" }), short: i === 6 ? "Today" : new Date(st).toLocaleDateString("en-GB", { weekday: "short" }), n: es.length, sold: es.reduce((a, e) => a + (+e.sold || 0), 0), bas: new Set(es.map(e => e.baId)).size, outlets: new Set(es.map(e => e.outletId || e.outletName)).size, photos: es.reduce((a, e) => a + e.photos.length, 0) }; });
+  const wmax = Math.max(1, ...week.map(d => d.sold));
+  const bySeg = Object.values(all.filter(e => e.start >= Date.now() - 7 * 864e5 && pass(e)).reduce((m, e) => { const k = segOf(e), r = m[k] || (m[k] = { s: k, v: 0, n: 0 }); r.v += +e.sold || 0; r.n++; return m; }, {})).sort((a, b) => b.v - a.v);
+  const smax = Math.max(1, ...bySeg.map(x => x.v));
   const recentPh = all.filter(pass).flatMap(e => e.photos.map(p => ({ p, e }))).slice(-400).sort((a, b) => b.e.start - a.e.start).slice(0, 12);
   $("#dashBody").innerHTML = `
     <div class="toolbar">
       <div class="seg" id="dType">${["All", ...TYPES].map(t => `<button type="button" aria-pressed="${dash.type === t}" data-o="${t}">${t === "All" ? "All activities" : t}</button>`).join("")}</div>
       <select class="inline" id="dBrand" aria-label="Filter by brand"><option value="All">All brands</option>${brandsInScope.map(b => `<option ${dash.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select>
+      <select class="inline" id="dSeg" aria-label="Filter by segment"><option value="All">All segments</option>${SEG_NAMES.map(x => `<option ${dash.seg === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select>
       ${u.role === "admin" ? `<select class="inline" id="dVendor" aria-label="Filter by vendor"><option value="All">All vendors</option>${liveVendors().map(v => `<option value="${v.id}" ${dash.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
       <button class="btn sm" type="button" id="dExport" style="margin-left:auto"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download report</button>
     </div>
     <div class="kpis">
-      <div class="kpi"><label>Running now</label><div class="v">${live.length}</div><div class="d">${byType.map(x => `${x.c} ${x.t === "Trade Activity" ? "trade" : x.t.toLowerCase()}`).join(" · ")}</div></div>
-      <div class="kpi"><label>Ambassadors on ground</label><div class="v">${new Set(live.map(e => e.baId)).size}</div><div class="d">of ${S.users.filter(x => x.role === "ba" && vendorsInScope.some(v => v.id === x.vendorId)).length} registered</div></div>
-      <div class="kpi"><label>Cases sold today</label><div class="v">${n(sold)}</div><div class="d">${n(reached)} consumers reached</div></div>
-      <div class="kpi"><label>Outlets activated today</label><div class="v">${outletsToday}</div><div class="d">of ${scopeOutlets().length} assigned outlets</div></div>
-      <div class="kpi"><label>Live photos today</label><div class="v">${nPhotos}</div><div class="d">stamped with time and location</div></div>
+      ${[
+        ["k1", "Running now", live.length, byType.map(x => `${x.c} ${x.t === "Trade Activity" ? "trade" : x.t.toLowerCase()}`).join(" · "), week.map(d => d.n)],
+        ["k2", "Ambassadors on ground", new Set(live.map(e => e.baId)).size, `of ${S.users.filter(x => x.role === "ba" && !x.disabled && vendorsInScope.some(v => v && v.id === x.vendorId)).length} registered`, week.map(d => d.bas)],
+        ["k3", "Cases sold today", sold, `${n(reached)} consumers reached`, week.map(d => d.sold)],
+        ["k4", "Outlets activated today", outletsToday, `of ${scopeOutlets().length} assigned outlets`, week.map(d => d.outlets)],
+        ["k5", "Live photos today", nPhotos, "stamped with time, place and outlet", week.map(d => d.photos)]
+      ].map(([k, label, v, d, sp]) => `<div class="kpi ${k}"><label>${label}</label><div class="v" data-count="${v}" data-key="${u.role}${k}">${n(v)}</div><div class="d">${d}</div>${sparkSVG(sp, `var(--${k})`)}<span class="sr">Last 7 days: ${sp.join(", ")}</span></div>`).join("")}
     </div>
+    <div class="pulse">
+      <div class="card"><div class="card-h"><h3>Activity mix right now</h3></div>
+        <div class="mix">${donutSVG(byType.map(x => ({ label: x.t, v: x.c, col: css(TVAR(x.t)) })))}<div class="legend2">${byType.map(x => `<div><i style="background:var(${TVAR(x.t)})"></i><span>${x.t}</span><b>${x.c}</b></div>`).join("")}</div></div></div>
+      <div class="card"><div class="card-h"><h3>Cases sold, last 7 days</h3><div class="right"><span class="chip">${n(week.reduce((a, d) => a + d.sold, 0))} total</span></div></div>
+        <div class="cols">${week.map((d, i) => `<div class="col ${i === 6 ? "today" : ""}" tabindex="0" data-tip="${d.label}: ${n(d.sold)} cases, ${d.n} ${d.n === 1 ? "activity" : "activities"}"><span class="cv">${d.sold ? n(d.sold) : ""}</span><i style="height:${Math.max(2, d.sold / wmax * 100)}%"></i><small>${d.short}</small></div>`).join("")}</div></div>
+      <div class="card"><div class="card-h"><h3>Cases by segment this week</h3></div>
+        ${bySeg.length ? bySeg.map(x => `<div class="hbar" data-tip="${esc(x.s)}: ${n(x.v)} cases from ${x.n} ${x.n === 1 ? "activity" : "activities"}"><span class="nm">${esc(x.s)}</span><span class="tr"><i class="gold" style="width:${x.v / smax * 100}%"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("") : `<div class="empty">No activity this week yet.</div>`}</div>
+    </div>
+    ${u.role === "admin" ? `<div class="card"><div class="card-h"><h3>Vendors today</h3><div class="right"><span class="chip">outlets activated of outlets assigned</span></div></div><div class="vscore">${liveVendors().map(v => { const ve = todays.filter(e => e.vendorId === v.id), vo = S.outlets.filter(o => o.vendorId === v.id).length, act = new Set(ve.map(e => e.outletId || e.outletName)).size, run = live.filter(e => e.vendorId === v.id).length; return `<button type="button" class="vs" data-dv="${v.id}" style="--vc:${v.color}"><div class="vs-h"><b>${esc(v.name)}</b>${run ? `<span class="pill p-live">${run} live</span>` : ""}</div><div class="vs-n"><span><b>${n(ve.reduce((a, e) => a + (+e.sold || 0), 0))}</b> cases</span><span><b>${ve.length}</b> activities</span></div><div class="vs-bar"><i style="width:${vo ? act / vo * 100 : 0}%"></i></div><small>${act} of ${vo} outlets</small></button>`; }).join("")}</div></div>` : `<div class="card"><div class="card-h"><h3>Your outlet coverage this week</h3></div>${(() => { const mine = scopeOutlets(), wk = new Set(all.filter(e => e.start >= Date.now() - 7 * 864e5).map(e => e.outletId)), cov = mine.filter(o => wk.has(o.id)).length, pc = mine.length ? cov / mine.length : 0, staffed = mine.filter(o => basOf(o).length).length; return `<div class="cover"><svg viewBox="0 0 120 120" class="ring" role="img" aria-label="${cov} of ${mine.length} outlets activated this week"><circle r="48" cx="60" cy="60" fill="none" stroke="var(--raise)" stroke-width="12"/><circle r="48" cx="60" cy="60" fill="none" stroke="url(#goldg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${pc * 301.6} 301.6" transform="rotate(-90 60 60)"/><defs><linearGradient id="goldg" x1="0" x2="1"><stop offset="0" stop-color="#F2C14E"/><stop offset="1" stop-color="#8E5E0A"/></linearGradient></defs><text x="60" y="64" text-anchor="middle" class="dv">${Math.round(pc * 100)}%</text></svg><div class="cover-t"><div><b>${cov}</b> of ${mine.length} outlets activated in the last 7 days</div><div><b>${staffed}</b> of ${mine.length} outlets have an ambassador assigned</div><div><b>${mine.length - cov}</b> outlets still to visit this week</div></div></div>`; })()}</div>`}
     <div class="split">
       <div class="card"><div class="card-h"><h3>Running now</h3><div class="right">${flagged ? `<span class="pill p-warn">${flagged} need a location check</span>` : ""}<span class="chip"><span class="dot"></span>Updates as ambassadors log</span></div></div>
         <div id="liveList">${live.length ? live.map(e => liveRow(e)).join("") : `<div class="empty">Nothing is running for this filter. When an ambassador starts an activation it appears here and on the map.</div>`}</div></div>
@@ -976,6 +1155,9 @@ function renderDashboard() {
   $("#dType").onclick = e => { const b = e.target.closest("button"); if (b) { dash.type = b.dataset.o; renderDashboard(); } };
   $("#dBrand").onchange = e => { dash.brand = e.target.value; renderDashboard(); };
   if ($("#dVendor")) $("#dVendor").onchange = e => { dash.vendor = e.target.value; renderDashboard(); };
+  $("#dSeg").onchange = e => { dash.seg = e.target.value; renderDashboard(); };
+  $$("[data-dv]").forEach(b => b.onclick = () => { dash.vendor = dash.vendor === b.dataset.dv ? "All" : b.dataset.dv; renderDashboard(); });
+  countUp($("#dashBody"));
   $("#dExport").onclick = () => exportReport(pass);
   hydrate($("#dashBody"));
   city.setMarkers(live, scopeOutlets());
@@ -1020,7 +1202,7 @@ async function downloadSheets(base, sheets, format) {
 }
 const activationRows = es => es.map(e => {
   const ba = userOf(e.baId) || {}, v = vendorOf(e.vendorId) || {}, o = outletOf(e.outletId) || {};
-  return { Date: dayKey(e.start), Start: hm(e.start), End: e.end ? hm(e.end) : "Running", Vendor: v.name || "", "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Outlet: e.outletName, Area: o.area || "", Activity: e.type, Brand: e.brand, Folder: (folderOf(e.folderId) || {}).name || "", "Opening cases": +e.opening || 0, "Cases sold": +e.sold || 0, "Closing cases": Math.max(0, (+e.opening || 0) - (+e.sold || 0)), "Consumers reached": +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", "Location check": locIssue(e) || "OK", Notes: e.notes || "" };
+  return { Date: dayKey(e.start), Start: hm(e.start), End: e.end ? hm(e.end) : "Running", Vendor: v.name || "", "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Outlet: e.outletName, Area: o.area || "", Segment: segOf(e), Activity: e.type, Brand: e.brand, Folder: (folderOf(e.folderId) || {}).name || "", "Opening cases": +e.opening || 0, "Cases sold": +e.sold || 0, "Closing cases": Math.max(0, (+e.opening || 0) - (+e.sold || 0)), "Consumers reached": +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", "Location check": locIssue(e) || "OK", Notes: e.notes || "" };
 });
 const summaryRows = es => { const sum = {}; es.forEach(e => { const vn = (vendorOf(e.vendorId) || {}).name || "", k = dayKey(e.start) + "|" + vn + "|" + e.brand; const x = sum[k] || (sum[k] = { Date: dayKey(e.start), Vendor: vn, Brand: e.brand, Activities: 0, "Cases sold": 0, "Consumers reached": 0, Photos: 0 }); x.Activities++; x["Cases sold"] += +e.sold || 0; x["Consumers reached"] += +e.reached || 0; x.Photos += e.photos.length; }); return Object.values(sum).sort((a, b) => a.Date < b.Date ? 1 : a.Date > b.Date ? -1 : b["Cases sold"] - a["Cases sold"]); };
 function exportReport(pass) {
@@ -1053,18 +1235,18 @@ function dxRange() {
   return [Date.now() - +dx.period * 864e5, Infinity];
 }
 function dxEntries() { const [f, t] = dxRange(); return S.entries.filter(e => e.start >= f && e.start <= t && (dx.vendor === "All" || e.vendorId === dx.vendor)).sort((a, b) => a.start - b.start); }
-const outletRows = () => S.outlets.filter(o => dx.vendor === "All" || o.vendorId === dx.vendor).map(o => ({ Outlet: o.name, Address: o.address || "", Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", Vendor: (vendorOf(o.vendorId) || {}).name || "Not assigned", Ambassadors: basOf(o).map(b => `${b.name} (${b.login})`).join("; "), Brands: (o.brands || []).join("; "), Source: o.source || "" }));
+const outletRows = () => S.outlets.filter(o => dx.vendor === "All" || o.vendorId === dx.vendor).map(o => ({ Outlet: o.name, Address: o.address || "", Area: o.area || "", Channel: o.channel || "", Segment: o.segment || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", Vendor: (vendorOf(o.vendorId) || {}).name || "Not assigned", Ambassadors: basOf(o).map(b => `${b.name} (${b.login})`).join("; "), Brands: (o.brands || []).join("; "), Source: o.source || "" }));
 const userRows = () => S.users.filter(u => dx.vendor === "All" || u.vendorId === dx.vendor).map(u => ({ Name: u.name, Role: ROLE_INFO[u.role].label, Vendor: (vendorOf(u.vendorId) || {}).name || "", "Sign-in": u.login, Phone: u.phone || "", Activations: S.entries.filter(e => e.baId === u.id).length, "Cases sold": S.entries.filter(e => e.baId === u.id).reduce((a, e) => a + (+e.sold || 0), 0) }));
 const vendorRows = () => S.vendors.filter(v => dx.vendor === "All" || v.id === dx.vendor).map(v => ({ Vendor: v.name + (v.removed ? " (deleted)" : ""), Manager: v.contact, Phone: v.phone || "", Email: v.email || "", Brands: v.brands.join("; "), Outlets: S.outlets.filter(o => o.vendorId === v.id).length, Ambassadors: S.users.filter(u => u.role === "ba" && u.vendorId === v.id).length, Activations: S.entries.filter(e => e.vendorId === v.id).length, Registered: dayKey(v.createdAt || Date.now()) }));
 const folderRows = () => S.folders.filter(f => dx.vendor === "All" || f.vendorId === dx.vendor).map(f => { const es = S.entries.filter(e => e.folderId === f.id); return { Folder: f.name, Vendor: (vendorOf(f.vendorId) || {}).name || "", Description: f.note || "", Created: dayKey(f.createdAt), Activations: es.length, "Cases sold": es.reduce((a, e) => a + (+e.sold || 0), 0) }; });
 // Power BI model: one fact table keyed to dimension tables by ID, plus a calendar.
 function powerBISheets(es) {
-  const fact = es.map(e => ({ ActivationID: e.id, Date: dayKey(e.start), StartTime: new Date(e.start).toISOString(), EndTime: e.end ? new Date(e.end).toISOString() : "", DurationMinutes: Math.round(((e.end || Date.now()) - e.start) / 60000), Status: e.end ? "Ended" : "Running", VendorID: e.vendorId, OutletID: e.outletId || "", AmbassadorID: e.baId, Brand: e.brand, ActivityType: e.type, FolderID: e.folderId || "", OpeningCases: +e.opening || 0, CasesSold: +e.sold || 0, ClosingCases: Math.max(0, (+e.opening || 0) - (+e.sold || 0)), ConsumersReached: +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", LocationCheck: locIssue(e) || "OK" }));
+  const fact = es.map(e => ({ ActivationID: e.id, Date: dayKey(e.start), StartTime: new Date(e.start).toISOString(), EndTime: e.end ? new Date(e.end).toISOString() : "", DurationMinutes: Math.round(((e.end || Date.now()) - e.start) / 60000), Status: e.end ? "Ended" : "Running", VendorID: e.vendorId, OutletID: e.outletId || "", AmbassadorID: e.baId, Brand: e.brand, ActivityType: e.type, Segment: segOf(e), FolderID: e.folderId || "", OpeningCases: +e.opening || 0, CasesSold: +e.sold || 0, ClosingCases: Math.max(0, (+e.opening || 0) - (+e.sold || 0)), ConsumersReached: +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", LocationCheck: locIssue(e) || "OK" }));
   const days = es.length ? (() => { const out = [], d = new Date(es[0].start); d.setHours(0, 0, 0, 0); const end = new Date(); while (d <= end) { out.push({ Date: dayKey(+d), Year: d.getFullYear(), MonthNo: d.getMonth() + 1, Month: d.toLocaleDateString("en-GB", { month: "short" }), Week: Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 864e5 + new Date(d.getFullYear(), 0, 1).getDay() + 1) / 7), Weekday: d.toLocaleDateString("en-GB", { weekday: "short" }) }); d.setDate(d.getDate() + 1); } return out; })() : [];
   return [
     ["Activations", fact],
     ["Vendors", S.vendors.map(v => ({ VendorID: v.id, Vendor: v.name, Manager: v.contact, Brands: v.brands.join("; ") }))],
-    ["Outlets", S.outlets.map(o => ({ OutletID: o.id, Outlet: o.name, Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", VendorID: o.vendorId || "" }))],
+    ["Outlets", S.outlets.map(o => ({ OutletID: o.id, Outlet: o.name, Area: o.area || "", Channel: o.channel || "", Segment: o.segment || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", VendorID: o.vendorId || "" }))],
     ["Ambassadors", S.users.filter(u => u.role === "ba").map(u => ({ AmbassadorID: u.id, Ambassador: u.name, BAID: u.login, VendorID: u.vendorId || "" }))],
     ["Brands", BRANDS.map(b => ({ Brand: b.name, Pack: b.kind === "can" ? "Can" : "Bottle", Colour: b.color }))],
     ["Folders", S.folders.map(f => ({ FolderID: f.id, Folder: f.name, VendorID: f.vendorId }))],
@@ -1147,7 +1329,7 @@ function openEntry(id) {
         <div><label>Consumers reached</label><b class="num">${n(e.reached)}</b></div>
         <div><label>Started</label><b class="num">${hm(e.start)}</b></div>
         <div><label>${isLive(e) ? "Running for" : "Ended"}</label><b class="num">${isLive(e) ? dur(Date.now() - e.start) : hm(e.end) + " (" + dur(e.end - e.start) + ")"}</b></div>
-        <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
+        <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px;display:flex;gap:14px;flex-wrap:wrap"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a><button type="button" class="linkbtn" data-sv="${e.gps.lat},${e.gps.lng}" data-svname="${esc(e.outletName)}">Street view</button></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
         ${canFile(e.vendorId) ? `<div class="wide"><label for="drFolder">Folder</label><select class="inline" id="drFolder" style="margin-top:4px;max-width:100%"><option value="">Not in a folder (filed by day only)</option>${foldersOf(e.vendorId).map(f => `<option value="${f.id}" ${e.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : e.folderId && folderOf(e.folderId) ? `<div class="wide"><label>Folder</label><b>${esc(folderOf(e.folderId).name)}</b></div>` : ""}
         ${o ? `<div class="wide"><label>Outlet</label><b>${esc(o.name)}</b><div class="dim" style="font-size:12.5px">${esc([o.address, o.area, o.channel].filter(Boolean).join(" · "))}</div></div>` : ""}
         ${e.notes ? `<div class="wide"><label>Notes</label><b style="font-weight:500">${esc(e.notes)}</b></div>` : ""}
@@ -1180,7 +1362,7 @@ function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classLi
    Each vendor has its own folder. Inside it, entries are filed by day automatically,
    and admins or the vendor's manager can add named folders (a campaign, a promo,
    a region) and file entries into them. */
-const fold = { vendor: null, day: null, folder: null, brand: "All" };
+const fold = { vendor: null, day: null, folder: null, outlet: null, brand: "All" };
 const foldersOf = vid => S.folders.filter(f => f.vendorId === vid).sort((a, b) => b.createdAt - a.createdAt);
 const folderOf = id => S.folders.find(f => f.id === id);
 const canFile = vid => { const u = me(); return u && (u.role === "admin" || (u.role === "manager" && u.vendorId === vid)); };
@@ -1215,12 +1397,13 @@ function renderFolders() {
   const entries = scopeEntries();
   const today = dayKey(Date.now());
   if (!fold.vendor) {
-    el.innerHTML = `<div class="fgrid2">${liveVendors().map(v => {
+    el.innerHTML = `${u.role === "admin" ? `<div class="toolbar"><span class="muted">Each vendor's photos, one folder per outlet.</span><span style="flex:1"></span><button class="btn sm primary" type="button" id="zipAll">${ZIP_SVG}Download all photos (.zip)</button></div>` : ""}<div class="fgrid2">${liveVendors().map(v => {
       const es = entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length, nf = foldersOf(v.id).length;
       const last = es.reduce((a, e) => Math.max(a, e.end || e.start), 0);
       return `<button class="folder" type="button" data-vendor="${v.id}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(v.name)}</h4><div class="meta">${es.length} entries · ${new Set(es.map(e => dayKey(e.start))).size} days${nf ? ` · ${nf} folder${nf === 1 ? "" : "s"}` : ""}</div><div class="meta">${last ? "Last entry " + (dayKey(last) === today ? "today at " + hm(last) : fmtDay(dayKey(last))) : "No entries yet"}</div></button>`;
     }).join("") || `<div class="empty">No vendors registered yet. Add one under Vendors & users.</div>`}</div>`;
-    el.onclick = e => { const b = e.target.closest("[data-vendor]"); if (b) { fold.vendor = b.dataset.vendor; fold.day = null; fold.folder = null; renderFolders(); } };
+    el.onclick = e => { const b = e.target.closest("[data-vendor]"); if (b) { fold.vendor = b.dataset.vendor; fold.day = null; fold.folder = null; fold.outlet = null; renderFolders(); } };
+    if ($("#zipAll")) $("#zipAll").onclick = () => zipPhotos(entries.filter(e => (vendorOf(e.vendorId) || {}).removed ? false : true), `trade-activate-photos-${dayKey(Date.now())}`);
     return;
   }
   const v = vendorOf(fold.vendor);
@@ -1228,13 +1411,17 @@ function renderFolders() {
   if (fold.folder && !folderOf(fold.folder)) fold.folder = null;
   const es = entries.filter(e => e.vendorId === v.id && (fold.brand === "All" || e.brand === fold.brand));
   const f = fold.folder && folderOf(fold.folder);
-  const here = f ? `<b>${esc(f.name)}</b>` : fold.day ? `<b>${fmtDay(fold.day)}</b>` : "";
+  const here = f ? `<b>${esc(f.name)}</b>` : fold.day ? `<b>${fmtDay(fold.day)}</b>` : fold.outlet ? `<b>${esc(fold.outlet)}</b>` : "";
   const crumbs = `<div class="crumbs">${u.role === "admin" ? `<button type="button" data-crumb="root">All vendors</button><span class="dim">/</span>` : ""}${here ? `<button type="button" data-crumb="vendor">${esc(v.name)}</button><span class="dim">/</span>${here}` : `<b>${esc(v.name)}</b>`}</div>`;
   const actions = !canFile(v.id) ? "" : f ? `<button class="btn sm" type="button" id="fRename">Rename</button><button class="btn sm danger" type="button" id="fDelete">Delete folder</button>` : !fold.day ? `<button class="btn sm primary" type="button" id="fNew">+ New folder</button>` : "";
-  const filters = `<div class="toolbar">${crumbs}<span style="flex:1"></span>${actions}<select class="inline" id="fBrand" aria-label="Filter by brand"><option value="All">All brands</option>${v.brands.concat(BRANDS.map(b => b.name).filter(b => !v.brands.includes(b))).map(b => `<option ${fold.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></div>`;
+  const filters = `<div class="toolbar">${crumbs}<span style="flex:1"></span>${actions}<button class="btn sm" type="button" id="fZip">${ZIP_SVG}Download photos (.zip)</button><select class="inline" id="fBrand" aria-label="Filter by brand"><option value="All">All brands</option>${v.brands.concat(BRANDS.map(b => b.name).filter(b => !v.brands.includes(b))).map(b => `<option ${fold.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></div>`;
   if (f) {
     const d = es.filter(e => e.folderId === f.id).sort((a, b) => b.start - a.start);
     el.innerHTML = filters + (f.note ? `<p class="muted" style="margin:0">${esc(f.note)}</p>` : "") + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">Nothing filed here yet. Open any entry and choose this folder under "Folder", or ambassadors can pick it when they log.</div>`);
+  } else if (fold.outlet) {
+    const d = es.filter(e => e.outletName === fold.outlet).sort((a, b) => b.start - a.start);
+    const pics = d.flatMap(e => e.photos.map(p => ({ p, e })));
+    el.innerHTML = filters + (pics.length ? `<div class="sect">${pics.length} ${pics.length === 1 ? "photo" : "photos"}</div><div class="ogal">${pics.map(({ p, e }) => `<button type="button" data-photo-open="${p}"><img data-photo="${p}" alt="${esc(e.outletName)}"><span data-pname="${p}">${esc(photoName(e.outletName, e.start))}</span></button>`).join("")}</div>` : "") + `<div class="sect">Activations</div>` + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">No entries for this outlet.</div>`);
   } else if (fold.day) {
     const d = es.filter(e => dayKey(e.start) === fold.day).sort((a, b) => b.start - a.start);
     el.innerHTML = filters + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">No entries for this brand on this day.</div>`);
@@ -1243,17 +1430,20 @@ function renderFolders() {
     const days = [...new Set(es.map(e => dayKey(e.start)))].sort().reverse();
     el.innerHTML = filters +
       `<div class="sect">Folders</div>` + (fl.length ? `<div class="fgrid2">${fl.map(x => folderCard(x, es.filter(e => e.folderId === x.id), v.color)).join("")}</div>` : `<div class="empty" style="padding:18px">No folders yet.${canFile(v.id) ? " Use New folder to group entries by campaign, promo or region." : ""}</div>`) +
+      `<div class="sect">By outlet</div>` + (() => { const outs = [...new Set(es.map(e => e.outletName))].map(nm => { const d = es.filter(e => e.outletName === nm); return { nm, d, ph: d.reduce((a, e) => a + e.photos.length, 0), last: Math.max(...d.map(e => e.start)) }; }).sort((a, b) => b.last - a.last); return outs.length ? `<div class="fgrid2">${outs.map(o => `<button class="folder" type="button" data-outlet="${esc(o.nm)}" style="--fc:${v.color}">${o.d.some(isLive) ? `<span class="pill p-live live">Running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(o.nm)}</h4><div class="meta">${o.ph} ${o.ph === 1 ? "photo" : "photos"} · ${o.d.length} ${o.d.length === 1 ? "visit" : "visits"}</div></button>`).join("")}</div>` : `<div class="empty" style="padding:18px">No outlets visited yet.</div>`; })() +
       `<div class="sect">By day</div>` + (days.length ? `<div class="fgrid2">${days.map(dk => {
       const d = es.filter(e => dayKey(e.start) === dk), live = d.filter(isLive).length;
       return `<button class="folder" type="button" data-day="${dk}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${dk === today ? "Today" : fmtDay(dk)}</h4><div class="meta">${d.length} ${d.length === 1 ? "entry" : "entries"} · ${d.reduce((a, e) => a + e.photos.length, 0)} photos</div><div class="meta">${n(d.reduce((a, e) => a + (+e.sold || 0), 0))} cases sold</div></button>`;
     }).join("")}</div>` : `<div class="empty">No entries in this folder yet. They appear as soon as an ambassador logs an activation.</div>`);
   }
   el.onclick = e => {
-    const c = e.target.closest("[data-crumb]"); if (c) { if (c.dataset.crumb === "root") fold.vendor = null; fold.day = null; fold.folder = null; renderFolders(); return; }
-    const dd = e.target.closest("[data-day]"); if (dd) { fold.day = dd.dataset.day; fold.folder = null; renderFolders(); return; }
-    const ff = e.target.closest("[data-folder]"); if (ff) { fold.folder = ff.dataset.folder; fold.day = null; renderFolders(); }
+    const c = e.target.closest("[data-crumb]"); if (c) { if (c.dataset.crumb === "root") fold.vendor = null; fold.day = null; fold.folder = null; fold.outlet = null; renderFolders(); return; }
+    const dd = e.target.closest("[data-day]"); if (dd) { fold.day = dd.dataset.day; fold.folder = null; fold.outlet = null; renderFolders(); return; }
+    const oo = e.target.closest("[data-outlet]"); if (oo) { fold.outlet = oo.dataset.outlet; fold.day = null; fold.folder = null; renderFolders(); return; }
+    const ff = e.target.closest("[data-folder]"); if (ff) { fold.folder = ff.dataset.folder; fold.day = null; fold.outlet = null; renderFolders(); }
   };
   $("#fBrand").onchange = e => { fold.brand = e.target.value; renderFolders(); };
+  $("#fZip").onclick = () => { const scope = f ? es.filter(e => e.folderId === f.id) : fold.day ? es.filter(e => dayKey(e.start) === fold.day) : fold.outlet ? es.filter(e => e.outletName === fold.outlet) : es; zipPhotos(scope, ["trade-activate", v.name, f ? f.name : fold.day || fold.outlet || "", fold.brand !== "All" ? fold.brand : ""].filter(Boolean).map(x => safeName(x).toLowerCase().replace(/\s+/g, "-")).join("-")); };
   if ($("#fNew")) $("#fNew").onclick = () => folderForm(v.id);
   if ($("#fRename")) $("#fRename").onclick = () => folderForm(v.id, f);
   if ($("#fDelete")) $("#fDelete").onclick = () => openModal(`<h3>Delete "${esc(f.name)}"?</h3><p class="muted">The ${S.entries.filter(e => e.folderId === f.id).length} entries in it are kept. They stay in ${esc(v.name)}'s day folders.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="fdNo">Keep it</button><button class="btn primary" type="button" id="fdYes">Delete folder</button></div>`, m => {
@@ -1270,15 +1460,15 @@ function fileCard(e) {
 }
 
 /* ---------- outlets (upload + assign) ---------- */
-const ol = { q: "", vendor: "All", sel: new Set(), preview: null, unstaffed: false };
-const SAMPLE_CSV = `Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands
-Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
-Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
-Mile 12 Market Bar,Ikorodu Road,Ketu,Beer parlour,,,Kora Field Marketing,Beta Malt;Grand Malt
-Agege Stadium Spot,Old Abeokuta Road,Agege,Bar,,,,
-Okota Chill Zone,Okota Road,Isolo,Lounge,6.5112,3.3121,,
-Obalende Garage Bar,Obalende Road,Obalende,Beer parlour,,,Pinnacle Activations,Trophy Stout`;
-const HEAD = { name: ["outlet name", "outlet", "name", "outlet_name"], address: ["address", "street", "outlet address"], area: ["area", "lga", "location", "zone", "town", "city"], channel: ["channel", "outlet type", "type of outlet", "category"], lat: ["latitude", "lat"], lng: ["longitude", "lng", "lon", "long"], vendor: ["vendor", "agency", "assigned vendor"], brands: ["brands", "brand"] };
+const ol = { q: "", vendor: "All", seg: "All", sel: new Set(), preview: null, unstaffed: false };
+const SAMPLE_CSV = `Outlet name,Address,Area,Channel,Segment,Latitude,Longitude,Vendor,Brands
+Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,Low End,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
+Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,High End,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
+Mile 12 Market Bar,Ikorodu Road,Ketu,Beer parlour,Open Market,,,Kora Field Marketing,Beta Malt;Grand Malt
+Agege Stadium Spot,Old Abeokuta Road,Agege,Bar,Out of Home,,,,
+Okota Chill Zone,Okota Road,Isolo,Lounge,Mainstream,6.5112,3.3121,,
+Obalende Garage Bar,Obalende Road,Obalende,Beer parlour,Spiritual Home,,,Pinnacle Activations,Trophy Stout`;
+const HEAD = { name: ["outlet name", "outlet", "name", "outlet_name"], address: ["address", "street", "outlet address"], area: ["area", "lga", "location", "zone", "town", "city"], channel: ["channel", "outlet type", "type of outlet", "category"], lat: ["latitude", "lat"], lng: ["longitude", "lng", "lon", "long"], vendor: ["vendor", "agency", "assigned vendor"], brands: ["brands", "brand"], segment: ["segment", "trade segment", "outlet segment", "tier", "class"] };
 function parseCSV(text) {
   const rows = []; let row = [], cell = "", q = false;
   for (let i = 0; i < text.length; i++) {
@@ -1302,7 +1492,7 @@ function rowsToOutlets(rows, source) {
     const vname = g("vendor").toLowerCase();
     const vend = vname ? liveVendors().find(v => v.name.toLowerCase() === vname || v.name.toLowerCase().startsWith(vname)) : null;
     const brands = g("brands").split(/[;,|/]/).map(s => s.trim()).filter(Boolean).map(s => (BRANDS.find(b => b.name.toLowerCase() === s.toLowerCase()) || {}).name).filter(Boolean);
-    return { id: uid("o_"), name, address: g("address"), area: g("area"), channel: g("channel"), lat, lng, located, vendorId: vend ? vend.id : null, vendorText: g("vendor"), brands, uploadedAt: Date.now(), source };
+    return { id: uid("o_"), name, address: g("address"), area: g("area"), channel: g("channel"), segment: matchSegment(g("segment")) || guessSegment(g("channel"), g("area"), name), lat, lng, located, vendorId: vend ? vend.id : null, vendorText: g("vendor"), brands, uploadedAt: Date.now(), source };
   }).filter(Boolean);
   return { items };
 }
@@ -1320,31 +1510,33 @@ function renderOutlets() {
   const q = ol.q.toLowerCase();
   const mgr = u.role === "manager", myBAs = mgr ? S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId && !x.disabled) : [];
   if (mgr && ol.vendor === "mine-none") ol.vendor = "All";
-  const list = scopeOutlets().filter(o => (!mgr || !ol.unstaffed || !basOf(o).length) && (ol.vendor === "All" || (ol.vendor === "none" ? !o.vendorId : o.vendorId === ol.vendor)) && (!q || [o.name, o.address, o.area, o.channel].join(" ").toLowerCase().includes(q)));
+  const list = scopeOutlets().filter(o => (ol.seg === "All" || (o.segment || "") === ol.seg) && (!mgr || !ol.unstaffed || !basOf(o).length) && (ol.vendor === "All" || (ol.vendor === "none" ? !o.vendorId : o.vendorId === ol.vendor)) && (!q || [o.name, o.address, o.area, o.channel].join(" ").toLowerCase().includes(q)));
   const unassigned = S.outlets.filter(o => !o.vendorId).length;
   const vopts = sel => `<option value="">Not assigned</option>` + liveVendors().map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
   el.innerHTML = `
     ${admin ? `<label class="drop" id="drop" for="ofile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <b>Upload a list of activating outlets</b><span class="muted">Drop an Excel (.xlsx) or CSV file here, or click to choose one. Columns: Outlet name, Address, Area, Channel, Latitude, Longitude, Vendor, Brands.</span>
+      <b>Upload a list of activating outlets</b><span class="muted">Drop an Excel (.xlsx) or CSV file here, or click to choose one. Columns: Outlet name, Address, Area, Channel, Segment, Latitude, Longitude, Vendor, Brands.</span>
       <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="btn sm primary">Choose file</span><button class="btn sm" type="button" id="trySample">Try a sample list</button><button class="btn sm" type="button" id="copyTpl">Copy column headers</button></span>
       <input id="ofile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden></label>` : ""}
     <div class="toolbar">
       <input class="input" id="oq" type="search" placeholder="Search outlets" style="max-width:280px" value="${esc(ol.q)}" aria-label="Search outlets">
       ${admin ? `<select class="inline" id="ov" aria-label="Filter by vendor"><option value="All">All vendors</option><option value="none" ${ol.vendor === "none" ? "selected" : ""}>Not assigned (${unassigned})</option>${liveVendors().map(v => `<option value="${v.id}" ${ol.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      <select class="inline" id="oSeg" aria-label="Filter by segment"><option value="All">All segments</option>${SEG_NAMES.map(n2 => `<option ${ol.seg === n2 ? "selected" : ""}>${esc(n2)}</option>`).join("")}<option value="" ${ol.seg === "" ? "selected" : ""}>No segment</option></select>
       ${mgr ? `<label class="chip" style="cursor:pointer"><input type="checkbox" id="oUnstaffed" ${ol.unstaffed ? "checked" : ""}> Only outlets with no ambassador (${scopeOutlets().filter(o => !basOf(o).length).length})</label>` : ""}
       <span class="muted" style="margin-left:auto">${list.length} outlets</span>
     </div>
     ${mgr ? `<div class="hint">These are the outlets trade marketing has shared with ${esc((vendorOf(u.vendorId) || {}).name || "you")}. Tick outlets and assign an ambassador, or use Assign on a row. Ambassadors see their outlets first when they log an activation.</div>` : ""}
     ${mgr && ol.sel.size ? `<div class="bulk"><b>${ol.sel.size} selected</b><span>Ambassador</span><select class="inline" id="bulkBA">${myBAs.map(b => `<option value="${b.id}">${esc(b.name)} · ${esc(b.login)}</option>`).join("")}</select><button class="btn sm primary" type="button" id="bulkBAgo" ${myBAs.length ? "" : "disabled"}>Assign to selected</button><button class="btn sm" type="button" id="bulkBArm">Remove from selected</button><button class="btn sm" type="button" id="bulkClear">Clear selection</button></div>` : ""}
     ${admin && ol.sel.size ? `<div class="bulk"><b>${ol.sel.size} selected</b><span>Assign to</span><select class="inline" id="bulkV">${vopts("")}</select><button class="btn sm primary" type="button" id="bulkGo">Assign</button><button class="btn sm" type="button" id="bulkClear">Clear selection</button></div>` : ""}
-    <div class="twrap"><table><thead><tr><th style="width:36px"><input type="checkbox" id="selAll" aria-label="Select all outlets"></th><th>Outlet</th><th>Area</th><th>Channel</th><th>Brands</th>${admin ? "<th>Assigned vendor</th>" : ""}<th>Ambassadors</th><th>Today</th></tr></thead>
+    <div class="twrap"><table><thead><tr><th style="width:36px"><input type="checkbox" id="selAll" aria-label="Select all outlets"></th><th>Outlet</th><th>Area</th><th>Segment</th><th>Brands</th>${admin ? "<th>Assigned vendor</th>" : ""}<th>Ambassadors</th><th>Today</th></tr></thead>
     <tbody>${list.map(o => `<tr>
       <td><input type="checkbox" data-sel="${o.id}" ${ol.sel.has(o.id) ? "checked" : ""} aria-label="Select ${esc(o.name)}"></td>
-      <td><b>${esc(o.name)}</b><small>${esc(o.address)}</small></td><td>${esc(o.area)}${o.located === "area" ? `<small>Placed by area</small>` : o.lat == null ? `<small style="color:var(--warn)">No location</small>` : ""}</td><td>${esc(o.channel)}</td>
+      <td><b>${esc(o.name)}</b><small>${esc(o.address)}</small></td><td>${esc(o.area)}${o.located === "area" ? `<small>Placed by area</small>` : o.lat == null ? `<small style="color:var(--warn)">No location</small>` : ""}</td><td>${admin ? segSelect("", o.segment || "", `class="inline" data-oseg="${o.id}" aria-label="Segment for ${esc(o.name)}"`) : o.segment ? `<span class="seg-pill">${esc(o.segment)}</span>` : `<span class="dim">–</span>`}<small>${esc(o.channel || "")}</small></td>
       <td><div class="chips">${(o.brands || []).map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("") || `<span class="dim">Any</span>`}</div></td>
       ${admin ? `<td><select class="inline" data-assign="${o.id}" aria-label="Vendor for ${esc(o.name)}">${vopts(o.vendorId)}</select></td>` : ""}
       <td><div class="chips">${basOf(o).map(b => `<span class="chip sm">${esc(b.name)}</span>`).join("") || `<span class="dim">${o.vendorId ? "None yet" : "–"}</span>`}${mgr ? `<button class="btn sm" type="button" data-staff="${o.id}">${basOf(o).length ? "Change" : "Assign"}</button>` : ""}</div></td>
       <td>${activeToday.has(o.id) ? `<span class="pill p-live">Activated</span>` : `<span class="dim">–</span>`}</td></tr>`).join("") || `<tr><td colspan="8"><div class="empty" style="border:0">${scopeOutlets().length ? "No outlets match." : mgr ? "Trade marketing hasn't shared any outlets with you yet." : "No outlets yet. Upload a list above."}</div></td></tr>`}</tbody></table></div>`;
+  $("#oSeg").onchange = e => { e.stopPropagation(); ol.seg = e.target.value; renderOutlets(); };
   $("#oq").oninput = e => { ol.q = e.target.value; const pos = e.target.selectionStart; renderOutlets(); const i = $("#oq"); i.focus(); i.setSelectionRange(pos, pos); };
   if (mgr) {
     el.onchange = e => {
@@ -1364,12 +1556,13 @@ function renderOutlets() {
   $("#ov").onchange = e => { ol.vendor = e.target.value; renderOutlets(); };
   $("#ofile").onchange = async e => { const f = e.target.files[0]; if (f) showPreview(await readOutletFile(f)); e.target.value = ""; };
   $("#trySample").onclick = e => { e.preventDefault(); showPreview(rowsToOutlets(parseCSV(SAMPLE_CSV), "Sample list")); };
-  $("#copyTpl").onclick = async e => { e.preventDefault(); const t = "Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands"; try { await navigator.clipboard.writeText(t); toast("Column headers copied"); } catch (er) { toast(t); } };
+  $("#copyTpl").onclick = async e => { e.preventDefault(); const t = "Outlet name,Address,Area,Channel,Segment,Latitude,Longitude,Vendor,Brands"; try { await navigator.clipboard.writeText(t); toast("Column headers copied"); } catch (er) { toast(t); } };
   const drop = $("#drop");
   ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
   drop.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) showPreview(await readOutletFile(f)); });
   el.onchange = async e => {
+    const sg = e.target.closest("[data-oseg]"); if (sg) { const o = outletOf(sg.dataset.oseg); o.segment = sg.value; await save("outlets"); toast(`${o.name}: ${o.segment || "no segment"}`); return; }
     const a = e.target.closest("[data-assign]");
     if (a) { const o = outletOf(a.dataset.assign); setOutletVendor(o, a.value || null); if (o.vendorId && !(o.brands || []).length) o.brands = vendorOf(o.vendorId).brands.slice(); await save("outlets"); toast(o.vendorId ? `${o.name} assigned to ${vendorOf(o.vendorId).name}` : `${o.name} unassigned`); renderOutlets(); renderNav(); return; }
     const s = e.target.closest("[data-sel]"); if (s) { s.checked ? ol.sel.add(s.dataset.sel) : ol.sel.delete(s.dataset.sel); renderOutlets(); return; }
@@ -1593,6 +1786,7 @@ function locate(cb) {
   if (!navigator.geolocation) { cb(null, "This device can't share its location."); return; }
   navigator.geolocation.getCurrentPosition(p => cb({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, time: Date.now() }), err => cb(null, err.code === 1 ? "Location access was blocked. Allow location for this site in your browser settings, then try again." : "Couldn't get a location fix. Move outside or near a window and try again."), { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
 }
+const ZIP_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M11 6h2M11 9h2M11 12h2M10.5 15h3v3h-3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 const PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>';
 const CAM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 function stepper(id, val, label) { return `<div class="field"><label for="${id}">${label}</label><div class="stepper"><button type="button" data-step="${id}" data-d="-1" aria-label="Decrease ${label}">−</button><input id="${id}" class="input" type="number" inputmode="numeric" min="0" value="${val}"><button type="button" data-step="${id}" data-d="1" aria-label="Increase ${label}">+</button></div></div>`; }
@@ -1643,7 +1837,8 @@ function renderLog() {
       <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${draft.gps ? `<b>Location recorded</b><span>${draft.gps.lat.toFixed(5)}, ${draft.gps.lng.toFixed(5)} · ±${Math.round(draft.gps.acc)} m</span>${near ? `<div style="font-size:12px;color:var(--muted)">Nearest outlet: ${esc(near.o.name)}, ${near.d < 1 ? Math.round(near.d * 1000) + " m" : near.d.toFixed(1) + " km"} away</div>` : ""}` : `<b>Record your location</b><span style="font-family:var(--body)">${esc(draft.locMsg || "Your manager sees where you are when you start.")}</span>`}</div><button class="btn sm ${draft.gps ? "" : "primary"}" type="button" id="getLoc">${draft.gps ? "Refresh" : "Record location"}</button></div>
       <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${(() => { const opt = o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`, mine = outlets.filter(o => (o.baIds || []).includes(u.id)), rest = outlets.filter(o => !mine.includes(o)); return mine.length ? `<optgroup label="Your outlets">${mine.map(opt).join("")}</optgroup><optgroup label="Other ${esc(v.name)} outlets">${rest.map(opt).join("")}</optgroup>` : outlets.map(opt).join(""); })()}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
       ${foldersOf(u.vendorId).length ? `<div class="field"><label for="lg-folder">Folder or campaign (optional)</label><select id="lg-folder"><option value="">None</option>${foldersOf(u.vendorId).map(f => `<option value="${f.id}" ${draft.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : ""}
-      <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"></div>
+      <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"><label for="lg-seg" style="margin-top:8px">Segment</label>${segSelect("lg-seg", draft.segment || "")}</div>
+      ${(() => { const so = outletOf(draft.outletId); return so && so.segment ? `<div class="segnote"><span class="seg-pill">${esc(so.segment)}</span>${esc((SEGMENTS.find(x => x[0] === so.segment) || [])[1] || "")}</div>` : ""; })()}
       <div class="field"><span class="flabel">Activity</span><div class="seg" id="lg-type">${TYPES.map(t => `<button type="button" aria-pressed="${draft.type === t}" data-o="${t}">${t}</button>`).join("")}</div></div>
       <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div></div>
       <div class="fgrid">${stepper("lg-open", draft.opening, "Opening cases")}${stepper("lg-sold", draft.sold, "Cases sold")}</div>
@@ -1654,9 +1849,9 @@ function renderLog() {
       <div class="err" id="lg-err" role="alert"></div>
       <button class="btn primary block" type="submit" style="padding:13px">${draft.status === "running" ? "Start activation" : "Submit activation"}</button>
     </form></div>`;
-  const keep = () => { draft.folderId = $("#lg-folder") ? $("#lg-folder").value : ""; draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
+  const keep = () => { draft.folderId = $("#lg-folder") ? $("#lg-folder").value : ""; draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.segment = $("#lg-seg") ? $("#lg-seg").value : ""; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
   el.oninput = keep;
-  $("#lg-outlet").onchange = () => { keep(); $("#otherWrap").hidden = draft.outletId !== "other"; };
+  $("#lg-outlet").onchange = () => { keep(); renderLog(); };
   el.onclick = e => {
     const st = e.target.closest("[data-step]"); if (st) { const i = $("#" + st.dataset.step); i.value = Math.max(0, (+i.value || 0) + +st.dataset.d); keep(); return; }
     const t = e.target.closest("#lg-type button"); if (t) { keep(); draft.type = t.dataset.o; renderLog(); return; }
@@ -1678,8 +1873,8 @@ function renderLog() {
     const photos = [];
     for (const f of draft.files) { const p = await storePhoto(f.file, { brand: draft.brand, outlet: outletName, time: start, gps: draft.gps }); photos.push(p.id); URL.revokeObjectURL(f.url); }
     const gps = draft.gps;
-    const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim(), folderId: draft.folderId || null };
-    if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
+    const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim(), folderId: draft.folderId || null, segment: o ? o.segment || "" : draft.segment || "" };
+    if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", segment: draft.segment || "", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
     S.entries.push(entry); await save("entries");
     Object.assign(draft, { folderId: "", outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", files: [], status: "running" });
     toast(entry.end ? "Activation submitted" : "You're live. Your manager can see you on the map.");
@@ -1694,6 +1889,24 @@ function renderHistory() {
     (es.length ? `<div class="files">${es.map(fileCard).join("")}</div>` : `<div class="empty">Nothing logged yet. Your activations will be listed here.</div>`);
   hydrate(el);
 }
+
+/* ---------- street view ----------
+   Google Street View for any point, shown over the app. Google has imagery on
+   most main roads in Lagos, Abuja and Port Harcourt; elsewhere it may show the
+   nearest covered road or nothing. */
+function streetView(lat, lng, name) {
+  const ll = `${(+lat).toFixed(6)},${(+lng).toFixed(6)}`;
+  const el = document.createElement("div"); el.className = "svpanel"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Street view");
+  el.innerHTML = `<div class="svbox"><header><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="5" r="2.5" fill="currentColor"/><path d="M9 9h6l-1 6h-4zM10 15l-1 6M14 15l1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${esc(name || "Street view")} <span class="dim num" style="font-weight:500">${ll}</span></b>
+    <a class="btn sm" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${ll}" target="_blank" rel="noopener">Open in Google Maps</a><button class="iconbtn" type="button" aria-label="Close street view">✕</button></header>
+    <iframe title="Street view" src="https://www.google.com/maps?layer=c&cbll=${ll}&cbp=12,0,0,0,0&output=svembed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="svnote">Drag to look around. If the view stays blank, Google has no street imagery right here, or this preview blocks embedded maps: use Open in Google Maps.</div></div>`;
+  const close = () => { el.remove(); removeEventListener("keydown", esc_); };
+  const esc_ = e => { if (e.key === "Escape") close(); };
+  el.querySelector("header .iconbtn").onclick = close; el.onclick = e => { if (e.target === el) close(); };
+  addEventListener("keydown", esc_); document.body.appendChild(el);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-sv]"); if (b) { const [a, c] = b.dataset.sv.split(","); streetView(a, c, b.dataset.svname); } });
 
 /* =====================================================================
    3D: map of Nigeria for the dashboard
@@ -1722,11 +1935,11 @@ const city = (() => {
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0B0E18, .0035);
+  scene.fog = new THREE.FogExp2(0x0E0C08, .0035);
   const camera = new THREE.PerspectiveCamera(38, 2, .5, 1200);
   const hemi = new THREE.HemisphereLight(0x8aa0ff, 0x0b0b14, .6); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xffffff, .9); sun.position.set(-60, 120, 80); scene.add(sun);
-  const rim = new THREE.DirectionalLight(0xffb547, .35); rim.position.set(80, 40, -90); scene.add(rim);
+  const rim = new THREE.DirectionalLight(0xE0A82E, .35); rim.position.set(80, 40, -90); scene.add(rim);
   const gc = document.createElement("canvas"); gc.width = gc.height = 128;
   const g2 = gc.getContext("2d"), grd = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.25, "rgba(255,255,255,.55)"); grd.addColorStop(1, "rgba(255,255,255,0)");
@@ -1762,10 +1975,24 @@ const city = (() => {
     fragmentShader: "varying vec3 vW; varying vec3 vN; uniform vec3 uCol; uniform vec3 uSea; void main(){ float l=.72+.28*vN.y; float d=max(abs(vW.x-1.)/74.,abs(vW.z-5.)/60.); gl_FragColor=vec4(mix(uCol*l,uSea,smoothstep(.55,.97,d)),1.); }"
   });
   const stateMeshes = [], stateLines = [], cityPts = [], lakeMeshes = [], riverLines = [];
-  let outline = null, outlineGlow = null, built = false;
+  let outline = null, outlineGlow = null, built = false, treeMesh = null, treeZ = -1;
+  const parkLabels = [];
+  const PARKS = [
+    { name: "Cross River National Park", lat: 5.4, lng: 8.55, r: .35 }, { name: "Obudu Plateau", lat: 6.37, lng: 9.3, r: .2 },
+    { name: "Okomu National Park", lat: 6.38, lng: 5.3, r: .2 }, { name: "Niger Delta mangroves", lat: 4.75, lng: 6.25, r: .5 },
+    { name: "Omo Forest Reserve", lat: 6.85, lng: 4.45, r: .2 }, { name: "Old Oyo National Park", lat: 8.5, lng: 3.95, r: .35 },
+    { name: "Kainji Lake National Park", lat: 10.15, lng: 4.35, r: .35 }, { name: "Kamuku National Park", lat: 10.75, lng: 6.45, r: .25 },
+    { name: "Yankari Game Reserve", lat: 9.75, lng: 10.45, r: .3 }, { name: "Gashaka-Gumti National Park", lat: 7.35, lng: 11.55, r: .45 }
+  ];
+  const tm = new THREE.Matrix4(), tq = new THREE.Quaternion(), tv = new THREE.Vector3(), ts = new THREE.Vector3();
+  function placeTrees(zs) {
+    if (!treeMesh) return; const k = THREE.MathUtils.clamp(zs * 1.1, .14, 1);
+    treeMesh.userData.trees.forEach((t, i) => { const p = project(t.lat, t.lng); tv.set(p.x, topOf(t.st) - .05, p.z); ts.setScalar(t.s * k); tm.compose(tv, tq, ts); treeMesh.setMatrixAt(i, tm); });
+    treeMesh.instanceMatrix.needsUpdate = true; treeZ = zs;
+  }
   const borderMat = new THREE.LineBasicMaterial({ color: 0x3a4670, transparent: true, opacity: .8 });
   const riverMat = new THREE.LineBasicMaterial({ color: 0x3fa7d6, transparent: true, opacity: .9 });
-  const outlineMat = new THREE.LineBasicMaterial({ color: 0xffb547, transparent: true, opacity: .95 });
+  const outlineMat = new THREE.LineBasicMaterial({ color: 0xE0A82E, transparent: true, opacity: .95 });
   const lakeMat = new THREE.MeshStandardMaterial({ color: 0x1d6f95, roughness: .3, metalness: .2 });
   const cityLabels = [];
   function build() {
@@ -1778,7 +2005,9 @@ const city = (() => {
       const m = slab(s.poly, LAND_H, [top, side], true);
       // realistic tint: rainforest green on the coast, savanna through the middle belt, Sahel sand in the far north
       const lat = s.c[1], tt = THREE.MathUtils.clamp((lat - 4.5) / 9, 0, 1), base = new THREE.Color();
-      if (tt < .5) base.set(0x4F8A43).lerp(new THREE.Color(0x9AA45A), tt * 2); else base.set(0x9AA45A).lerp(new THREE.Color(0xD9C38A), (tt - .5) * 2);
+      // vegetation belts: mangrove and rainforest (south), derived and Guinea savanna (middle belt), Sudan savanna, Sahel (far north-east)
+      const VEG = [[0, 0x1E6B34], [.22, 0x2E8A3E], [.45, 0x4E9F45], [.68, 0x7DAE4E], [.86, 0xA8B35C], [1, 0xC9B676]];
+      for (let i = 1; i < VEG.length; i++) if (tt <= VEG[i][0]) { base.set(VEG[i - 1][1]).lerp(new THREE.Color(VEG[i][1]), (tt - VEG[i - 1][0]) / (VEG[i][0] - VEG[i - 1][0])); break; }
       base.offsetHSL(0, 0, (((s.name.length * 37) % 9) - 4) * .008);
       m.userData = { state: s.name, top, side, lift: 0, want: 0, heat: 0, h: 1, hNow: 1, base };
       mapGroup.add(m); stateMeshes.push(m);
@@ -1789,7 +2018,7 @@ const city = (() => {
     // national outline, drawn twice for a soft glow
     const opts = []; NG.country.forEach(p => { const pts = lineOf(p[0], 0); for (let i = 1; i < pts.length; i++) opts.push(pts[i - 1], pts[i]); });
     outline = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(opts), outlineMat); outline.position.y = .12; mapGroup.add(outline);
-    outlineGlow = new THREE.LineSegments(outline.geometry, new THREE.LineBasicMaterial({ color: 0xffb547, transparent: true, opacity: .25 })); outlineGlow.position.y = .5; mapGroup.add(outlineGlow);
+    outlineGlow = new THREE.LineSegments(outline.geometry, new THREE.LineBasicMaterial({ color: 0xE0A82E, transparent: true, opacity: .25 })); outlineGlow.position.y = .5; mapGroup.add(outlineGlow);
     // rivers (the Niger and Benue are the wide ones) and lakes
     NG.rivers.forEach(r => r.lines.forEach(ln => { const ln2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(lineOf(ln, LAND_H + .29)), riverMat); ln2.userData.st = ln.map(([lng, lat]) => stateAt(lat, lng)); mapGroup.add(ln2); riverLines.push(ln2); }));
     NG.lakes.forEach(k => { if (k.poly.length) { const m = slab(k.poly, .06, lakeMat); m.position.y = LAND_H + .24; const [lng, lat] = k.poly[0][0][Math.floor(k.poly[0][0].length / 2)]; m.userData.st = stateAt(lat, lng); mapGroup.add(m); lakeMeshes.push(m); } });
@@ -1801,6 +2030,17 @@ const city = (() => {
       const el = document.createElement("div"); el.className = "clabel" + (c.name === "Abuja" ? " cap" : ""); el.textContent = c.name; $("#labels").appendChild(el);
       cityLabels.push({ el, name: c.name, pos: new THREE.Vector3(p.x, LAND_H + .5, p.z), pop: c.pop, st: stateAt(c.lat, c.lng), dot });
     });
+    // forests: denser in the rainforest south, thinning through the savanna, plus the main national parks and reserves
+    const trees = []; seed = 31;
+    const addTree = (lat, lng, park) => { const st = stateAt(lat, lng); if (st) trees.push({ lat, lng, st, park, s: .7 + rnd() * .6 }); };
+    for (let i = 0; i < 5200 && trees.length < 1500; i++) { const lat = 4.3 + rnd() * 9.6, lng = 2.7 + rnd() * 12; const g = THREE.MathUtils.clamp(1 - (lat - 4.3) / 7.5, .03, 1); if (rnd() < g * .55) addTree(lat, lng, false); }
+    PARKS.forEach(p => { for (let i = 0; i < 70; i++) { const a = rnd() * 6.283, r = Math.sqrt(rnd()) * p.r; addTree(p.lat + Math.sin(a) * r, p.lng + Math.cos(a) * r * 1.1, true); } });
+    const cone = new THREE.ConeGeometry(.42, 1.3, 6); cone.translate(0, .65, 0);
+    treeMesh = new THREE.InstancedMesh(cone, new THREE.MeshStandardMaterial({ roughness: .85, flatShading: true }), trees.length);
+    const tc = new THREE.Color();
+    trees.forEach((t, i) => { tc.set(t.park ? 0x14592A : t.lat < 7 ? 0x1F7536 : t.lat < 9.5 ? 0x3B8C3A : 0x6E9A3E).offsetHSL(0, 0, (rnd() - .5) * .06); treeMesh.setColorAt(i, tc); });
+    treeMesh.userData.trees = trees; mapGroup.add(treeMesh);
+    PARKS.forEach(p => { const pp = project(p.lat, p.lng), el = document.createElement("div"); el.className = "clabel park"; el.textContent = p.name; $("#labels").appendChild(el); parkLabels.push({ el, pos: new THREE.Vector3(pp.x, LAND_H + 1, pp.z), st: stateAt(p.lat, p.lng) }); });
     built = true; theme(); if (pending) { const [l, o] = pending; pending = null; setMarkers(l, o); }
     // land rises out of the sea on first show
     mapGroup.scale.y = RM ? 1 : .01;
@@ -1808,9 +2048,9 @@ const city = (() => {
   fetch(ART + "nigeria.json").then(r => r.ok ? r.json() : null).then(d => { if (d) { NG = d; stateCache.clear(); build(); if (me() && view === "dashboard") renderDashboard(); } }).catch(() => { });
   // trade marketing hub in Lagos
   const hp = project(HUB.lat, HUB.lng), HUB_Y = 12;
-  const hubCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffb547, emissiveIntensity: .7, metalness: .6, roughness: .2, flatShading: true }));
+  const hubCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xE0A82E, emissiveIntensity: .7, metalness: .6, roughness: .2, flatShading: true }));
   hubCore.position.set(hp.x, HUB_Y, hp.z); scene.add(hubCore);
-  const hubGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffb547, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .8 }));
+  const hubGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xE0A82E, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .8 }));
   hubGlow.scale.set(7, 7, 1); hubGlow.position.copy(hubCore.position); scene.add(hubGlow);
   // floating dust
   const DP = 420, dpos = new Float32Array(DP * 3); seed = 77;
@@ -1862,9 +2102,9 @@ const city = (() => {
     stateMeshes.forEach(m => {
       const h = m.userData.heat, hov = hoverState === m.userData.state;
       cLand.copy(m.userData.base);
-      if (dark) { cLand.lerp(new THREE.Color(0x1b2236), .62); } else cLand.lerp(new THREE.Color(0xF3F0E6), .08);
-      cHot.set(dark ? 0xE09A3A : 0xF2A93B);
-      cLand.lerp(cHot, h ? .12 + h * .5 : 0);
+      if (dark) { cLand.multiplyScalar(.62); } else cLand.lerp(new THREE.Color(0xF3F0E6), .04);
+      cHot.set(dark ? 0xD9A02A : 0xE3AE3A);
+      cLand.lerp(cHot, h ? .08 + h * .32 : 0);
       if (hov) cLand.lerp(new THREE.Color(dark ? 0x7d8fd0 : 0xffffff), .35);
       m.userData.top.color.copy(cLand);
       cSide.copy(cLand).multiplyScalar(dark ? .55 : .78); m.userData.side.color.copy(cSide);
@@ -1882,7 +2122,7 @@ const city = (() => {
     live.forEach(e => {
       const pos = posOf(e), p = project(pos.lat, pos.lng); const k = Math.round(p.x * 2) + ":" + Math.round(p.z * 2); const off = slot[k] = (slot[k] || 0) + 1;
       const x = p.x + (off - 1) * .7, z = p.z + (off - 1) * .5;
-      const color = css(TVAR(e.type)) || "#FFB547";
+      const color = css(TVAR(e.type)) || "#E0A82E";
       const g = new THREE.Group(); g.position.set(x, topAt(pos.lat, pos.lng) + .05, z);
       const h = 6 + Math.min(8, (+e.sold || 0) / 4);
       const beam = new THREE.Mesh(new THREE.CylinderGeometry(.22, .4, h, 20, 1, true), beamMat(color)); beam.geometry.translate(0, h / 2, 0); g.add(beam);
@@ -1931,6 +2171,14 @@ const city = (() => {
     want.target.set(p.x, topOf(name), p.z); want.radius = fit(62); want.phi = .66; lastInteract = performance.now();
   }
   $("#mapViews").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setView(b.dataset.mv); });
+  const svBtn = $("#svBtn");
+  svBtn.onclick = () => {
+    const b = focusId && beacons.find(x => x.id === focusId);
+    if (b) { const en = S.entries.find(x => x.id === b.id); return streetView(b.lat, b.lng, en ? en.outletName : ""); }
+    const lat = -rig.target.z / MAP_S + MAP_C.lat, lng = rig.target.x / (MAP_S * .988) + MAP_C.lng;
+    const near = NG && NG.cities.slice().sort((a, c) => Math.hypot(a.lat - lat, a.lng - lng) - Math.hypot(c.lat - lat, c.lng - lng))[0];
+    streetView(lat, lng, near && Math.hypot(near.lat - lat, near.lng - lng) < .4 ? near.name : stateAt(lat, lng) || "");
+  };
   let drag = null, hoverState = null; const pointers = new Map();
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   const setNdc = e => { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, camera); };
@@ -1974,14 +2222,14 @@ const city = (() => {
   if ("ResizeObserver" in window) new ResizeObserver(resize).observe(stage);
   function theme() {
     const dark = isDark();
-    renderer.setClearColor(dark ? 0x0A0C13 : 0xE7EBF4, 1);
-    scene.fog.color.set(dark ? 0x0A0C13 : 0xE7EBF4); scene.fog.density = dark ? .0035 : .0028;
-    seaMat.uniforms.uA.value.set(dark ? 0x07111f : 0xA9D3E6); seaMat.uniforms.uB.value.set(dark ? 0x0f3550 : 0xCDE9F4); seaMat.uniforms.uGrid.value.set(dark ? 0x22375a : 0x8FB8CF); seaMat.uniforms.uFade.value.set(dark ? 0x0A0C13 : 0xE7EBF4);
-    hemi.intensity = dark ? .75 : .62; hemi.color.set(dark ? 0x8aa0ff : 0xffffff); hemi.groundColor.set(dark ? 0x0b0b14 : 0xb9c0d6);
+    renderer.setClearColor(dark ? 0x0E0C08 : 0xEFE8D8, 1);
+    scene.fog.color.set(dark ? 0x0E0C08 : 0xEFE8D8); scene.fog.density = dark ? .0035 : .0028;
+    seaMat.uniforms.uA.value.set(dark ? 0x07111f : 0xA9D3E6); seaMat.uniforms.uB.value.set(dark ? 0x0f3550 : 0xCDE9F4); seaMat.uniforms.uGrid.value.set(dark ? 0x22375a : 0x8FB8CF); seaMat.uniforms.uFade.value.set(dark ? 0x0E0C08 : 0xEFE8D8);
+    hemi.intensity = dark ? .75 : .62; hemi.color.set(dark ? 0xc9d6ff : 0xffffff); hemi.groundColor.set(dark ? 0x14100a : 0xc9bfa6);
     sun.intensity = dark ? 1 : .55; rim.intensity = dark ? .35 : .15;
-    neighbourMat.uniforms.uCol.value.set(dark ? 0x1a2030 : 0xE4E2DA); neighbourMat.uniforms.uSea.value.set(dark ? 0x0a1626 : 0xB9DCEC);
-    borderMat.color.set(dark ? 0x56658f : 0xFFFFFF); borderMat.opacity = dark ? .75 : .85;
-    outlineMat.color.set(dark ? 0xffb547 : 0xD98A12); outlineGlow && outlineGlow.material.color.set(dark ? 0xffb547 : 0xD98A12);
+    neighbourMat.uniforms.uCol.value.set(dark ? 0x1f1c16 : 0xE6E0D0); neighbourMat.uniforms.uSea.value.set(dark ? 0x0a1626 : 0xB9DCEC);
+    borderMat.color.set(dark ? 0x7a8a62 : 0xFFFFFF); borderMat.opacity = dark ? .75 : .85;
+    outlineMat.color.set(dark ? 0xE0A82E : 0xD98A12); outlineGlow && outlineGlow.material.color.set(dark ? 0xE0A82E : 0xD98A12);
     riverMat.color.set(dark ? 0x3fa7d6 : 0x3D93C4); lakeMat.color.set(dark ? 0x1d6f95 : 0x8EC7E0);
     cityPts.forEach(d => d.material.color.set(dark ? 0xffffff : 0x2b3350));
     dustMat.opacity = dark ? .3 : .1; dustMat.color.set(dark ? 0x8fa6ff : 0x6b7bb0);
@@ -2008,8 +2256,9 @@ const city = (() => {
     if (built && mapGroup.scale.y < 1) mapGroup.scale.y = Math.min(1, mapGroup.scale.y + dt * 1.4);
     let moved = false; const flat = THREE.MathUtils.clamp((rig.radius - 25) / 70, 0, 1); // states settle flat when you zoom into a city
     stateMeshes.forEach(m => { const u = m.userData, l0 = u.lift, h0 = u.hNow; u.lift += (u.want - u.lift) * k; u.hNow += (1 + (u.h - 1) * flat - u.hNow) * k * .6; m.position.y = u.lift * .9; m.scale.y = u.hNow; if (Math.abs(u.lift - l0) + Math.abs(u.hNow - h0) > 1e-4) moved = true; });
-    if (moved || drapeDirty) { drape(); drapeDirty = false; }
+    if (moved || drapeDirty) { drape(); drapeDirty = false; treeZ = -1; }
     const zs = THREE.MathUtils.clamp(rig.radius / 150, .16, 1); // beams shrink as you zoom into a city
+    if (Math.abs(zs - treeZ) > .015) placeTrees(zs);
     hubCore.scale.setScalar(zs); hubGlow.scale.set(7 * zs, 7 * zs, 1);
     seaMat.uniforms.uTime.value = s;
     hubCore.rotation.y = s * .8; hubCore.position.y = topAt(HUB.lat, HUB.lng) + (HUB_Y - LAND_H) * zs + Math.sin(s * 1.5) * .3 * zs; hubGlow.position.y = hubCore.position.y;
@@ -2029,6 +2278,8 @@ const city = (() => {
       place(b.label, b.top, w, h, sel || (!focusId && close && w >= 700));
     });
     cityLabels.forEach(c => place(c.el, c.pos, w, h, !focusId && (!close || rig.radius < 40 || c.live > 0) && (w >= 600 || c.pop > 1e6 || c.live)));
+    parkLabels.forEach(c => { c.pos.y = topOf(c.st) + 1.2 * zs; place(c.el, c.pos, w, h, !focusId && rig.radius < 125 && w >= 600); });
+    const svOn = !!focusId || rig.radius < 45; if (svBtn.hidden === svOn) svBtn.hidden = !svOn;
     renderer.render(scene, camera);
   }
   theme(); resize(); requestAnimationFrame(frame);
@@ -2046,7 +2297,7 @@ const loginScene = (() => {
   let r; try { r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return noop; }
   r.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); r.outputEncoding = THREE.sRGBEncoding;
   const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(32, 1, .1, 200);
-  sc.fog = new THREE.Fog(0x0A0C13, 22, 44);
+  sc.fog = new THREE.Fog(0x0E0C08, 22, 44);
   // soft alpha masks: rounded corners for the cards, and a fading version for the floor reflections
   const mask = fade => {
     const c = document.createElement("canvas"); c.width = 192; c.height = 256; const g = c.getContext("2d");
@@ -2075,7 +2326,7 @@ const loginScene = (() => {
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.3, "rgba(255,255,255,.4)"); grd.addColorStop(1, "rgba(255,255,255,0)");
   g2.fillStyle = grd; g2.fillRect(0, 0, 128, 128);
   const glow = new THREE.CanvasTexture(gc);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R * 3.4, R * 3.4), new THREE.MeshBasicMaterial({ map: glow, color: 0xffb547, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R * 3.4, R * 3.4), new THREE.MeshBasicMaterial({ map: glow, color: 0xE0A82E, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -H / 2 - .06; ring.add(floor);
   const BP = 160, bpos = new Float32Array(BP * 3); seed = 11;
   for (let i = 0; i < BP; i++) { bpos[i * 3] = (rnd() - .5) * 46; bpos[i * 3 + 1] = (rnd() - .5) * 20; bpos[i * 3 + 2] = -rnd() * 24 + 6; }
@@ -2120,8 +2371,8 @@ const loginScene = (() => {
   };
   function theme() {
     const d = isDark();
-    sc.fog.color.set(d ? 0x0A0C13 : 0xE9EDF5);
-    floor.material.opacity = d ? .22 : .35; floor.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending; floor.material.color.set(d ? 0xffb547 : 0xF2B04E);
+    sc.fog.color.set(d ? 0x0E0C08 : 0xF5EFE2);
+    floor.material.opacity = d ? .22 : .35; floor.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending; floor.material.color.set(d ? 0xE0A82E : 0xF2B04E);
     bokeh.material.opacity = d ? .55 : .35; bokeh.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending;
   }
   size(); theme(); raf = requestAnimationFrame(loop);
@@ -2140,6 +2391,7 @@ const ready = new Promise(r => markReady = r);
   if ((await DB.get("kv", "artVersion")) !== 1) setTimeout(repaintExamplePhotos, 400);
   if ((await DB.get("kv", "geoVersion")) !== 1) { await seedNational(); await save("outlets", "entries"); }
   if ((await DB.get("kv", "staffVersion")) !== 1) { await seedStaffing(); await save("outlets"); }
+  if ((await DB.get("kv", "segVersion")) !== 1) { await seedSegments(); await save("outlets"); }
   readyDone = true; markReady();
   setTimeout(paintSamplePhotos, 50);
   const sid = sessionStore.get();
