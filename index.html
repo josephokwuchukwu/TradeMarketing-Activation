@@ -107,6 +107,18 @@ h1,h2,h3,h4{text-wrap:balance}
 .card-h .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .empty{color:var(--muted);padding:28px;text-align:center;border:1px dashed var(--line-2);border-radius:14px}
 .sample{font-size:11px;color:var(--dim)}
+.dsets{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.dset{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:var(--panel-2)}
+.dset p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.dset-f{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.pbi-mark{display:inline-flex;gap:2px;align-items:flex-end;height:18px;margin-right:9px;vertical-align:-2px}
+.pbi-mark i{width:5px;border-radius:1.5px;background:#F2C811}.pbi-mark i:nth-child(1){height:9px;opacity:.7}.pbi-mark i:nth-child(2){height:14px;opacity:.85}.pbi-mark i:nth-child(3){height:18px}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:9px;font-size:13.5px;line-height:1.5}
+.steps b{font-weight:700}
+.live-note{margin-top:16px;padding:13px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.code{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:300px;overflow:auto}
+.sect{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:4px 0 -8px}
+.folder.custom .ficon::after{background:linear-gradient(transparent 56%,rgba(255,255,255,.6) 56% 68%,transparent 68%),linear-gradient(160deg,var(--fc,#FFB547),color-mix(in srgb,var(--fc,#FFB547) 60%,#000))}
 .beta{font-family:var(--body);font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;vertical-align:2px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent-text)}
 .lb{display:grid;grid-template-columns:28px 32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:13px}
 .lb:first-of-type{border-top:0}
@@ -416,6 +428,7 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
       <div class="view" id="v-outlets"></div>
       <div class="view" id="v-vendors"></div>
       <div class="view" id="v-team"></div>
+      <div class="view" id="v-data"></div>
       <div class="view" id="v-log"></div>
       <div class="view" id="v-history"></div>
     </div>
@@ -513,8 +526,8 @@ const DB = (() => {
   });
   return { open, get, put, clear };
 })();
-const COLLS = ["vendors", "users", "outlets", "entries"];
-const S = { vendors: [], users: [], outlets: [], entries: [] };
+const COLLS = ["vendors", "users", "outlets", "entries", "folders"];
+const S = { vendors: [], users: [], outlets: [], entries: [], folders: [] };
 const bc = "BroadcastChannel" in window ? new BroadcastChannel("trade-activate") : null;
 async function save(...colls) {
   for (const c of colls) await DB.put("kv", c, S[c]);
@@ -681,7 +694,11 @@ async function seedDemo() {
     const opening = 20 + Math.floor(rnd() * 50);
     await mk(ba, o, v.brands[(dday + j) % 3], TYPES[(dday + j) % 3], +base, +base + (3 + rnd() * 3) * 36e5, opening, Math.floor(opening * (.45 + rnd() * .45)), 60 + Math.floor(rnd() * 220), j < 3 ? 2 : 1);
   }
-  Object.assign(S, { vendors, users, outlets, entries });
+  const folders = [["v_pin", "Eagle Promo, September", "Buy a truck of Eagle Lager and win prizes", "Eagle"], ["v_blu", "Budweiser World Cup nights", "Match-night activations in lounges", "Budweiser"], ["v_kor", "Beta Malt family weekends", "Weekend sampling at mainland outlets", "Beta Malt"]]
+    .map(([vendorId, name, note, brand]) => ({ id: uid("f_"), vendorId, name, note, brand, createdAt: now - 7 * 864e5, createdBy: "u_admin" }));
+  entries.forEach(e => { const f = folders.find(x => x.vendorId === e.vendorId && x.brand === e.brand); if (f) e.folderId = f.id; });
+  folders.forEach(f => delete f.brand);
+  Object.assign(S, { vendors, users, outlets, entries, folders });
   await save(...COLLS);
   await DB.put("kv", "seeded", 2); await DB.put("kv", "artVersion", 1);
 }
@@ -738,7 +755,7 @@ function enter(id) {
   try { const v = localStorage.getItem("ta.view." + me().role); if (v && NAV[me().role].some(x => x[0] === v)) view = v; } catch (e) { }
   renderShell(); go(view);
 }
-$("#logout").onclick = () => { draft.files.forEach(f => URL.revokeObjectURL(f.url)); Object.assign(draft, { outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", gps: null, files: [], status: "running", locMsg: "" }); currentId = null; sessionStore.set(null); closeDrawer(); $("#app").hidden = true; $("#login").hidden = false; loginRole = "admin"; renderLogin(); loginScene.start(); };
+$("#logout").onclick = () => { draft.files.forEach(f => URL.revokeObjectURL(f.url)); Object.assign(draft, { folderId: "", outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", gps: null, files: [], status: "running", locMsg: "" }); currentId = null; sessionStore.set(null); closeDrawer(); $("#app").hidden = true; $("#login").hidden = false; loginRole = "admin"; renderLogin(); loginScene.start(); };
 
 /* ---------- my account: change password or PIN ---------- */
 $("#acctBtn").onclick = () => {
@@ -790,8 +807,9 @@ const ICON = {
   history: '<path d="M3 12a9 9 0 1 0 3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 4v4h4M12 8v4l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
 };
 ICON.team = ICON.vendors;
+ICON.data = '<rect x="4" y="12" width="3.5" height="8" rx="1" fill="currentColor"/><rect x="10.25" y="7" width="3.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="3" width="3.5" height="17" rx="1" fill="currentColor"/>';
 const NAV = {
-  admin: [["dashboard", "Live dashboard"], ["folders", "Vendor folders"], ["outlets", "Outlets"], ["vendors", "Vendors & users"]],
+  admin: [["dashboard", "Live dashboard"], ["folders", "Vendor folders"], ["outlets", "Outlets"], ["vendors", "Vendors & users"], ["data", "Data & Power BI"]],
   manager: [["dashboard", "Live dashboard"], ["folders", "Our folder"], ["outlets", "Our outlets"], ["team", "Ambassadors"]],
   ba: [["log", "My activation"], ["history", "History"]]
 };
@@ -804,6 +822,7 @@ function subtitle(v) {
     outlets: u.role === "admin" ? "Upload activating outlets and assign them to vendors" : `Outlets assigned to ${vend.name}`,
     vendors: "Register vendors and give their managers and ambassadors sign-ins",
     team: `${vend.name} brand ambassadors`,
+    data: "Download any of the data, or feed it into a Power BI dashboard",
     log: `${vend.name} · Log what's happening at your outlet`,
     history: "Everything you have logged"
   })[v] || "";
@@ -832,7 +851,7 @@ function go(v) {
   if (v === "dashboard") city.resize();
 }
 function renderView() {
-  ({ dashboard: renderDashboard, folders: renderFolders, outlets: renderOutlets, vendors: renderVendors, team: renderTeam, log: renderLog, history: renderHistory })[view]();
+  ({ dashboard: renderDashboard, folders: renderFolders, outlets: renderOutlets, vendors: renderVendors, data: renderData, team: renderTeam, log: renderLog, history: renderHistory })[view]();
 }
 function refresh() { if (!me()) return; renderNav(); renderView(); }
 const tick = () => { const d = new Date(); $("#clock").textContent = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) + " · " + hm(+d); };
@@ -916,38 +935,138 @@ function liveRow(e) {
     <div class="r"><b>${n(e.sold)}</b>cases sold</div></div>`;
 }
 
-/* ---------- report download (Excel, or CSV when Excel support didn't load) ---------- */
+/* ---------- file downloads ----------
+   On a hosted page this is a normal browser download. Inside the claude.ai
+   preview the page asks the viewer through the downloads capability. */
+let dlCap;
+async function saveFile(filename, data, mime) {
+  if (dlCap === undefined) { try { dlCap = window.claude && window.claude.use ? await Promise.race([window.claude.use("downloads"), new Promise(r => setTimeout(() => r(null), 1500))]) : null; } catch (e) { dlCap = null; } }
+  if (dlCap) {
+    try { await dlCap.save({ filename, data: new Blob([data], { type: mime }) }); return true; }
+    catch (e) { if (e && e.code === "declined") return false; if (e && e.code === "rate_limited") { toast("Another download is waiting for you to confirm it.", true); return false; } }
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: mime })); a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  return true;
+}
+const csvOf = rows => { if (!rows.length) return ""; const cols = Object.keys(rows[0]), q = x => /[",\n\r]/.test(String(x ?? "")) ? `"${String(x).replace(/"/g, '""')}"` : (x ?? ""); return "﻿" + [cols.join(","), ...rows.map(r => cols.map(c => q(r[c])).join(","))].join("\r\n"); };
+// sheets: [[name, rows], ...]. Excel gets one workbook; CSV gets one file per sheet.
+async function downloadSheets(base, sheets, format) {
+  sheets = sheets.filter(([, rows]) => rows.length);
+  if (!sheets.length) { toast("Nothing to download for that choice.", true); return; }
+  if (format === "xlsx" && window.XLSX) {
+    const wb = XLSX.utils.book_new();
+    for (const [name, rows] of sheets) { const ws = XLSX.utils.json_to_sheet(rows); ws["!cols"] = Object.keys(rows[0]).map(k => ({ wch: Math.min(40, Math.max(k.length, ...rows.slice(0, 200).map(r => String(r[k] ?? "").length)) + 2) })); XLSX.utils.book_append_sheet(wb, ws, name.slice(0, 31)); }
+    if (await saveFile(base + ".xlsx", XLSX.write(wb, { type: "array", bookType: "xlsx" }), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) toast(`Downloaded ${base}.xlsx`);
+    return;
+  }
+  for (const [name, rows] of sheets) { if (!(await saveFile(`${base}${sheets.length > 1 ? "-" + name.toLowerCase().replace(/\W+/g, "-") : ""}.csv`, csvOf(rows), "text/csv"))) return; }
+  toast(sheets.length > 1 ? `Downloaded ${sheets.length} CSV files` : `Downloaded ${base}.csv`);
+}
+const activationRows = es => es.map(e => {
+  const ba = userOf(e.baId) || {}, v = vendorOf(e.vendorId) || {}, o = outletOf(e.outletId) || {};
+  return { Date: dayKey(e.start), Start: hm(e.start), End: e.end ? hm(e.end) : "Running", Vendor: v.name || "", "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Outlet: e.outletName, Area: o.area || "", Activity: e.type, Brand: e.brand, Folder: (folderOf(e.folderId) || {}).name || "", "Opening cases": +e.opening || 0, "Cases sold": +e.sold || 0, "Closing cases": Math.max(0, (+e.opening || 0) - (+e.sold || 0)), "Consumers reached": +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", "Location check": locIssue(e) || "OK", Notes: e.notes || "" };
+});
+const summaryRows = es => { const sum = {}; es.forEach(e => { const vn = (vendorOf(e.vendorId) || {}).name || "", k = dayKey(e.start) + "|" + vn + "|" + e.brand; const x = sum[k] || (sum[k] = { Date: dayKey(e.start), Vendor: vn, Brand: e.brand, Activities: 0, "Cases sold": 0, "Consumers reached": 0, Photos: 0 }); x.Activities++; x["Cases sold"] += +e.sold || 0; x["Consumers reached"] += +e.reached || 0; x.Photos += e.photos.length; }); return Object.values(sum).sort((a, b) => a.Date < b.Date ? 1 : a.Date > b.Date ? -1 : b["Cases sold"] - a["Cases sold"]); };
 function exportReport(pass) {
   const RANGES = [["today", "Today"], ["7", "Last 7 days"], ["30", "Last 30 days"], ["all", "Everything"]];
   const filters = [dash.type !== "All" && dash.type, dash.brand !== "All" && dash.brand, dash.vendor !== "All" && (vendorOf(dash.vendor) || {}).name].filter(Boolean);
   openModal(`<h3>Download a report</h3>
-    <div class="muted">One row per activation with ambassador, outlet, cases and location, plus a summary sheet by vendor and brand.${filters.length ? ` Uses your dashboard filters: ${esc(filters.join(", "))}.` : ""}</div>
+    <div class="muted">One row per activation with ambassador, outlet, cases and location, plus a daily summary by vendor and brand.${filters.length ? ` Uses your dashboard filters: ${esc(filters.join(", "))}.` : ""}</div>
     <div class="radios" id="rgRange">${RANGES.map(([k, l], i) => `<label><input type="radio" name="rg" value="${k}" ${i === 1 ? "checked" : ""}>${l}</label>`).join("")}</div>
     <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rgNo">Cancel</button><button class="btn primary" type="button" id="rgGo">Download</button></div>`, m => {
     $("#rgNo", m).onclick = closeModal;
-    $("#rgGo", m).onclick = () => {
+    $("#rgGo", m).onclick = async () => {
       const r = $("input[name=rg]:checked", m).value;
       const from = r === "all" ? 0 : r === "today" ? new Date(new Date().setHours(0, 0, 0, 0)).getTime() : Date.now() - +r * 864e5;
       const es = scopeEntries().filter(e => pass(e) && e.start >= from).sort((a, b) => a.start - b.start);
       if (!es.length) return toast("Nothing logged in that period.", true);
-      const rows = es.map(e => {
-        const ba = userOf(e.baId) || {}, v = vendorOf(e.vendorId) || {}, o = outletOf(e.outletId) || {};
-        return { Date: dayKey(e.start), Start: hm(e.start), End: e.end ? hm(e.end) : "Running", Vendor: v.name || "", "Brand ambassador": ba.name || "", "BA ID": ba.login || "", Outlet: e.outletName, Area: o.area || "", Activity: e.type, Brand: e.brand, "Opening cases": +e.opening || 0, "Cases sold": +e.sold || 0, "Closing cases": Math.max(0, (+e.opening || 0) - (+e.sold || 0)), "Consumers reached": +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", "Location check": locIssue(e) || "OK", Notes: e.notes || "" };
-      });
-      const sum = {}; es.forEach(e => { const k = ((vendorOf(e.vendorId) || {}).name || "") + "|" + e.brand; const x = sum[k] || (sum[k] = { Vendor: k.split("|")[0], Brand: e.brand, Activities: 0, "Cases sold": 0, "Consumers reached": 0 }); x.Activities++; x["Cases sold"] += +e.sold || 0; x["Consumers reached"] += +e.reached || 0; });
-      const fname = `trade-activate-${r === "all" ? "all" : r === "today" ? dayKey(Date.now()) : "last-" + r + "-days"}`;
-      if (window.XLSX) {
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Activations");
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.values(sum).sort((a, b) => b["Cases sold"] - a["Cases sold"])), "Summary");
-        XLSX.writeFile(wb, fname + ".xlsx");
-      } else {
-        const cols = Object.keys(rows[0]), q = x => /[",\n]/.test(String(x)) ? `"${String(x).replace(/"/g, '""')}"` : x;
-        const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([[cols.join(","), ...rows.map(r => cols.map(c => q(r[c])).join(","))].join("\n")], { type: "text/csv" })); a.download = fname + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      }
-      closeModal(); toast(`Report downloaded: ${rows.length} activations`);
+      closeModal();
+      await downloadSheets(`trade-activate-${r === "all" ? "all" : r === "today" ? dayKey(Date.now()) : "last-" + r + "-days"}`, [["Activations", activationRows(es)], ["Summary", summaryRows(es)]], "xlsx");
     };
   });
+}
+
+/* ---------- data & Power BI (admin) ---------- */
+const dx = { period: "30", from: "", to: "", vendor: "All", format: "xlsx" };
+function dxRange() {
+  const d0 = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return +d; };
+  if (dx.period === "custom") { const f = dx.from ? +new Date(dx.from + "T00:00") : 0, t = dx.to ? +new Date(dx.to + "T23:59:59") : Infinity; return [f, t]; }
+  if (dx.period === "today") return [d0(Date.now()), Infinity];
+  if (dx.period === "month") { const d = new Date(); return [+new Date(d.getFullYear(), d.getMonth(), 1), Infinity]; }
+  if (dx.period === "all") return [0, Infinity];
+  return [Date.now() - +dx.period * 864e5, Infinity];
+}
+function dxEntries() { const [f, t] = dxRange(); return S.entries.filter(e => e.start >= f && e.start <= t && (dx.vendor === "All" || e.vendorId === dx.vendor)).sort((a, b) => a.start - b.start); }
+const outletRows = () => S.outlets.filter(o => dx.vendor === "All" || o.vendorId === dx.vendor).map(o => ({ Outlet: o.name, Address: o.address || "", Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", Vendor: (vendorOf(o.vendorId) || {}).name || "Not assigned", Brands: (o.brands || []).join("; "), Source: o.source || "" }));
+const userRows = () => S.users.filter(u => dx.vendor === "All" || u.vendorId === dx.vendor).map(u => ({ Name: u.name, Role: ROLE_INFO[u.role].label, Vendor: (vendorOf(u.vendorId) || {}).name || "", "Sign-in": u.login, Phone: u.phone || "", Activations: S.entries.filter(e => e.baId === u.id).length, "Cases sold": S.entries.filter(e => e.baId === u.id).reduce((a, e) => a + (+e.sold || 0), 0) }));
+const vendorRows = () => S.vendors.filter(v => dx.vendor === "All" || v.id === dx.vendor).map(v => ({ Vendor: v.name, Manager: v.contact, Phone: v.phone || "", Email: v.email || "", Brands: v.brands.join("; "), Outlets: S.outlets.filter(o => o.vendorId === v.id).length, Ambassadors: S.users.filter(u => u.role === "ba" && u.vendorId === v.id).length, Activations: S.entries.filter(e => e.vendorId === v.id).length, Registered: dayKey(v.createdAt || Date.now()) }));
+const folderRows = () => S.folders.filter(f => dx.vendor === "All" || f.vendorId === dx.vendor).map(f => { const es = S.entries.filter(e => e.folderId === f.id); return { Folder: f.name, Vendor: (vendorOf(f.vendorId) || {}).name || "", Description: f.note || "", Created: dayKey(f.createdAt), Activations: es.length, "Cases sold": es.reduce((a, e) => a + (+e.sold || 0), 0) }; });
+// Power BI model: one fact table keyed to dimension tables by ID, plus a calendar.
+function powerBISheets(es) {
+  const fact = es.map(e => ({ ActivationID: e.id, Date: dayKey(e.start), StartTime: new Date(e.start).toISOString(), EndTime: e.end ? new Date(e.end).toISOString() : "", DurationMinutes: Math.round(((e.end || Date.now()) - e.start) / 60000), Status: e.end ? "Ended" : "Running", VendorID: e.vendorId, OutletID: e.outletId || "", AmbassadorID: e.baId, Brand: e.brand, ActivityType: e.type, FolderID: e.folderId || "", OpeningCases: +e.opening || 0, CasesSold: +e.sold || 0, ClosingCases: Math.max(0, (+e.opening || 0) - (+e.sold || 0)), ConsumersReached: +e.reached || 0, Photos: e.photos.length, Latitude: e.gps ? +e.gps.lat.toFixed(6) : "", Longitude: e.gps ? +e.gps.lng.toFixed(6) : "", LocationCheck: locIssue(e) || "OK" }));
+  const days = es.length ? (() => { const out = [], d = new Date(es[0].start); d.setHours(0, 0, 0, 0); const end = new Date(); while (d <= end) { out.push({ Date: dayKey(+d), Year: d.getFullYear(), MonthNo: d.getMonth() + 1, Month: d.toLocaleDateString("en-GB", { month: "short" }), Week: Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 864e5 + new Date(d.getFullYear(), 0, 1).getDay() + 1) / 7), Weekday: d.toLocaleDateString("en-GB", { weekday: "short" }) }); d.setDate(d.getDate() + 1); } return out; })() : [];
+  return [
+    ["Activations", fact],
+    ["Vendors", S.vendors.map(v => ({ VendorID: v.id, Vendor: v.name, Manager: v.contact, Brands: v.brands.join("; ") }))],
+    ["Outlets", S.outlets.map(o => ({ OutletID: o.id, Outlet: o.name, Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", VendorID: o.vendorId || "" }))],
+    ["Ambassadors", S.users.filter(u => u.role === "ba").map(u => ({ AmbassadorID: u.id, Ambassador: u.name, BAID: u.login, VendorID: u.vendorId || "" }))],
+    ["Brands", BRANDS.map(b => ({ Brand: b.name, Pack: b.kind === "can" ? "Can" : "Bottle", Colour: b.color }))],
+    ["Folders", S.folders.map(f => ({ FolderID: f.id, Folder: f.name, VendorID: f.vendorId }))],
+    ["Calendar", days]
+  ];
+}
+const PBI_M = `let
+    // Point this at the workbook saved in OneDrive or SharePoint
+    Source = Excel.Workbook(Web.Contents("https://YOUR-COMPANY.sharepoint.com/sites/TradeMarketing/Shared Documents/trade-activate-powerbi.xlsx"), true),
+    Activations = Source{[Item="Activations", Kind="Sheet"]}[Data],
+    Typed = Table.TransformColumnTypes(Activations, {{"Date", type date}, {"OpeningCases", Int64.Type}, {"CasesSold", Int64.Type}, {"ClosingCases", Int64.Type}, {"ConsumersReached", Int64.Type}, {"Photos", Int64.Type}, {"DurationMinutes", Int64.Type}})
+in
+    Typed`;
+function renderData() {
+  const el = $("#v-data");
+  const es = dxEntries();
+  const sets = [
+    ["act", "Activations", "One row per activation: vendor, ambassador, outlet, brand, folder, cases, consumers, GPS and location check.", es.length, () => [["Activations", activationRows(es)]]],
+    ["sum", "Daily summary", "Activities, cases sold, consumers and photos per day, vendor and brand.", summaryRows(es).length, () => [["Summary", summaryRows(es)]]],
+    ["out", "Outlets", "Every activating outlet with area, channel, coordinates, vendor and brands.", outletRows().length, () => [["Outlets", outletRows()]]],
+    ["usr", "People and sign-ins", "Admins, vendor managers and ambassadors with their totals. Passwords are never exported.", userRows().length, () => [["People", userRows()]]],
+    ["ven", "Vendors", "Registered vendors with brands, outlets, ambassadors and activations.", vendorRows().length, () => [["Vendors", vendorRows()]]],
+    ["fol", "Folders", "Custom vendor folders and what is filed in them.", folderRows().length, () => [["Folders", folderRows()]]]
+  ];
+  const base = () => `trade-activate-${dx.vendor === "All" ? "all-vendors" : (vendorOf(dx.vendor) || { name: "vendor" }).name.toLowerCase().replace(/\W+/g, "-")}-${dayKey(Date.now())}`;
+  el.innerHTML = `
+    <div class="card"><div class="card-h"><h3>Download data</h3><div class="right"><span class="chip">${es.length} activations in range</span></div></div>
+      <div class="toolbar" style="margin-bottom:14px">
+        <select class="inline" id="dxPeriod" aria-label="Period">${[["today", "Today"], ["7", "Last 7 days"], ["30", "Last 30 days"], ["month", "This month"], ["all", "Everything"], ["custom", "Pick dates"]].map(([k, l]) => `<option value="${k}" ${dx.period === k ? "selected" : ""}>${l}</option>`).join("")}</select>
+        ${dx.period === "custom" ? `<input class="input" type="date" id="dxFrom" value="${dx.from}" aria-label="From" style="max-width:170px"><span class="dim">to</span><input class="input" type="date" id="dxTo" value="${dx.to}" aria-label="To" style="max-width:170px">` : ""}
+        <select class="inline" id="dxVendor" aria-label="Vendor"><option value="All">All vendors</option>${S.vendors.map(v => `<option value="${v.id}" ${dx.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
+        <div class="seg" id="dxFormat"><button type="button" data-o="xlsx" aria-pressed="${dx.format === "xlsx"}">Excel</button><button type="button" data-o="csv" aria-pressed="${dx.format === "csv"}">CSV</button></div>
+        <button class="btn primary sm" type="button" id="dxAll" style="margin-left:auto">Download everything</button>
+      </div>
+      <div class="dsets">${sets.map(([k, t, d, c]) => `<div class="dset"><div><b>${t}</b><p>${d}</p></div><div class="dset-f"><span class="num">${n(c)} rows</span><button class="btn sm" type="button" data-dx="${k}" ${c ? "" : "disabled"}>Download</button></div></div>`).join("")}</div>
+      <p class="muted" style="font-size:12px;margin:12px 0 0">Outlets, people, vendors and folders ignore the period. Photos stay in the app; each activation row says how many it has.</p>
+    </div>
+    <div class="card pbi"><div class="card-h"><h3><span class="pbi-mark" aria-hidden="true"><i></i><i></i><i></i></span>Power BI</h3><div class="right"><span class="chip">Excel dataset, ready to model</span></div></div>
+      <p class="muted" style="margin:0 0 14px">The Power BI dataset is one workbook laid out the way Power BI likes it: an <b>Activations</b> fact table joined by ID to <b>Vendors</b>, <b>Outlets</b>, <b>Ambassadors</b>, <b>Brands</b>, <b>Folders</b> and a <b>Calendar</b>. It uses the vendor and period chosen above.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><button class="btn primary" type="button" id="pbiGo">Download Power BI dataset</button><button class="btn" type="button" id="pbiCopy">Copy Power Query script</button></div>
+      <ol class="steps">
+        <li><b>Save the workbook to OneDrive or SharePoint</b> as <span class="num">trade-activate-powerbi.xlsx</span>. Keep that name so refreshes find it.</li>
+        <li><b>In Power BI Desktop</b>, choose Get data, then Excel workbook (or Web, pasting the file's SharePoint link). Tick all seven sheets and load.</li>
+        <li><b>Check the relationships</b> in Model view: Activations to Vendors on VendorID, Outlets on OutletID, Ambassadors on AmbassadorID, Brands on Brand, Folders on FolderID, Calendar on Date. Power BI usually finds them by itself.</li>
+        <li><b>Build the report.</b> Good first visuals: cases sold by brand, activations on a map from Latitude and Longitude, a leaderboard by ambassador, and the location check count.</li>
+        <li><b>Publish to the Power BI service</b> and turn on scheduled refresh. Each time you download a new dataset here and overwrite the file in SharePoint, the report updates on the next refresh.</li>
+      </ol>
+      <div class="live-note"><b>Want it fully live, with no downloads?</b> That needs the shared online database (the next step in the README). Once the app saves to it, Power BI connects straight to it with the PostgreSQL connector and refreshes on a schedule. Until then each phone and laptop keeps its own data, so download from the device that holds the entries.</div>
+    </div>`;
+  const rerender = () => renderData();
+  $("#dxPeriod").onchange = e => { dx.period = e.target.value; rerender(); };
+  if ($("#dxFrom")) { $("#dxFrom").onchange = e => { dx.from = e.target.value; rerender(); }; $("#dxTo").onchange = e => { dx.to = e.target.value; rerender(); }; }
+  $("#dxVendor").onchange = e => { dx.vendor = e.target.value; rerender(); };
+  $("#dxFormat").onclick = e => { const b = e.target.closest("button"); if (b) { dx.format = b.dataset.o; rerender(); } };
+  el.querySelectorAll("[data-dx]").forEach(b => b.onclick = () => { const set = sets.find(x => x[0] === b.dataset.dx); downloadSheets(`${base()}-${set[1].toLowerCase().replace(/\W+/g, "-")}`, set[4](), dx.format); });
+  $("#dxAll").onclick = () => downloadSheets(base(), sets.flatMap(x => x[4]()), dx.format);
+  $("#pbiGo").onclick = () => downloadSheets("trade-activate-powerbi", powerBISheets(es), "xlsx");
+  $("#pbiCopy").onclick = async () => { try { await navigator.clipboard.writeText(PBI_M); toast("Power Query script copied. Paste it into Advanced Editor and change the link."); } catch (e) { openModal(`<h3>Power Query script</h3><p class="muted">Copy this into Power BI's Advanced Editor and change the link to your file.</p><pre class="code">${esc(PBI_M)}</pre><div style="text-align:right"><button class="btn" type="button" onclick="this.closest('.modal').classList.remove('on');document.getElementById('scrim').classList.remove('on')">Close</button></div>`); } };
 }
 document.addEventListener("click", e => { const t = e.target.closest("[data-entry]"); if (t && !e.target.closest("[data-photo-open]")) openEntry(t.dataset.entry); });
 document.addEventListener("keydown", e => { if (e.key === "Enter") { const t = e.target.closest && e.target.closest("[data-entry]"); if (t) openEntry(t.dataset.entry); } });
@@ -973,12 +1092,14 @@ function openEntry(id) {
         <div><label>Started</label><b class="num">${hm(e.start)}</b></div>
         <div><label>${isLive(e) ? "Running for" : "Ended"}</label><b class="num">${isLive(e) ? dur(Date.now() - e.start) : hm(e.end) + " (" + dur(e.end - e.start) + ")"}</b></div>
         <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
+        ${canFile(e.vendorId) ? `<div class="wide"><label for="drFolder">Folder</label><select class="inline" id="drFolder" style="margin-top:4px;max-width:100%"><option value="">Not in a folder (filed by day only)</option>${foldersOf(e.vendorId).map(f => `<option value="${f.id}" ${e.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : e.folderId && folderOf(e.folderId) ? `<div class="wide"><label>Folder</label><b>${esc(folderOf(e.folderId).name)}</b></div>` : ""}
         ${o ? `<div class="wide"><label>Outlet</label><b>${esc(o.name)}</b><div class="dim" style="font-size:12.5px">${esc([o.address, o.area, o.channel].filter(Boolean).join(" · "))}</div></div>` : ""}
         ${e.notes ? `<div class="wide"><label>Notes</label><b style="font-weight:500">${esc(e.notes)}</b></div>` : ""}
       </div>
     </div>`;
   $("#drawer").classList.add("on"); $("#scrim").classList.add("on");
   $("#dx").onclick = closeDrawer; $("#dx").focus();
+  if ($("#drFolder")) $("#drFolder").onchange = async ev => { e.folderId = ev.target.value || null; await save("entries"); toast(e.folderId ? `Filed in ${folderOf(e.folderId).name}` : "Removed from folder"); if (view === "folders") renderFolders(); };
   hydrate($("#drawer"));
   city.focus(id);
 }
@@ -999,8 +1120,39 @@ function closeModal() { $("#modal").classList.remove("on"); if (!$("#drawer").cl
 let toastT;
 function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classList.toggle("bad", !!bad); t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2800); }
 
-/* ---------- vendor folders ---------- */
-const fold = { vendor: null, day: null, brand: "All" };
+/* ---------- vendor folders ----------
+   Each vendor has its own folder. Inside it, entries are filed by day automatically,
+   and admins or the vendor's manager can add named folders (a campaign, a promo,
+   a region) and file entries into them. */
+const fold = { vendor: null, day: null, folder: null, brand: "All" };
+const foldersOf = vid => S.folders.filter(f => f.vendorId === vid).sort((a, b) => b.createdAt - a.createdAt);
+const folderOf = id => S.folders.find(f => f.id === id);
+const canFile = vid => { const u = me(); return u && (u.role === "admin" || (u.role === "manager" && u.vendorId === vid)); };
+function folderForm(vendorId, existing) {
+  const v = vendorOf(vendorId);
+  openModal(`<h3>${existing ? "Rename folder" : `New folder in ${esc(v.name)}`}</h3>
+    <form id="ff" class="fgrid" novalidate>
+      <div class="field full"><label for="ff-name">Folder name</label><input id="ff-name" value="${esc(existing ? existing.name : "")}" placeholder="e.g. Eagle Promo, September" maxlength="60"></div>
+      <div class="field full"><label for="ff-note">What goes in it (optional)</label><input id="ff-note" value="${esc(existing ? existing.note || "" : "")}" placeholder="e.g. Buy a truck, win prizes. Lagos mainland outlets."></div>
+      <div class="err full" id="ff-err" role="alert"></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="ffNo">Cancel</button><button class="btn primary" type="submit">${existing ? "Save" : "Create folder"}</button></div>
+    </form>`, m => {
+    $("#ffNo", m).onclick = closeModal;
+    $("#ff", m).onsubmit = async e => {
+      e.preventDefault();
+      const name = $("#ff-name").value.trim(), note = $("#ff-note").value.trim();
+      if (!name) return $("#ff-err").textContent = "Give the folder a name.";
+      if (foldersOf(vendorId).some(f => f.name.toLowerCase() === name.toLowerCase() && f !== existing)) return $("#ff-err").textContent = `${v.name} already has a folder with that name.`;
+      if (existing) Object.assign(existing, { name, note });
+      else S.folders.push({ id: uid("f_"), vendorId, name, note, createdAt: Date.now(), createdBy: me().id });
+      await save("folders"); closeModal(); toast(existing ? "Folder renamed" : `Folder "${name}" created`); renderFolders();
+    };
+  });
+}
+function folderCard(f, es, color) {
+  const live = es.filter(isLive).length;
+  return `<button class="folder custom" type="button" data-folder="${f.id}" style="--fc:${color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(f.name)}</h4><div class="meta">${es.length} ${es.length === 1 ? "entry" : "entries"} · ${es.reduce((a, e) => a + e.photos.length, 0)} photos · ${n(es.reduce((a, e) => a + (+e.sold || 0), 0))} cases</div><div class="meta">${esc(f.note || "Folder")}</div></button>`;
+}
 function renderFolders() {
   const u = me(), el = $("#v-folders");
   if (u.role !== "admin") fold.vendor = u.vendorId;
@@ -1008,32 +1160,50 @@ function renderFolders() {
   const today = dayKey(Date.now());
   if (!fold.vendor) {
     el.innerHTML = `<div class="fgrid2">${S.vendors.map(v => {
-      const es = entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length;
+      const es = entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length, nf = foldersOf(v.id).length;
       const last = es.reduce((a, e) => Math.max(a, e.end || e.start), 0);
-      return `<button class="folder" type="button" data-vendor="${v.id}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(v.name)}</h4><div class="meta">${es.length} entries · ${new Set(es.map(e => dayKey(e.start))).size} days</div><div class="meta">${last ? "Last entry " + (dayKey(last) === today ? "today at " + hm(last) : fmtDay(dayKey(last))) : "No entries yet"}</div></button>`;
+      return `<button class="folder" type="button" data-vendor="${v.id}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(v.name)}</h4><div class="meta">${es.length} entries · ${new Set(es.map(e => dayKey(e.start))).size} days${nf ? ` · ${nf} folder${nf === 1 ? "" : "s"}` : ""}</div><div class="meta">${last ? "Last entry " + (dayKey(last) === today ? "today at " + hm(last) : fmtDay(dayKey(last))) : "No entries yet"}</div></button>`;
     }).join("") || `<div class="empty">No vendors registered yet. Add one under Vendors & users.</div>`}</div>`;
-    el.onclick = e => { const b = e.target.closest("[data-vendor]"); if (b) { fold.vendor = b.dataset.vendor; fold.day = null; renderFolders(); } };
+    el.onclick = e => { const b = e.target.closest("[data-vendor]"); if (b) { fold.vendor = b.dataset.vendor; fold.day = null; fold.folder = null; renderFolders(); } };
     return;
   }
   const v = vendorOf(fold.vendor);
+  if (!v) { fold.vendor = null; return renderFolders(); }
+  if (fold.folder && !folderOf(fold.folder)) fold.folder = null;
   const es = entries.filter(e => e.vendorId === v.id && (fold.brand === "All" || e.brand === fold.brand));
-  const crumbs = `<div class="crumbs">${u.role === "admin" ? `<button type="button" data-crumb="root">All vendors</button><span class="dim">/</span>` : ""}${fold.day ? `<button type="button" data-crumb="vendor">${esc(v.name)}</button><span class="dim">/</span><b>${fmtDay(fold.day)}</b>` : `<b>${esc(v.name)}</b>`}</div>`;
-  const filters = `<div class="toolbar">${crumbs}<span style="flex:1"></span><select class="inline" id="fBrand" aria-label="Filter by brand"><option value="All">All brands</option>${v.brands.concat(BRANDS.map(b => b.name).filter(b => !v.brands.includes(b))).map(b => `<option ${fold.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></div>`;
-  if (!fold.day) {
-    const days = [...new Set(es.map(e => dayKey(e.start)))].sort().reverse();
-    el.innerHTML = filters + (days.length ? `<div class="fgrid2">${days.map(dk => {
-      const d = es.filter(e => dayKey(e.start) === dk), live = d.filter(isLive).length;
-      return `<button class="folder" type="button" data-day="${dk}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${dk === today ? "Today" : fmtDay(dk)}</h4><div class="meta">${d.length} entries · ${d.reduce((a, e) => a + e.photos.length, 0)} photos</div><div class="meta">${n(d.reduce((a, e) => a + (+e.sold || 0), 0))} cases sold</div></button>`;
-    }).join("")}</div>` : `<div class="empty">No entries in this folder yet. They appear as soon as an ambassador logs an activation.</div>`);
-  } else {
+  const f = fold.folder && folderOf(fold.folder);
+  const here = f ? `<b>${esc(f.name)}</b>` : fold.day ? `<b>${fmtDay(fold.day)}</b>` : "";
+  const crumbs = `<div class="crumbs">${u.role === "admin" ? `<button type="button" data-crumb="root">All vendors</button><span class="dim">/</span>` : ""}${here ? `<button type="button" data-crumb="vendor">${esc(v.name)}</button><span class="dim">/</span>${here}` : `<b>${esc(v.name)}</b>`}</div>`;
+  const actions = !canFile(v.id) ? "" : f ? `<button class="btn sm" type="button" id="fRename">Rename</button><button class="btn sm danger" type="button" id="fDelete">Delete folder</button>` : !fold.day ? `<button class="btn sm primary" type="button" id="fNew">+ New folder</button>` : "";
+  const filters = `<div class="toolbar">${crumbs}<span style="flex:1"></span>${actions}<select class="inline" id="fBrand" aria-label="Filter by brand"><option value="All">All brands</option>${v.brands.concat(BRANDS.map(b => b.name).filter(b => !v.brands.includes(b))).map(b => `<option ${fold.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></div>`;
+  if (f) {
+    const d = es.filter(e => e.folderId === f.id).sort((a, b) => b.start - a.start);
+    el.innerHTML = filters + (f.note ? `<p class="muted" style="margin:0">${esc(f.note)}</p>` : "") + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">Nothing filed here yet. Open any entry and choose this folder under "Folder", or ambassadors can pick it when they log.</div>`);
+  } else if (fold.day) {
     const d = es.filter(e => dayKey(e.start) === fold.day).sort((a, b) => b.start - a.start);
     el.innerHTML = filters + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">No entries for this brand on this day.</div>`);
+  } else {
+    const fl = foldersOf(v.id);
+    const days = [...new Set(es.map(e => dayKey(e.start)))].sort().reverse();
+    el.innerHTML = filters +
+      `<div class="sect">Folders</div>` + (fl.length ? `<div class="fgrid2">${fl.map(x => folderCard(x, es.filter(e => e.folderId === x.id), v.color)).join("")}</div>` : `<div class="empty" style="padding:18px">No folders yet.${canFile(v.id) ? " Use New folder to group entries by campaign, promo or region." : ""}</div>`) +
+      `<div class="sect">By day</div>` + (days.length ? `<div class="fgrid2">${days.map(dk => {
+      const d = es.filter(e => dayKey(e.start) === dk), live = d.filter(isLive).length;
+      return `<button class="folder" type="button" data-day="${dk}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${dk === today ? "Today" : fmtDay(dk)}</h4><div class="meta">${d.length} ${d.length === 1 ? "entry" : "entries"} · ${d.reduce((a, e) => a + e.photos.length, 0)} photos</div><div class="meta">${n(d.reduce((a, e) => a + (+e.sold || 0), 0))} cases sold</div></button>`;
+    }).join("")}</div>` : `<div class="empty">No entries in this folder yet. They appear as soon as an ambassador logs an activation.</div>`);
   }
   el.onclick = e => {
-    const c = e.target.closest("[data-crumb]"); if (c) { if (c.dataset.crumb === "root") fold.vendor = null; fold.day = null; renderFolders(); return; }
-    const dd = e.target.closest("[data-day]"); if (dd) { fold.day = dd.dataset.day; renderFolders(); }
+    const c = e.target.closest("[data-crumb]"); if (c) { if (c.dataset.crumb === "root") fold.vendor = null; fold.day = null; fold.folder = null; renderFolders(); return; }
+    const dd = e.target.closest("[data-day]"); if (dd) { fold.day = dd.dataset.day; fold.folder = null; renderFolders(); return; }
+    const ff = e.target.closest("[data-folder]"); if (ff) { fold.folder = ff.dataset.folder; fold.day = null; renderFolders(); }
   };
   $("#fBrand").onchange = e => { fold.brand = e.target.value; renderFolders(); };
+  if ($("#fNew")) $("#fNew").onclick = () => folderForm(v.id);
+  if ($("#fRename")) $("#fRename").onclick = () => folderForm(v.id, f);
+  if ($("#fDelete")) $("#fDelete").onclick = () => openModal(`<h3>Delete "${esc(f.name)}"?</h3><p class="muted">The ${S.entries.filter(e => e.folderId === f.id).length} entries in it are kept. They stay in ${esc(v.name)}'s day folders.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="fdNo">Keep it</button><button class="btn primary" type="button" id="fdYes">Delete folder</button></div>`, m => {
+    $("#fdNo", m).onclick = closeModal;
+    $("#fdYes", m).onclick = async () => { S.entries.forEach(e => { if (e.folderId === f.id) e.folderId = null; }); S.folders = S.folders.filter(x => x.id !== f.id); fold.folder = null; await save("folders", "entries"); closeModal(); toast("Folder deleted"); renderFolders(); };
+  });
   hydrate(el);
 }
 function fileCard(e) {
@@ -1308,6 +1478,7 @@ function renderLog() {
       <div class="card-h" style="margin:0"><h3>Log an activation</h3></div>
       <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${draft.gps ? `<b>Location recorded</b><span>${draft.gps.lat.toFixed(5)}, ${draft.gps.lng.toFixed(5)} · ±${Math.round(draft.gps.acc)} m</span>${near ? `<div style="font-size:12px;color:var(--muted)">Nearest outlet: ${esc(near.o.name)}, ${near.d < 1 ? Math.round(near.d * 1000) + " m" : near.d.toFixed(1) + " km"} away</div>` : ""}` : `<b>Record your location</b><span style="font-family:var(--body)">${esc(draft.locMsg || "Your manager sees where you are when you start.")}</span>`}</div><button class="btn sm ${draft.gps ? "" : "primary"}" type="button" id="getLoc">${draft.gps ? "Refresh" : "Record location"}</button></div>
       <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${outlets.map(o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`).join("")}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
+      ${foldersOf(u.vendorId).length ? `<div class="field"><label for="lg-folder">Folder or campaign (optional)</label><select id="lg-folder"><option value="">None</option>${foldersOf(u.vendorId).map(f => `<option value="${f.id}" ${draft.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : ""}
       <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"></div>
       <div class="field"><span class="flabel">Activity</span><div class="seg" id="lg-type">${TYPES.map(t => `<button type="button" aria-pressed="${draft.type === t}" data-o="${t}">${t}</button>`).join("")}</div></div>
       <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div></div>
@@ -1319,7 +1490,7 @@ function renderLog() {
       <div class="err" id="lg-err" role="alert"></div>
       <button class="btn primary block" type="submit" style="padding:13px">${draft.status === "running" ? "Start activation" : "Submit activation"}</button>
     </form></div>`;
-  const keep = () => { draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
+  const keep = () => { draft.folderId = $("#lg-folder") ? $("#lg-folder").value : ""; draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
   el.oninput = keep;
   $("#lg-outlet").onchange = () => { keep(); $("#otherWrap").hidden = draft.outletId !== "other"; };
   el.onclick = e => {
@@ -1343,10 +1514,10 @@ function renderLog() {
     const photos = [];
     for (const f of draft.files) { const p = await storePhoto(f.file, { brand: draft.brand, outlet: outletName, time: start, gps: draft.gps }); photos.push(p.id); URL.revokeObjectURL(f.url); }
     const gps = draft.gps;
-    const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim() };
+    const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim(), folderId: draft.folderId || null };
     if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
     S.entries.push(entry); await save("entries");
-    Object.assign(draft, { outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", files: [], status: "running" });
+    Object.assign(draft, { folderId: "", outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", files: [], status: "running" });
     toast(entry.end ? "Activation submitted" : "You're live. Your manager can see you on the map.");
     renderNav(); renderLog();
   };

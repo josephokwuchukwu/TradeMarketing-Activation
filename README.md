@@ -32,6 +32,7 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 
 - **Live dashboard.** A 3D map of Lagos with a beam for every activation, sampling session or trade activity that is running now, coloured by activity type. KPIs show what is running, ambassadors on the ground, cases sold today, outlets activated and live photos. You can filter by activity type, brand and (for admins) vendor. Tapping a beam or row opens the entry: photos, recorded location (with a Google Maps link and distance from the outlet), opening cases, cases sold and closing cases.
 - **Vendor folders.** One folder per vendor, holding a folder per day, holding every entry ambassadors logged. You can filter by brand. Vendor managers only see their own folder.
+  - **Custom folders.** Admins, and each vendor's manager, can add named folders inside a vendor (a campaign, promo or region), rename or delete them, and file any entry into one from the entry's details. Ambassadors can pick the folder when they log.
 - **Brand ambassador log form.**
   - Pick the outlet. Outlets assigned to the BA's vendor are listed, or they can type a new one.
   - Choose the activity type and brand.
@@ -47,6 +48,7 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
   - **Download report.** One click exports an Excel file (Activations sheet and a vendor-by-brand Summary sheet) for today, the last 7 or 30 days, or everything, using the dashboard filters.
   - **My account.** Everyone can change their own password, and BAs their PIN.
   - **Install on phone.** The hosted page can be added to a phone's home screen and keeps opening on a weak network (manifest and service worker; hosted page only).
+- **Data & Power BI (admin).** Download activations, a daily summary, outlets, people, vendors and folders as Excel or CSV, for any period and vendor, one at a time or all together. The Power BI dataset is a workbook with an Activations fact table joined by ID to Vendors, Outlets, Ambassadors, Brands, Folders and a Calendar. The pane gives the steps to connect it from OneDrive or SharePoint with scheduled refresh, and a Power Query script. A live Power BI connection with no downloads needs the shared backend described below; Power BI then reads it through its PostgreSQL connector.
 - **Real brand images.** Product shots of each brand (cut from Jay's pictures) appear on the sign-in screen, in the brand pickers, on the dashboard bars and in entry details. Example entries use real field photos of the brands. The files are in `assets/`.
 - **Light and dark mode.** Use the sun or moon button on the sign-in screen and in the top bar. The choice is remembered on each device. Before you pick, the app follows the device setting.
 
