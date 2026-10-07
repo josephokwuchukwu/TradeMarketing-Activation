@@ -8,8 +8,8 @@ Trade Activate is a web app for trade marketing activations. Vendors (activation
 
 | Role | Signs in with | Panes |
 | --- | --- | --- |
-| **Admin** (trade marketing) | Email and password | Live dashboard (all vendors), Vendor folders (every vendor), Outlets (upload and assign), Vendors & users (register vendors, managers and BAs) |
-| **Vendor Manager** | Email and password | Live dashboard (their vendor only), their vendor folder, their assigned outlets, their ambassadors |
+| **Admin** (trade marketing) | Email and password | Live dashboard (all vendors), Vendor folders (every vendor), Outlets (upload and assign), Vendors & users (register, edit and delete vendors, share outlets with them, add managers and BAs) |
+| **Vendor Manager** | Email and password | Live dashboard (their vendor only), their vendor folder, the outlets shared with them (and which ambassador covers each), their ambassadors |
 | **Brand Ambassador** | BA ID or phone number, plus a PIN | My activation (log form, live card), History |
 
 ### Owner account
@@ -30,18 +30,20 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 
 ## Features
 
-- **Live dashboard.** A 3D map of Lagos with a beam for every activation, sampling session or trade activity that is running now, coloured by activity type. KPIs show what is running, ambassadors on the ground, cases sold today, outlets activated and live photos. You can filter by activity type, brand and (for admins) vendor. Tapping a beam or row opens the entry: photos, recorded location (with a Google Maps link and distance from the outlet), opening cases, cases sold and closing cases.
+- **Sign-in page.** A turning 3D ring of real brand and field photos (drag to spin) behind the sign-in card.
+- **Live dashboard.** A 3D map of Nigeria built from real boundaries (37 states, the Niger and Benue, Lake Chad, major cities; Natural Earth, public domain). States are tinted from coastal green to Sahel sand and rise with the week's activity. Hover a state for its numbers, tap it to fly in, or switch between the Nigeria and Lagos views. There is a beam for every activation, sampling session or trade activity that is running now, coloured by activity type. KPIs show what is running, ambassadors on the ground, cases sold today, outlets activated and live photos. You can filter by activity type, brand and (for admins) vendor. Tapping a beam or row opens the entry: photos, recorded location (with a Google Maps link and distance from the outlet), opening cases, cases sold and closing cases.
 - **Vendor folders.** One folder per vendor, holding a folder per day, holding every entry ambassadors logged. You can filter by brand. Vendor managers only see their own folder.
   - **Custom folders.** Admins, and each vendor's manager, can add named folders inside a vendor (a campaign, promo or region), rename or delete them, and file any entry into one from the entry's details. Ambassadors can pick the folder when they log.
 - **Brand ambassador log form.**
-  - Pick the outlet. Outlets assigned to the BA's vendor are listed, or they can type a new one.
+  - Pick the outlet. Outlets their manager assigned to them are listed first, then the rest of the vendor's outlets, or they can type a new one.
   - Choose the activity type and brand.
   - Enter opening cases, cases sold and consumers reached.
   - Record GPS location. The form shows the nearest assigned outlet.
   - Take live photos with the phone camera. Every photo is resized and stamped with the brand, outlet, time and coordinates. Photos older than 15 minutes are flagged.
   - Start it as **Still running**, then add more photos, update cases sold and **End activation** later. Or submit it as **Already finished**.
 - **Outlets.** Upload an Excel (`.xlsx`) or CSV list of activating outlets, preview it, assign outlets to vendors (one by one, in bulk, or from a `Vendor` column), and import. Outlets without coordinates are placed by their area name (Ikeja, Lekki, Surulere and others). See `sample-data/outlets-sample.csv` for the columns.
-- **Vendors & users.** Register a vendor, pick its brands, and create its manager's sign-in. Add brand ambassadors with a BA ID and PIN. Vendor managers can add their own ambassadors.
+- **Vendors & users.** Register a vendor, pick its brands, and create its manager's sign-in. Each vendor card has **Edit** (name, manager, phone, sign-in email, brands, password reset), **Outlets** (tick which outlets the vendor activates), **Upload outlet list** (import a file straight to that vendor) and **Delete**. Deleting a vendor switches off its sign-ins, ends its running activations and returns its outlets to Not assigned; its past entries stay in reports under its name. Add brand ambassadors with a BA ID and PIN. Vendor managers can add their own ambassadors.
+- **Ambassadors per outlet (vendor manager).** On Our outlets, a manager assigns one or more of their ambassadors to each shared outlet, one row at a time or by ticking several outlets. A filter shows outlets that have no ambassador yet. The admin's Outlets page and the outlets download show who covers each outlet.
 - **Beta features.**
   - **Top ambassadors today.** A leaderboard on the dashboard ranks BAs by cases sold, with consumers reached.
   - **Location check.** Running activations are flagged when the phone shared no location, or was more than 500 m from the outlet's listed position. Flags show on the dashboard and in the report.
@@ -83,7 +85,7 @@ To make it multi-user, replace the `DB` and `save()` layer in `src/app.html` wit
 | --- | --- |
 | `vendors` | Name, contact, brands, colour |
 | `users` | Role (`admin`, `manager`, `ba`), sign-in, `vendorId` |
-| `outlets` | Name, address, area, channel, lat/lng, `vendorId`, brands |
+| `outlets` | Name, address, area, channel, lat/lng, `vendorId`, brands, `baIds` (assigned ambassadors) |
 | `entries` | BA, vendor, outlet, brand, type, start/end, opening/sold cases, consumers reached, GPS, photo ids, notes |
 | `photos` | Stamped JPEG, time, GPS |
 
@@ -99,5 +101,7 @@ manifest.webmanifest, sw.js     make the hosted page installable and usable on a
 icons/                          app icon (SVG source and PNGs)
 assets/brands/                  product shot per brand, plus the full lineup
 assets/field/                   brand photos used for the example entries
+assets/login/                   photos on the 3D sign-in ring
+assets/nigeria.json             Nigeria map data: states, rivers, lakes, cities (Natural Earth)
 sample-data/outlets-sample.csv  example outlet upload
 ```

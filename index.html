@@ -284,6 +284,9 @@ select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-ra
 .vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .vcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .vcard h4{margin:0;font-family:var(--display);font-size:18px}
+.hint{font-size:13px;color:var(--muted);padding:10px 14px;border-radius:12px;border:1px dashed var(--line-2);background:var(--panel)}
+.vactions{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.stats3 small{display:block;font-size:11px;font-weight:500}
 .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
 .stats3 label{display:block;font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
 .stats3 b{font-family:var(--mono);font-size:14px}
@@ -714,9 +717,17 @@ async function seedDemo() {
   entries.forEach(e => { const f = folders.find(x => x.vendorId === e.vendorId && x.brand === e.brand); if (f) e.folderId = f.id; });
   folders.forEach(f => delete f.brand);
   Object.assign(S, { vendors, users, outlets, entries, folders });
-  await seedNational();
+  await seedNational(); await seedStaffing();
   await save(...COLLS);
   await DB.put("kv", "seeded", 2); await DB.put("kv", "artVersion", 1);
+}
+// Example ambassador assignments: each demo outlet gets one of its vendor's ambassadors.
+async function seedStaffing() {
+  if (!S.outlets.some(o => o.baIds) && S.vendors.some(v => v.id === "v_pin")) {
+    const k = {};
+    S.outlets.filter(o => o.source === "Demo list" && o.vendorId).forEach(o => { const bas = S.users.filter(u => u.role === "ba" && u.vendorId === o.vendorId && !u.disabled); if (!bas.length) return; const i = k[o.vendorId] = (k[o.vendorId] || 0) + 1; o.baIds = [bas[(i - 1) % bas.length].id]; });
+  }
+  await DB.put("kv", "staffVersion", 1);
 }
 // Example outlets and activations outside Lagos, so the Nigeria map has something to show.
 // Also runs once on browsers that were seeded before the national map arrived.
@@ -762,6 +773,9 @@ const sessionStore = { get() { try { return localStorage.getItem("ta.session"); 
 let currentId = null;
 const me = () => S.users.find(u => u.id === currentId);
 const vendorOf = id => S.vendors.find(v => v.id === id);
+// Deleted vendors stay in the data (flagged removed) so past entries and reports keep their name.
+const liveVendors = () => S.vendors.filter(v => !v.removed);
+const basOf = o => (o.baIds || []).map(userOf).filter(u => u && !u.disabled);
 const userOf = id => S.users.find(u => u.id === id);
 const outletOf = id => S.outlets.find(o => o.id === id);
 const ROLE_INFO = {
@@ -889,7 +903,7 @@ function renderShell() {
 }
 function renderNav() {
   const u = me();
-  const counts = { folders: scopeEntries().length, outlets: scopeOutlets().length, vendors: S.vendors.length, team: S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId).length, history: S.entries.filter(e => e.baId === u.id).length };
+  const counts = { folders: scopeEntries().length, outlets: scopeOutlets().length, vendors: liveVendors().length, team: S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId).length, history: S.entries.filter(e => e.baId === u.id).length };
   $("#nav").innerHTML = NAV[u.role].map(([k, label]) => `<button type="button" data-v="${k}" ${k === view ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg><span>${label}</span>${counts[k] ? `<span class="count">${counts[k]}</span>` : ""}</button>`).join("");
 }
 $("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(b.dataset.v); });
@@ -934,7 +948,7 @@ function renderDashboard() {
   const nPhotos = todays.reduce((a, e) => a + e.photos.length, 0);
   const outletsToday = new Set(todays.map(e => e.outletId || e.outletName)).size;
   $("#stageTitle").innerHTML = `<em>${live.length}</em> ${live.length === 1 ? "activity is" : "activities are"} running right now`;
-  const vendorsInScope = u.role === "admin" ? S.vendors : [vendorOf(u.vendorId)];
+  const vendorsInScope = u.role === "admin" ? liveVendors() : [vendorOf(u.vendorId)];
   const brandsInScope = u.role === "admin" ? BRANDS.map(b => b.name) : vendorOf(u.vendorId).brands;
   const byType = TYPES.map(t => ({ t, c: all.filter(e => isLive(e) && e.type === t && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor)).length }));
   const byBrand = brandsInScope.map(b => ({ b, v: todays.filter(e => e.brand === b).reduce((a, e) => a + (+e.sold || 0), 0) })).sort((a, b) => b.v - a.v);
@@ -946,7 +960,7 @@ function renderDashboard() {
     <div class="toolbar">
       <div class="seg" id="dType">${["All", ...TYPES].map(t => `<button type="button" aria-pressed="${dash.type === t}" data-o="${t}">${t === "All" ? "All activities" : t}</button>`).join("")}</div>
       <select class="inline" id="dBrand" aria-label="Filter by brand"><option value="All">All brands</option>${brandsInScope.map(b => `<option ${dash.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select>
-      ${u.role === "admin" ? `<select class="inline" id="dVendor" aria-label="Filter by vendor"><option value="All">All vendors</option>${S.vendors.map(v => `<option value="${v.id}" ${dash.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      ${u.role === "admin" ? `<select class="inline" id="dVendor" aria-label="Filter by vendor"><option value="All">All vendors</option>${liveVendors().map(v => `<option value="${v.id}" ${dash.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
       <button class="btn sm" type="button" id="dExport" style="margin-left:auto"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download report</button>
     </div>
     <div class="kpis">
@@ -1051,9 +1065,9 @@ function dxRange() {
   return [Date.now() - +dx.period * 864e5, Infinity];
 }
 function dxEntries() { const [f, t] = dxRange(); return S.entries.filter(e => e.start >= f && e.start <= t && (dx.vendor === "All" || e.vendorId === dx.vendor)).sort((a, b) => a.start - b.start); }
-const outletRows = () => S.outlets.filter(o => dx.vendor === "All" || o.vendorId === dx.vendor).map(o => ({ Outlet: o.name, Address: o.address || "", Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", Vendor: (vendorOf(o.vendorId) || {}).name || "Not assigned", Brands: (o.brands || []).join("; "), Source: o.source || "" }));
+const outletRows = () => S.outlets.filter(o => dx.vendor === "All" || o.vendorId === dx.vendor).map(o => ({ Outlet: o.name, Address: o.address || "", Area: o.area || "", Channel: o.channel || "", Latitude: o.lat ?? "", Longitude: o.lng ?? "", Vendor: (vendorOf(o.vendorId) || {}).name || "Not assigned", Ambassadors: basOf(o).map(b => `${b.name} (${b.login})`).join("; "), Brands: (o.brands || []).join("; "), Source: o.source || "" }));
 const userRows = () => S.users.filter(u => dx.vendor === "All" || u.vendorId === dx.vendor).map(u => ({ Name: u.name, Role: ROLE_INFO[u.role].label, Vendor: (vendorOf(u.vendorId) || {}).name || "", "Sign-in": u.login, Phone: u.phone || "", Activations: S.entries.filter(e => e.baId === u.id).length, "Cases sold": S.entries.filter(e => e.baId === u.id).reduce((a, e) => a + (+e.sold || 0), 0) }));
-const vendorRows = () => S.vendors.filter(v => dx.vendor === "All" || v.id === dx.vendor).map(v => ({ Vendor: v.name, Manager: v.contact, Phone: v.phone || "", Email: v.email || "", Brands: v.brands.join("; "), Outlets: S.outlets.filter(o => o.vendorId === v.id).length, Ambassadors: S.users.filter(u => u.role === "ba" && u.vendorId === v.id).length, Activations: S.entries.filter(e => e.vendorId === v.id).length, Registered: dayKey(v.createdAt || Date.now()) }));
+const vendorRows = () => S.vendors.filter(v => dx.vendor === "All" || v.id === dx.vendor).map(v => ({ Vendor: v.name + (v.removed ? " (deleted)" : ""), Manager: v.contact, Phone: v.phone || "", Email: v.email || "", Brands: v.brands.join("; "), Outlets: S.outlets.filter(o => o.vendorId === v.id).length, Ambassadors: S.users.filter(u => u.role === "ba" && u.vendorId === v.id).length, Activations: S.entries.filter(e => e.vendorId === v.id).length, Registered: dayKey(v.createdAt || Date.now()) }));
 const folderRows = () => S.folders.filter(f => dx.vendor === "All" || f.vendorId === dx.vendor).map(f => { const es = S.entries.filter(e => e.folderId === f.id); return { Folder: f.name, Vendor: (vendorOf(f.vendorId) || {}).name || "", Description: f.note || "", Created: dayKey(f.createdAt), Activations: es.length, "Cases sold": es.reduce((a, e) => a + (+e.sold || 0), 0) }; });
 // Power BI model: one fact table keyed to dimension tables by ID, plus a calendar.
 function powerBISheets(es) {
@@ -1093,7 +1107,7 @@ function renderData() {
       <div class="toolbar" style="margin-bottom:14px">
         <select class="inline" id="dxPeriod" aria-label="Period">${[["today", "Today"], ["7", "Last 7 days"], ["30", "Last 30 days"], ["month", "This month"], ["all", "Everything"], ["custom", "Pick dates"]].map(([k, l]) => `<option value="${k}" ${dx.period === k ? "selected" : ""}>${l}</option>`).join("")}</select>
         ${dx.period === "custom" ? `<input class="input" type="date" id="dxFrom" value="${dx.from}" aria-label="From" style="max-width:170px"><span class="dim">to</span><input class="input" type="date" id="dxTo" value="${dx.to}" aria-label="To" style="max-width:170px">` : ""}
-        <select class="inline" id="dxVendor" aria-label="Vendor"><option value="All">All vendors</option>${S.vendors.map(v => `<option value="${v.id}" ${dx.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
+        <select class="inline" id="dxVendor" aria-label="Vendor"><option value="All">All vendors</option>${liveVendors().map(v => `<option value="${v.id}" ${dx.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
         <div class="seg" id="dxFormat"><button type="button" data-o="xlsx" aria-pressed="${dx.format === "xlsx"}">Excel</button><button type="button" data-o="csv" aria-pressed="${dx.format === "csv"}">CSV</button></div>
         <button class="btn primary sm" type="button" id="dxAll" style="margin-left:auto">Download everything</button>
       </div>
@@ -1213,7 +1227,7 @@ function renderFolders() {
   const entries = scopeEntries();
   const today = dayKey(Date.now());
   if (!fold.vendor) {
-    el.innerHTML = `<div class="fgrid2">${S.vendors.map(v => {
+    el.innerHTML = `<div class="fgrid2">${liveVendors().map(v => {
       const es = entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length, nf = foldersOf(v.id).length;
       const last = es.reduce((a, e) => Math.max(a, e.end || e.start), 0);
       return `<button class="folder" type="button" data-vendor="${v.id}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(v.name)}</h4><div class="meta">${es.length} entries · ${new Set(es.map(e => dayKey(e.start))).size} days${nf ? ` · ${nf} folder${nf === 1 ? "" : "s"}` : ""}</div><div class="meta">${last ? "Last entry " + (dayKey(last) === today ? "today at " + hm(last) : fmtDay(dayKey(last))) : "No entries yet"}</div></button>`;
@@ -1268,7 +1282,7 @@ function fileCard(e) {
 }
 
 /* ---------- outlets (upload + assign) ---------- */
-const ol = { q: "", vendor: "All", sel: new Set(), preview: null };
+const ol = { q: "", vendor: "All", sel: new Set(), preview: null, unstaffed: false };
 const SAMPLE_CSV = `Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands
 Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
 Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
@@ -1298,7 +1312,7 @@ function rowsToOutlets(rows, source) {
     let lat = parseFloat(g("lat")), lng = parseFloat(g("lng")), located = "file";
     if (!(lat > 4 && lat < 14 && lng > 2 && lng < 15)) { const a = areaCoords(g("area") + " " + g("address")); if (a) { lat = a.lat; lng = a.lng; located = "area"; } else { lat = null; lng = null; located = "none"; } }
     const vname = g("vendor").toLowerCase();
-    const vend = vname ? S.vendors.find(v => v.name.toLowerCase() === vname || v.name.toLowerCase().startsWith(vname)) : null;
+    const vend = vname ? liveVendors().find(v => v.name.toLowerCase() === vname || v.name.toLowerCase().startsWith(vname)) : null;
     const brands = g("brands").split(/[;,|/]/).map(s => s.trim()).filter(Boolean).map(s => (BRANDS.find(b => b.name.toLowerCase() === s.toLowerCase()) || {}).name).filter(Boolean);
     return { id: uid("o_"), name, address: g("address"), area: g("area"), channel: g("channel"), lat, lng, located, vendorId: vend ? vend.id : null, vendorText: g("vendor"), brands, uploadedAt: Date.now(), source };
   }).filter(Boolean);
@@ -1316,9 +1330,11 @@ function renderOutlets() {
   const today = dayKey(Date.now());
   const activeToday = new Set(S.entries.filter(e => dayKey(e.start) === today).map(e => e.outletId));
   const q = ol.q.toLowerCase();
-  const list = scopeOutlets().filter(o => (ol.vendor === "All" || (ol.vendor === "none" ? !o.vendorId : o.vendorId === ol.vendor)) && (!q || [o.name, o.address, o.area, o.channel].join(" ").toLowerCase().includes(q)));
+  const mgr = u.role === "manager", myBAs = mgr ? S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId && !x.disabled) : [];
+  if (mgr && ol.vendor === "mine-none") ol.vendor = "All";
+  const list = scopeOutlets().filter(o => (!mgr || !ol.unstaffed || !basOf(o).length) && (ol.vendor === "All" || (ol.vendor === "none" ? !o.vendorId : o.vendorId === ol.vendor)) && (!q || [o.name, o.address, o.area, o.channel].join(" ").toLowerCase().includes(q)));
   const unassigned = S.outlets.filter(o => !o.vendorId).length;
-  const vopts = sel => `<option value="">Not assigned</option>` + S.vendors.map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+  const vopts = sel => `<option value="">Not assigned</option>` + liveVendors().map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
   el.innerHTML = `
     ${admin ? `<label class="drop" id="drop" for="ofile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <b>Upload a list of activating outlets</b><span class="muted">Drop an Excel (.xlsx) or CSV file here, or click to choose one. Columns: Outlet name, Address, Area, Channel, Latitude, Longitude, Vendor, Brands.</span>
@@ -1326,18 +1342,36 @@ function renderOutlets() {
       <input id="ofile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden></label>` : ""}
     <div class="toolbar">
       <input class="input" id="oq" type="search" placeholder="Search outlets" style="max-width:280px" value="${esc(ol.q)}" aria-label="Search outlets">
-      ${admin ? `<select class="inline" id="ov" aria-label="Filter by vendor"><option value="All">All vendors</option><option value="none" ${ol.vendor === "none" ? "selected" : ""}>Not assigned (${unassigned})</option>${S.vendors.map(v => `<option value="${v.id}" ${ol.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      ${admin ? `<select class="inline" id="ov" aria-label="Filter by vendor"><option value="All">All vendors</option><option value="none" ${ol.vendor === "none" ? "selected" : ""}>Not assigned (${unassigned})</option>${liveVendors().map(v => `<option value="${v.id}" ${ol.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      ${mgr ? `<label class="chip" style="cursor:pointer"><input type="checkbox" id="oUnstaffed" ${ol.unstaffed ? "checked" : ""}> Only outlets with no ambassador (${scopeOutlets().filter(o => !basOf(o).length).length})</label>` : ""}
       <span class="muted" style="margin-left:auto">${list.length} outlets</span>
     </div>
+    ${mgr ? `<div class="hint">These are the outlets trade marketing has shared with ${esc((vendorOf(u.vendorId) || {}).name || "you")}. Tick outlets and assign an ambassador, or use Assign on a row. Ambassadors see their outlets first when they log an activation.</div>` : ""}
+    ${mgr && ol.sel.size ? `<div class="bulk"><b>${ol.sel.size} selected</b><span>Ambassador</span><select class="inline" id="bulkBA">${myBAs.map(b => `<option value="${b.id}">${esc(b.name)} · ${esc(b.login)}</option>`).join("")}</select><button class="btn sm primary" type="button" id="bulkBAgo" ${myBAs.length ? "" : "disabled"}>Assign to selected</button><button class="btn sm" type="button" id="bulkBArm">Remove from selected</button><button class="btn sm" type="button" id="bulkClear">Clear selection</button></div>` : ""}
     ${admin && ol.sel.size ? `<div class="bulk"><b>${ol.sel.size} selected</b><span>Assign to</span><select class="inline" id="bulkV">${vopts("")}</select><button class="btn sm primary" type="button" id="bulkGo">Assign</button><button class="btn sm" type="button" id="bulkClear">Clear selection</button></div>` : ""}
-    <div class="twrap"><table><thead><tr>${admin ? `<th style="width:36px"><input type="checkbox" id="selAll" aria-label="Select all outlets"></th>` : ""}<th>Outlet</th><th>Area</th><th>Channel</th><th>Brands</th><th>${admin ? "Assigned vendor" : "Status"}</th><th>Today</th></tr></thead>
+    <div class="twrap"><table><thead><tr><th style="width:36px"><input type="checkbox" id="selAll" aria-label="Select all outlets"></th><th>Outlet</th><th>Area</th><th>Channel</th><th>Brands</th>${admin ? "<th>Assigned vendor</th>" : ""}<th>Ambassadors</th><th>Today</th></tr></thead>
     <tbody>${list.map(o => `<tr>
-      ${admin ? `<td><input type="checkbox" data-sel="${o.id}" ${ol.sel.has(o.id) ? "checked" : ""} aria-label="Select ${esc(o.name)}"></td>` : ""}
+      <td><input type="checkbox" data-sel="${o.id}" ${ol.sel.has(o.id) ? "checked" : ""} aria-label="Select ${esc(o.name)}"></td>
       <td><b>${esc(o.name)}</b><small>${esc(o.address)}</small></td><td>${esc(o.area)}${o.located === "area" ? `<small>Placed by area</small>` : o.lat == null ? `<small style="color:var(--warn)">No location</small>` : ""}</td><td>${esc(o.channel)}</td>
       <td><div class="chips">${(o.brands || []).map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("") || `<span class="dim">Any</span>`}</div></td>
-      <td>${admin ? `<select class="inline" data-assign="${o.id}" aria-label="Vendor for ${esc(o.name)}">${vopts(o.vendorId)}</select>` : `<span class="pill p-closed">Assigned</span>`}</td>
-      <td>${activeToday.has(o.id) ? `<span class="pill p-live">Activated</span>` : `<span class="dim">–</span>`}</td></tr>`).join("") || `<tr><td colspan="7"><div class="empty" style="border:0">No outlets match.</div></td></tr>`}</tbody></table></div>`;
+      ${admin ? `<td><select class="inline" data-assign="${o.id}" aria-label="Vendor for ${esc(o.name)}">${vopts(o.vendorId)}</select></td>` : ""}
+      <td><div class="chips">${basOf(o).map(b => `<span class="chip sm">${esc(b.name)}</span>`).join("") || `<span class="dim">${o.vendorId ? "None yet" : "–"}</span>`}${mgr ? `<button class="btn sm" type="button" data-staff="${o.id}">${basOf(o).length ? "Change" : "Assign"}</button>` : ""}</div></td>
+      <td>${activeToday.has(o.id) ? `<span class="pill p-live">Activated</span>` : `<span class="dim">–</span>`}</td></tr>`).join("") || `<tr><td colspan="8"><div class="empty" style="border:0">${scopeOutlets().length ? "No outlets match." : mgr ? "Trade marketing hasn't shared any outlets with you yet." : "No outlets yet. Upload a list above."}</div></td></tr>`}</tbody></table></div>`;
   $("#oq").oninput = e => { ol.q = e.target.value; const pos = e.target.selectionStart; renderOutlets(); const i = $("#oq"); i.focus(); i.setSelectionRange(pos, pos); };
+  if (mgr) {
+    el.onchange = e => {
+      if (e.target.id === "oUnstaffed") { ol.unstaffed = e.target.checked; renderOutlets(); return; }
+      const s = e.target.closest("[data-sel]"); if (s) { s.checked ? ol.sel.add(s.dataset.sel) : ol.sel.delete(s.dataset.sel); renderOutlets(); return; }
+      if (e.target.id === "selAll") { list.forEach(o => e.target.checked ? ol.sel.add(o.id) : ol.sel.delete(o.id)); renderOutlets(); }
+    };
+    el.onclick = e => { const b = e.target.closest("[data-staff]"); if (b) staffForm(outletOf(b.dataset.staff)); };
+    if ($("#bulkBAgo")) {
+      const bulk = async add => { const ba = userOf($("#bulkBA").value); if (!ba && add) return; let k = 0; for (const id of ol.sel) { const o = outletOf(id); if (!o) continue; const set = new Set(o.baIds || []); add ? set.add(ba.id) : ba ? set.delete(ba.id) : null; o.baIds = [...set]; k++; } await save("outlets"); toast(add ? `${ba.name} assigned to ${k} ${k === 1 ? "outlet" : "outlets"}` : `${ba ? ba.name : "Ambassador"} removed from ${k} ${k === 1 ? "outlet" : "outlets"}`); ol.sel.clear(); renderOutlets(); };
+      $("#bulkBAgo").onclick = () => bulk(true); $("#bulkBArm").onclick = () => bulk(false);
+      $("#bulkClear").onclick = () => { ol.sel.clear(); renderOutlets(); };
+    }
+    return;
+  }
   if (!admin) return;
   $("#ov").onchange = e => { ol.vendor = e.target.value; renderOutlets(); };
   $("#ofile").onchange = async e => { const f = e.target.files[0]; if (f) showPreview(await readOutletFile(f)); e.target.value = ""; };
@@ -1349,27 +1383,43 @@ function renderOutlets() {
   drop.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) showPreview(await readOutletFile(f)); });
   el.onchange = async e => {
     const a = e.target.closest("[data-assign]");
-    if (a) { const o = outletOf(a.dataset.assign); o.vendorId = a.value || null; if (o.vendorId && !(o.brands || []).length) o.brands = vendorOf(o.vendorId).brands.slice(); await save("outlets"); toast(o.vendorId ? `${o.name} assigned to ${vendorOf(o.vendorId).name}` : `${o.name} unassigned`); renderOutlets(); renderNav(); return; }
+    if (a) { const o = outletOf(a.dataset.assign); setOutletVendor(o, a.value || null); if (o.vendorId && !(o.brands || []).length) o.brands = vendorOf(o.vendorId).brands.slice(); await save("outlets"); toast(o.vendorId ? `${o.name} assigned to ${vendorOf(o.vendorId).name}` : `${o.name} unassigned`); renderOutlets(); renderNav(); return; }
     const s = e.target.closest("[data-sel]"); if (s) { s.checked ? ol.sel.add(s.dataset.sel) : ol.sel.delete(s.dataset.sel); renderOutlets(); return; }
     if (e.target.id === "selAll") { list.forEach(o => e.target.checked ? ol.sel.add(o.id) : ol.sel.delete(o.id)); renderOutlets(); }
   };
   if ($("#bulkGo")) {
-    $("#bulkGo").onclick = async () => { const vid = $("#bulkV").value || null; for (const id of ol.sel) { const o = outletOf(id); if (o) { o.vendorId = vid; if (vid && !(o.brands || []).length) o.brands = vendorOf(vid).brands.slice(); } } await save("outlets"); toast(`${ol.sel.size} outlets ${vid ? "assigned to " + vendorOf(vid).name : "unassigned"}`); ol.sel.clear(); renderOutlets(); };
+    $("#bulkGo").onclick = async () => { const vid = $("#bulkV").value || null; for (const id of ol.sel) { const o = outletOf(id); if (o) { setOutletVendor(o, vid); if (vid && !(o.brands || []).length) o.brands = vendorOf(vid).brands.slice(); } } await save("outlets"); toast(`${ol.sel.size} outlets ${vid ? "assigned to " + vendorOf(vid).name : "unassigned"}`); ol.sel.clear(); renderOutlets(); };
     $("#bulkClear").onclick = () => { ol.sel.clear(); renderOutlets(); };
   }
 }
-function showPreview(res) {
+function setOutletVendor(o, vid) {
+  if (o.vendorId !== vid) o.baIds = (o.baIds || []).filter(id => (userOf(id) || {}).vendorId === vid);
+  o.vendorId = vid;
+}
+// Vendor manager: choose which of their ambassadors cover an outlet.
+function staffForm(o) {
+  const u = me(), bas = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId && !x.disabled);
+  const load = id => S.outlets.filter(x => (x.baIds || []).includes(id)).length;
+  openModal(`<h3>Ambassadors for ${esc(o.name)}</h3><div class="muted">${esc([o.address, o.area].filter(Boolean).join(", "))}</div>
+    ${bas.length ? `<div class="radios">${bas.map(b => `<label><input type="checkbox" name="stf" value="${b.id}" ${(o.baIds || []).includes(b.id) ? "checked" : ""}>${avatar(b)}<span style="flex:1"><b>${esc(b.name)}</b> <span class="dim">${esc(b.login)}</span></span><small class="muted">${load(b.id)} ${load(b.id) === 1 ? "outlet" : "outlets"}</small></label>`).join("")}</div>` : `<div class="empty">You have no ambassadors yet. Add them under Ambassadors first.</div>`}
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="stNo">Cancel</button><button class="btn primary" type="button" id="stGo" ${bas.length ? "" : "disabled"}>Save</button></div>`, m => {
+    $("#stNo", m).onclick = closeModal;
+    $("#stGo", m).onclick = async () => { o.baIds = $$("input[name=stf]:checked", m).map(i => i.value); await save("outlets"); closeModal(); toast(o.baIds.length ? `${o.baIds.length} ${o.baIds.length === 1 ? "ambassador" : "ambassadors"} assigned to ${o.name}` : `No ambassador on ${o.name} now`); renderOutlets(); };
+  });
+}
+function showPreview(res, forVendor) {
   if (res.error) return toast(res.error, true);
   const items = res.items; if (!items.length) return toast("No outlets found in that file.", true);
-  const vopts = sel => `<option value="">Not assigned</option>` + S.vendors.map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+  if (forVendor) items.forEach(i => { i.vendorId = forVendor; });
+  const vopts = sel => `<option value="">Not assigned</option>` + liveVendors().map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
   const dupes = items.filter(i => S.outlets.some(o => o.name.toLowerCase() === i.name.toLowerCase() && (o.area || "").toLowerCase() === (i.area || "").toLowerCase())).length;
   openModal(`<h3>Import ${items.length} outlets</h3>
     <div class="muted">${items.filter(i => i.vendorId).length} already matched to a vendor from the file. ${items.filter(i => i.located === "none").length ? `${items.filter(i => i.located === "none").length} have no coordinates or known area, so they won't appear on the map until edited.` : ""} ${dupes ? `${dupes} look like outlets you already have and will be skipped.` : ""}</div>
-    <div class="field"><label for="pvAll">Assign every outlet without a vendor to</label><select id="pvAll" class="input">${vopts("")}</select></div>
+    ${forVendor ? `<div class="hint">Every outlet in this list will be shared with <b>${esc(vendorOf(forVendor).name)}</b>. You can change any row below.</div>` : `<div class="field"><label for="pvAll">Assign every outlet without a vendor to</label><select id="pvAll" class="input">${vopts("")}</select></div>`}
     <div class="twrap" style="max-height:300px;overflow:auto"><table style="min-width:560px"><thead><tr><th>Outlet</th><th>Area</th><th>Vendor</th></tr></thead><tbody>${items.map((i, k) => `<tr><td><b>${esc(i.name)}</b><small>${esc(i.address)}</small></td><td>${esc(i.area)}${i.located === "area" ? "<small>Placed by area</small>" : ""}</td><td><select class="inline" data-pv="${k}">${vopts(i.vendorId)}</select>${i.vendorText && !i.vendorId ? `<small style="color:var(--warn)">"${esc(i.vendorText)}" isn't registered</small>` : ""}</td></tr>`).join("")}</tbody></table></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="pvCancel">Cancel</button><button class="btn primary" type="button" id="pvGo">Import outlets</button></div>`, m => {
     $("#pvCancel", m).onclick = closeModal;
-    $("#pvAll", m).onchange = e => { $$("[data-pv]", m).forEach(s => { if (!items[+s.dataset.pv].vendorId) s.value = e.target.value; }); };
+    if ($("#pvAll", m)) $("#pvAll", m).onchange = e => { $$("[data-pv]", m).forEach(s => { if (!items[+s.dataset.pv].vendorId) s.value = e.target.value; }); };
     $("#pvGo", m).onclick = async () => {
       let added = 0;
       $$("[data-pv]", m).forEach(s => { items[+s.dataset.pv].vendorId = s.value || null; });
@@ -1378,7 +1428,7 @@ function showPreview(res) {
         if (i.vendorId && !i.brands.length) i.brands = vendorOf(i.vendorId).brands.slice();
         delete i.vendorText; S.outlets.push(i); added++;
       }
-      await save("outlets"); closeModal(); toast(`${added} outlets imported`); ol.vendor = "All"; renderOutlets(); renderNav();
+      await save("outlets"); closeModal(); toast(forVendor ? `${added} outlets shared with ${vendorOf(forVendor).name}` : `${added} outlets imported`); ol.vendor = "All"; refresh();
     };
   });
 }
@@ -1387,38 +1437,104 @@ function showPreview(res) {
 function renderVendors() {
   const el = $("#v-vendors");
   el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
-    <div class="vcards">${S.vendors.map(v => {
-      const mgr = S.users.filter(u => u.role === "manager" && u.vendorId === v.id), bas = S.users.filter(u => u.role === "ba" && u.vendorId === v.id);
+    <div class="vcards">${liveVendors().map(v => {
+      const mgr = S.users.filter(u => u.role === "manager" && u.vendorId === v.id && !u.disabled), bas = S.users.filter(u => u.role === "ba" && u.vendorId === v.id && !u.disabled);
       const es = S.entries.filter(e => e.vendorId === v.id);
       return `<article class="vcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4><i class="bdot" style="background:${v.color};margin-right:8px"></i>${esc(v.name)}</h4>${es.some(isLive) ? `<span class="pill p-live">${es.filter(isLive).length} running</span>` : ""}</div>
         <div class="muted" style="font-size:12.5px">${esc(v.contact)} · ${esc(v.phone)} · ${esc(v.email)}</div>
         <div class="chips">${v.brands.map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("")}</div>
-        <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b></div><div><label>Ambassadors</label><b>${bas.length}</b></div><div><label>Entries</label><b>${es.length}</b></div></div>
-        <div style="font-size:12.5px"><span class="dim">Manager sign-in:</span> ${mgr.map(m => `<span class="num">${esc(m.login)}</span>`).join(", ") || "none"}</div></article>`;
+        <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b><small class="dim">${S.outlets.filter(o => o.vendorId === v.id && basOf(o).length).length} staffed</small></div><div><label>Ambassadors</label><b>${bas.length}</b></div><div><label>Entries</label><b>${es.length}</b></div></div>
+        <div style="font-size:12.5px"><span class="dim">Manager sign-in:</span> ${mgr.map(m => `<span class="num">${esc(m.login)}</span>`).join(", ") || "none"}</div>
+        <div class="vactions"><button class="btn sm" type="button" data-vedit="${v.id}">Edit</button><button class="btn sm" type="button" data-vout="${v.id}">Outlets</button><button class="btn sm" type="button" data-vup="${v.id}">Upload outlet list</button><button class="btn sm danger" type="button" data-vdel="${v.id}">Delete</button></div></article>`;
     }).join("")}</div>
-    <div class="card"><div class="card-h"><h3>Everyone with a sign-in</h3><div class="right"><span class="chip">${S.users.length} accounts</span></div></div>
+    <input id="vupFile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden>
+    <div class="card"><div class="card-h"><h3>Everyone with a sign-in</h3><div class="right"><span class="chip">${S.users.filter(u => !u.disabled).length} accounts</span></div></div>
     <div class="twrap" style="border:0"><table><thead><tr><th>Name</th><th>Role</th><th>Vendor</th><th>Sign-in</th><th>Entries</th></tr></thead><tbody>
-    ${S.users.map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center">${avatar(u)}<b>${esc(u.name)}</b></div></td><td>${ROLE_INFO[u.role].label}</td><td>${esc((vendorOf(u.vendorId) || {}).name || "–")}</td><td class="num">${esc(u.login)}</td><td class="num">${S.entries.filter(e => e.baId === u.id).length || "–"}</td></tr>`).join("")}
+    ${S.users.filter(u => !u.disabled).map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center">${avatar(u)}<b>${esc(u.name)}</b></div></td><td>${ROLE_INFO[u.role].label}</td><td>${esc((vendorOf(u.vendorId) || {}).name || "–")}</td><td class="num">${esc(u.login)}</td><td class="num">${S.entries.filter(e => e.baId === u.id).length || "–"}</td></tr>`).join("")}
     </tbody></table></div></div>`;
-  $("#addVendor").onclick = vendorForm;
+  $("#addVendor").onclick = () => vendorForm(null);
+  let upFor = null;
+  $("#vupFile").onchange = async e => { const f = e.target.files[0]; if (f && upFor) showPreview(await readOutletFile(f), upFor); e.target.value = ""; };
+  el.onclick = e => {
+    const t = e.target.closest("[data-vedit],[data-vout],[data-vup],[data-vdel]"); if (!t) return;
+    const v = vendorOf(t.dataset.vedit || t.dataset.vout || t.dataset.vup || t.dataset.vdel);
+    if (t.dataset.vedit) vendorForm(v); else if (t.dataset.vout) vendorOutlets(v); else if (t.dataset.vdel) deleteVendor(v);
+    else { upFor = v.id; $("#vupFile").click(); }
+  };
   $("#addBA").onclick = () => baForm(null);
   $("#resetDemo").onclick = () => openModal(`<h3>Reset to the example data?</h3><p class="muted">This deletes every vendor, outlet, account, entry and photo stored in this browser and puts the example data back. It can't be undone.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rsNo">Keep my data</button><button class="btn primary" type="button" id="rsYes">Reset</button></div>`, m => {
     $("#rsNo", m).onclick = closeModal;
     $("#rsYes", m).onclick = async () => { await DB.clear(); photoCache.clear(); await seedDemo(); closeModal(); toast("Example data restored"); refresh(); paintSamplePhotos(); };
   });
 }
+function deleteVendor(v) {
+  const es = S.entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length;
+  const users = S.users.filter(u => u.vendorId === v.id && !u.disabled), outs = S.outlets.filter(o => o.vendorId === v.id);
+  openModal(`<h3>Delete ${esc(v.name)}?</h3>
+    <ul class="muted" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+      <li>${users.length} ${users.length === 1 ? "sign-in" : "sign-ins"} (the manager and their ambassadors) will stop working.</li>
+      <li>${outs.length} ${outs.length === 1 ? "outlet goes" : "outlets go"} back to "Not assigned" so you can give them to another vendor.</li>
+      <li>Their ${es.length} logged ${es.length === 1 ? "entry stays" : "entries stay"} in reports and downloads under the name ${esc(v.name)}.</li>
+      ${live ? `<li style="color:var(--warn)">${live} ${live === 1 ? "activation is" : "activations are"} running right now and will be ended.</li>` : ""}
+    </ul>
+    <div class="field"><label for="vdConfirm">Type the vendor's name to confirm</label><input id="vdConfirm" autocomplete="off" placeholder="${esc(v.name)}"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="vdNo">Keep vendor</button><button class="btn danger" type="button" id="vdYes" disabled>Delete vendor</button></div>`, m => {
+    $("#vdNo", m).onclick = closeModal;
+    $("#vdConfirm", m).oninput = e => { $("#vdYes", m).disabled = e.target.value.trim().toLowerCase() !== v.name.toLowerCase(); };
+    $("#vdYes", m).onclick = async () => {
+      const now = Date.now();
+      v.removed = now; users.forEach(u => { u.disabled = true; u.removedWithVendor = v.id; });
+      outs.forEach(o => { o.vendorId = null; o.baIds = []; });
+      es.filter(isLive).forEach(e => { e.end = now; });
+      await save("vendors", "users", "outlets", "entries"); closeModal(); toast(`${v.name} deleted`); if (dash.vendor === v.id) dash.vendor = "All"; refresh();
+    };
+  });
+}
+// Choose which outlets a vendor activates. They appear on the vendor manager's Our outlets page.
+function vendorOutlets(v) {
+  const st = { q: "", only: false, pick: new Set(S.outlets.filter(o => o.vendorId === v.id).map(o => o.id)) };
+  const draw = m => {
+    const q = st.q.toLowerCase();
+    const rows = S.outlets.filter(o => (!st.only || st.pick.has(o.id)) && (!q || [o.name, o.area, o.address].join(" ").toLowerCase().includes(q)));
+    $("#voList", m).innerHTML = rows.map(o => { const other = o.vendorId && o.vendorId !== v.id ? vendorOf(o.vendorId) : null; return `<label><input type="checkbox" data-vo="${o.id}" ${st.pick.has(o.id) ? "checked" : ""}><span style="flex:1;min-width:0"><b>${esc(o.name)}</b> <span class="dim">${esc(o.area || "")}</span></span>${other ? `<small style="color:var(--warn)">Now with ${esc(other.name)}</small>` : !o.vendorId ? `<small class="dim">Not assigned</small>` : ""}</label>`; }).join("") || `<div class="empty">No outlets match.</div>`;
+    $("#voCount", m).textContent = `${st.pick.size} selected`;
+  };
+  openModal(`<h3>Outlets for ${esc(v.name)}</h3><div class="muted">Ticked outlets are shared with ${esc(v.contact)}, who can then assign ambassadors to them. Ticking an outlet that's with another vendor moves it here.</div>
+    <div class="toolbar"><input class="input" id="voQ" type="search" placeholder="Search outlets" aria-label="Search outlets" style="flex:1;min-width:160px"><label class="chip" style="cursor:pointer"><input type="checkbox" id="voOnly"> Selected only</label></div>
+    <div class="toolbar"><button class="btn sm" type="button" id="voAll">Select all shown</button><button class="btn sm" type="button" id="voNone">Clear shown</button><span class="muted" id="voCount" style="margin-left:auto"></span></div>
+    <div class="radios" id="voList" style="max-height:340px;overflow:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="voNo">Cancel</button><button class="btn primary" type="button" id="voGo">Save</button></div>`, m => {
+    draw(m);
+    $("#voQ", m).oninput = e => { st.q = e.target.value; draw(m); };
+    $("#voOnly", m).onchange = e => { st.only = e.target.checked; draw(m); };
+    $("#voList", m).onchange = e => { const c = e.target.closest("[data-vo]"); if (c) { c.checked ? st.pick.add(c.dataset.vo) : st.pick.delete(c.dataset.vo); $("#voCount", m).textContent = `${st.pick.size} selected`; } };
+    const shown = () => $$("[data-vo]", m).map(c => c.dataset.vo);
+    $("#voAll", m).onclick = () => { shown().forEach(id => st.pick.add(id)); draw(m); };
+    $("#voNone", m).onclick = () => { shown().forEach(id => st.pick.delete(id)); draw(m); };
+    $("#voNo", m).onclick = closeModal;
+    $("#voGo", m).onclick = async () => {
+      let add = 0, rm = 0;
+      S.outlets.forEach(o => {
+        if (st.pick.has(o.id) && o.vendorId !== v.id) { setOutletVendor(o, v.id); if (!(o.brands || []).length) o.brands = v.brands.slice(); add++; }
+        else if (!st.pick.has(o.id) && o.vendorId === v.id) { setOutletVendor(o, null); rm++; }
+      });
+      await save("outlets"); closeModal(); toast(add || rm ? `${v.name}: ${add} added, ${rm} removed` : "No changes"); refresh();
+    };
+  });
+}
 function brandPicker(name, chosen = []) { return `<div class="chips">${BRANDS.map(b => `<label class="bchip"><input type="checkbox" name="${name}" value="${esc(b.name)}" ${chosen.includes(b.name) ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div>`; }
-function vendorForm() {
-  openModal(`<h3>Register a vendor</h3>
+function vendorForm(ed) {
+  const mu = ed && S.users.find(u => u.role === "manager" && u.vendorId === ed.id && !u.disabled);
+  openModal(`<h3>${ed ? `Edit ${esc(ed.name)}` : "Register a vendor"}</h3>
     <form id="vf" class="fgrid" novalidate>
-      <div class="field full"><label for="vf-name">Vendor (agency) name</label><input id="vf-name" required placeholder="e.g. Apex Brand Experience"></div>
-      <div class="field"><label for="vf-contact">Vendor manager's name</label><input id="vf-contact" required></div>
-      <div class="field"><label for="vf-phone">Phone</label><input id="vf-phone" inputmode="tel"></div>
-      <div class="field"><label for="vf-email">Manager's sign-in email</label><input id="vf-email" type="email" required></div>
-      <div class="field"><label for="vf-pw">Temporary password</label><input id="vf-pw" value="Manager@${Math.floor(100 + Math.random() * 900)}"><small>Share this with the manager.</small></div>
-      <div class="field full"><span class="flabel">Brands this vendor activates</span>${brandPicker("vfb")}</div>
+      <div class="field full"><label for="vf-name">Vendor (agency) name</label><input id="vf-name" required placeholder="e.g. Apex Brand Experience" value="${esc(ed ? ed.name : "")}"></div>
+      <div class="field"><label for="vf-contact">Vendor manager's name</label><input id="vf-contact" required value="${esc(ed ? ed.contact : "")}"></div>
+      <div class="field"><label for="vf-phone">Phone</label><input id="vf-phone" inputmode="tel" value="${esc(ed ? ed.phone || "" : "")}"></div>
+      <div class="field"><label for="vf-email">Manager's sign-in email</label><input id="vf-email" type="email" required value="${esc(ed ? (mu ? mu.login : ed.email) : "")}"></div>
+      <div class="field"><label for="vf-pw">${ed ? "New password (optional)" : "Temporary password"}</label><input id="vf-pw" value="${ed ? "" : "Manager@" + Math.floor(100 + Math.random() * 900)}" ${ed ? 'placeholder="Leave blank to keep the current one"' : ""}><small>${ed ? "Only fill this in to reset the manager's password." : "Share this with the manager."}</small></div>
+      <div class="field full"><span class="flabel">Brands this vendor activates</span>${brandPicker("vfb", ed ? ed.brands : [])}</div>
       <div class="err full" id="vf-err" role="alert"></div>
-      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="vfCancel">Cancel</button><button class="btn primary" type="submit">Register vendor</button></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="vfCancel">Cancel</button><button class="btn primary" type="submit">${ed ? "Save changes" : "Register vendor"}</button></div>
     </form>`, m => {
     $("#vfCancel", m).onclick = closeModal;
     $("#vf", m).onsubmit = async e => {
@@ -1428,9 +1544,15 @@ function vendorForm() {
       const err = t => $("#vf-err").textContent = t;
       if (!name || !contact) return err("Add the vendor's name and its manager's name.");
       if (!/^\S+@\S+\.\S+$/.test(email)) return err("Enter a valid email for the manager's sign-in.");
-      if (S.users.some(u => u.login.toLowerCase() === email)) return err("That email already has an account.");
-      if (pw.length < 6) return err("Use a password of at least 6 characters.");
+      if (S.users.some(u => u.login.toLowerCase() === email && u !== mu)) return err("That email already has an account.");
+      if ((!ed || pw) && pw.length < 6) return err("Use a password of at least 6 characters.");
       if (!brands.length) return err("Pick at least one brand.");
+      if (ed) {
+        Object.assign(ed, { name, contact, phone: $("#vf-phone").value.trim(), email, brands });
+        if (mu) Object.assign(mu, { name: contact, login: email, phone: ed.phone }, pw ? { pw: await sha(pw) } : {});
+        else S.users.push({ id: uid("u_"), role: "manager", name: contact, login: email, phone: ed.phone, vendorId: ed.id, pw: await sha(pw || "Manager@123") });
+        await save("vendors", "users"); closeModal(); toast(`${name} updated${pw ? `. New password: ${pw}` : ""}`); refresh(); return;
+      }
       const v = { id: uid("v_"), name, contact, phone: $("#vf-phone").value.trim(), email, brands, color: BC(brands[0]), createdAt: Date.now() };
       S.vendors.push(v); S.users.push({ id: uid("u_"), role: "manager", name: contact, login: email, phone: v.phone, vendorId: v.id, pw: await sha(pw) });
       await save("vendors", "users"); closeModal(); toast(`${name} registered. ${contact} can sign in with ${email}.`); refresh();
@@ -1443,7 +1565,7 @@ function baForm(vendorId) {
     <form id="bf" class="fgrid" novalidate>
       <div class="field full"><label for="bf-name">Full name</label><input id="bf-name" required></div>
       <div class="field"><label for="bf-phone">Phone number</label><input id="bf-phone" inputmode="tel" placeholder="0803 000 0000"></div>
-      ${vendorId ? "" : `<div class="field"><label for="bf-v">Vendor</label><select id="bf-v">${S.vendors.map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("")}</select></div>`}
+      ${vendorId ? "" : `<div class="field"><label for="bf-v">Vendor</label><select id="bf-v">${liveVendors().map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("")}</select></div>`}
       <div class="field"><label for="bf-id">BA ID</label><input id="bf-id" value="BA-${nextNo}"></div>
       <div class="field"><label for="bf-pin">4-digit PIN</label><input id="bf-pin" inputmode="numeric" maxlength="6" value="${String(Math.floor(1000 + Math.random() * 9000))}"><small>They sign in with the BA ID or phone number and this PIN.</small></div>
       <div class="err full" id="bf-err" role="alert"></div>
@@ -1531,7 +1653,7 @@ function renderLog() {
     <form class="card" id="logForm" novalidate style="display:flex;flex-direction:column;gap:16px">
       <div class="card-h" style="margin:0"><h3>Log an activation</h3></div>
       <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${draft.gps ? `<b>Location recorded</b><span>${draft.gps.lat.toFixed(5)}, ${draft.gps.lng.toFixed(5)} · ±${Math.round(draft.gps.acc)} m</span>${near ? `<div style="font-size:12px;color:var(--muted)">Nearest outlet: ${esc(near.o.name)}, ${near.d < 1 ? Math.round(near.d * 1000) + " m" : near.d.toFixed(1) + " km"} away</div>` : ""}` : `<b>Record your location</b><span style="font-family:var(--body)">${esc(draft.locMsg || "Your manager sees where you are when you start.")}</span>`}</div><button class="btn sm ${draft.gps ? "" : "primary"}" type="button" id="getLoc">${draft.gps ? "Refresh" : "Record location"}</button></div>
-      <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${outlets.map(o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`).join("")}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
+      <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${(() => { const opt = o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`, mine = outlets.filter(o => (o.baIds || []).includes(u.id)), rest = outlets.filter(o => !mine.includes(o)); return mine.length ? `<optgroup label="Your outlets">${mine.map(opt).join("")}</optgroup><optgroup label="Other ${esc(v.name)} outlets">${rest.map(opt).join("")}</optgroup>` : outlets.map(opt).join(""); })()}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
       ${foldersOf(u.vendorId).length ? `<div class="field"><label for="lg-folder">Folder or campaign (optional)</label><select id="lg-folder"><option value="">None</option>${foldersOf(u.vendorId).map(f => `<option value="${f.id}" ${draft.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : ""}
       <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"></div>
       <div class="field"><span class="flabel">Activity</span><div class="seg" id="lg-type">${TYPES.map(t => `<button type="button" aria-pressed="${draft.type === t}" data-o="${t}">${t}</button>`).join("")}</div></div>
@@ -2029,6 +2151,7 @@ const ready = new Promise(r => markReady = r);
   await ensureOwner();
   if ((await DB.get("kv", "artVersion")) !== 1) setTimeout(repaintExamplePhotos, 400);
   if ((await DB.get("kv", "geoVersion")) !== 1) { await seedNational(); await save("outlets", "entries"); }
+  if ((await DB.get("kv", "staffVersion")) !== 1) { await seedStaffing(); await save("outlets"); }
   readyDone = true; markReady();
   setTimeout(paintSamplePhotos, 50);
   const sid = sessionStore.get();
