@@ -1,0 +1,1505 @@
+<title>Trade Activate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: login splash over a 3D field of brand bottles; inside, a left rail + workspace whose panes change by role
+   (Admin, Vendor Manager, Brand Ambassador). Light and dark palettes share one token set. */
+:root{
+  --bg:#F2F3F7; --panel:#FFFFFF; --panel-2:#F6F7FB; --raise:#EBEDF4;
+  --line:rgba(22,28,58,.10); --line-2:rgba(22,28,58,.18);
+  --fg:#151A2B; --muted:#596079; --dim:#8A90A5;
+  --accent:#FFB547; --accent-ink:#1E1404; --accent-text:#B76A00;
+  --act:#D98500; --samp:#0E9C8F; --trade:#7357F0;
+  --good:#1B9653; --warn:#C77700; --bad:#D13A3A;
+  --stage-top:#DCE3F3; --stage-bot:#EEF1F8;
+  --shadow:0 18px 50px -24px rgba(20,28,60,.35);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A0C13; --panel:#11141F; --panel-2:#171B29; --raise:#1E2334;
+  --line:rgba(150,162,210,.13); --line-2:rgba(150,162,210,.24);
+  --fg:#EAEDF6; --muted:#8C93AB; --dim:#5F6680;
+  --accent-text:#FFB547;
+  --act:#FFB547; --samp:#4FD8CB; --trade:#A78BFF;
+  --good:#5BD68A; --warn:#FFB547; --bad:#FF6B6B;
+  --stage-top:#18203A; --stage-bot:#0B0E18;
+  --shadow:0 30px 80px -30px rgba(0,0,0,.8);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A0C13; --panel:#11141F; --panel-2:#171B29; --raise:#1E2334;
+  --line:rgba(150,162,210,.13); --line-2:rgba(150,162,210,.24);
+  --fg:#EAEDF6; --muted:#8C93AB; --dim:#5F6680;
+  --accent-text:#FFB547;
+  --act:#FFB547; --samp:#4FD8CB; --trade:#A78BFF;
+  --good:#5BD68A; --warn:#FFB547; --bad:#FF6B6B;
+  --stage-top:#18203A; --stage-bot:#0B0E18;
+  --shadow:0 30px 80px -30px rgba(0,0,0,.8);
+  color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden;transition:background .3s,color .3s}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{text-wrap:balance}
+
+/* ---------- shared controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:9px 15px;font-weight:700;font-size:13.5px;border:1px solid var(--line-2);background:var(--panel-2);transition:transform .15s,background .2s,border-color .2s;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 24px -10px rgba(255,181,71,.8)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.iconbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);display:grid;place-items:center}
+.iconbtn svg{width:18px;height:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--muted);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block;box-shadow:0 0 0 0 rgba(91,214,138,.6);animation:ping 1.8s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 7px rgba(91,214,138,0)}100%{box-shadow:0 0 0 0 rgba(91,214,138,0)}}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.full{grid-column:1/-1}
+.field>label,.flabel{font-size:12px;font-weight:600;color:var(--muted)}
+.field input,.field select,.field textarea,.input{background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus,.input:focus{border-color:var(--accent);outline:none}
+.field small{color:var(--dim);font-size:11.5px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:7px;font-weight:600;font-size:12.5px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--raise);color:var(--fg)}
+.err{color:var(--bad);font-size:12.5px;min-height:1em}
+.muted{color:var(--muted)} .dim{color:var(--dim)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-live{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.p-closed{color:var(--muted);background:color-mix(in srgb,var(--muted) 14%,transparent)}
+.p-warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.typ{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.t-Activation{color:var(--act)} .t-Sampling{color:var(--samp)} .t-Trade{color:var(--trade)}
+.bdot{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0B0D14;flex:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.card-h h3{font-family:var(--display);font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
+.card-h .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.empty{color:var(--muted);padding:28px;text-align:center;border:1px dashed var(--line-2);border-radius:14px}
+.sample{font-size:11px;color:var(--dim)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ---------- login ---------- */
+.login{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(360px,480px);background:radial-gradient(120% 100% at 20% 0%,var(--stage-top),var(--stage-bot));z-index:5}
+.login canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.login-hero{position:relative;padding:40px 48px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;min-width:0}
+.login-hero .brand{pointer-events:auto}
+.login-hero h1{text-shadow:0 2px 30px var(--stage-bot);font-family:var(--display);font-size:clamp(34px,5vw,64px);line-height:1;letter-spacing:-.035em;margin:0;max-width:12ch;font-weight:800}
+.login-hero h1 em{font-style:normal;color:var(--accent-text)}
+.login-hero p{color:var(--muted);max-width:44ch;font-size:15px;margin:14px 0 0}
+.brandrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;max-width:560px}
+.brandrow span{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);backdrop-filter:blur(6px);display:inline-flex;gap:6px;align-items:center}
+.login-panel{position:relative;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:100%;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(18px);border:1px solid var(--line-2);border-radius:22px;padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px}
+.login-card h2{font-family:var(--display);margin:0;font-size:24px;letter-spacing:-.02em}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.roles button{border:1px solid var(--line-2);background:var(--panel-2);border-radius:12px;padding:10px 6px;font-weight:700;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted)}
+.roles button svg{width:20px;height:20px}
+.roles button[aria-pressed="true"]{border-color:var(--accent);color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
+.demo{border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.demo button{background:none;border:1px dashed var(--line-2);border-radius:8px;padding:6px 10px;text-align:left;font-size:12px;color:var(--fg);display:flex;justify-content:space-between;gap:8px}
+.demo button span{font-family:var(--mono);color:var(--muted);font-size:11px}
+.login-top{position:absolute;right:20px;top:18px;z-index:2}
+
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg,#FFB547,#C8102E,#17A9B5,#2F8F46,#FFB547);position:relative;box-shadow:0 0 24px rgba(255,181,71,.35);flex:none}
+.brand-mark::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--panel)}
+.brand b{font-family:var(--display);font-size:19px;letter-spacing:-.02em;font-weight:800}
+.brand small{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:-3px}
+
+/* ---------- app ---------- */
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);height:100%}
+.rail{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 14px;gap:26px}
+.rail .brand{padding:0 8px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{display:flex;align-items:center;gap:12px;background:none;border:0;padding:10px 12px;border-radius:10px;color:var(--muted);font-weight:600;text-align:left;transition:background .2s,color .2s}
+.nav button svg{width:18px;height:18px;flex:none}
+.nav button:hover{background:var(--panel-2);color:var(--fg)}
+.nav button[aria-current="page"]{background:var(--raise);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-2)}
+.nav button[aria-current="page"] svg{color:var(--accent-text)}
+.nav .count{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.me{margin-top:auto;padding:12px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);display:flex;gap:10px;align-items:center;font-size:12.5px;min-width:0}
+.me div{min-width:0}
+.me b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me span{color:var(--muted)}
+.work{display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden}
+.top{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.top h1{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.02em;margin:0}
+.top .sub{color:var(--muted);font-size:13px}
+.top-right{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:24px 28px 48px}
+.view{display:none;flex-direction:column;gap:20px;animation:rise .4s cubic-bezier(.2,.7,.2,1)}
+.view.on{display:flex}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- dashboard ---------- */
+.stage{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 90% at 50% 0%,var(--stage-top) 0%,var(--stage-bot) 65%);height:min(54vh,540px);min-height:360px}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 55% at 0% 0%,color-mix(in srgb,var(--stage-bot) 92%,transparent),transparent 70%)}
+.stage-hud{position:absolute;left:20px;top:18px;right:20px;display:flex;justify-content:space-between;gap:12px;pointer-events:none;flex-wrap:wrap;z-index:3}
+.stage-hud h2{font-family:var(--display);font-size:clamp(22px,3vw,34px);line-height:1.05;margin:0;letter-spacing:-.025em;font-weight:800;max-width:16ch}
+.stage-hud h2 em{font-style:normal;color:var(--accent-text)}
+.stage-hud p{margin:6px 0 0;color:var(--muted);font-size:13px;max-width:42ch}
+.legend{display:flex;gap:12px;flex-wrap:wrap;align-self:flex-start;background:color-mix(in srgb,var(--panel) 70%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);padding:8px 12px;border-radius:10px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.stage-tip{position:absolute;left:20px;bottom:14px;font-size:11.5px;color:var(--dim);pointer-events:none;z-index:3}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+.blabel{position:absolute;left:0;top:0;white-space:nowrap;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:color-mix(in srgb,var(--panel) 80%,transparent);border:1px solid var(--line-2);backdrop-filter:blur(6px);pointer-events:auto;cursor:pointer;transition:opacity .2s;color:var(--fg)}
+.blabel i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+.blabel small{font-weight:500;color:var(--muted);margin-left:5px;font-family:var(--mono);font-size:10px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kpi label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .d{font-size:12px;color:var(--muted)}
+.split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+.lrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);cursor:pointer;border-radius:10px;transition:background .2s}
+.lrow:first-child{border-top:0}
+.lrow:hover{background:var(--panel-2)}
+.thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--raise);display:block}
+.lrow .t{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.lrow .m{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .r{text-align:right;font-size:12px;color:var(--muted)}
+.lrow .r b{display:block;font-family:var(--mono);font-size:14px;color:var(--fg)}
+.hbar{display:grid;grid-template-columns:120px minmax(0,1fr) 54px;gap:10px;align-items:center;padding:5px 0;font-size:12.5px}
+.hbar .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:7px;align-items:center}
+.hbar .tr{height:12px;background:var(--raise);border-radius:4px;overflow:hidden}
+.hbar .tr i{display:block;height:100%;border-radius:4px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.typestrip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.typestrip div{border-radius:12px;padding:10px 12px;background:var(--panel-2);border:1px solid var(--line)}
+.typestrip b{font-family:var(--display);font-size:22px;display:block}
+.photostrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.photostrip button{border:0;padding:0;background:none;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:4/3}
+.photostrip img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.photostrip button:hover img{transform:scale(1.06)}
+.photostrip span{position:absolute;left:6px;bottom:6px;font-size:10px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:5px}
+
+/* ---------- folders ---------- */
+.crumbs{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-weight:600}
+.crumbs button{background:none;border:0;color:var(--muted);padding:4px 6px;border-radius:6px}
+.crumbs button:hover{color:var(--fg);background:var(--panel-2)}
+.crumbs b{padding:4px 6px}
+.fgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.folder{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:10px;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden}
+.folder:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:var(--shadow)}
+.folder .ficon{width:54px;height:44px;position:relative}
+.folder .ficon::before{content:"";position:absolute;left:0;top:0;width:24px;height:10px;border-radius:5px 5px 0 0;background:var(--fc,#FFB547);opacity:.8}
+.folder .ficon::after{content:"";position:absolute;left:0;top:7px;right:0;bottom:0;border-radius:4px 8px 8px 8px;background:linear-gradient(160deg,var(--fc,#FFB547),color-mix(in srgb,var(--fc,#FFB547) 60%,#000));box-shadow:0 6px 16px -6px var(--fc,#FFB547)}
+.folder h4{margin:0;font-family:var(--display);font-size:17px}
+.folder .meta{font-size:12px;color:var(--muted)}
+.folder .live{position:absolute;right:14px;top:14px}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.file{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+.file:hover{transform:translateY(-2px);border-color:var(--line-2)}
+.file .ph{aspect-ratio:16/9;background:var(--raise);position:relative;overflow:hidden}
+.file .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.file .ph .n{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px}
+.file .ph .pill{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55)}
+.file .bd{padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.file .bd b{font-size:14px}
+.file .bd .m{font-size:12px;color:var(--muted)}
+.file .st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-top:1px solid var(--line);padding:10px 14px}
+.file .st label{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.file .st span{font-family:var(--mono);font-size:13px;font-weight:600}
+
+/* ---------- tables ---------- */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--panel-2);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td small{color:var(--muted);display:block;font-size:12px}
+select.inline{background:var(--panel-2);border:1px solid var(--line-2);border-radius:8px;padding:6px 8px;font-size:12.5px;max-width:220px}
+.drop{border:2px dashed var(--line-2);border-radius:16px;padding:26px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,background .2s;background:var(--panel)}
+.drop.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel))}
+.drop svg{width:36px;height:36px;color:var(--accent-text)}
+.drop b{font-size:15px}
+.bulk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.vcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.vcard h4{margin:0;font-family:var(--display);font-size:18px}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.stats3 label{display:block;font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.stats3 b{font-family:var(--mono);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.bchip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border:1px solid var(--line-2);border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;background:var(--panel-2)}
+.bchip input{position:absolute;opacity:0;pointer-events:none}
+.bchip:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
+.bchip.sm{cursor:default;padding:3px 8px 3px 6px;font-size:11px}
+
+/* ---------- BA ---------- */
+.ba-wrap{max-width:760px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.hello{display:flex;gap:14px;align-items:center}
+.hello h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:-.02em}
+.livecard{border-radius:20px;padding:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--bc,#FFB547) 22%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--bc,#FFB547) 45%,transparent);display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.livecard h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em}
+.timer{font-family:var(--mono);font-size:26px;font-weight:600}
+.locbox{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);flex-wrap:wrap}
+.locbox .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--samp) 18%,transparent);color:var(--samp);flex:none}
+.locbox .ic svg{width:18px;height:18px}
+.locbox div{min-width:0;flex:1}
+.locbox b{display:block}
+.locbox span{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.shot{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--raise)}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot .x{position:absolute;right:4px;top:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px}
+.shot .tag{position:absolute;left:4px;bottom:4px;font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff}
+.addshot{aspect-ratio:1;border-radius:10px;border:2px dashed var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;background:none}
+.addshot svg{width:24px;height:24px}
+.addshot input{display:none}
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cases div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cases label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;display:block}
+.cases b{font-family:var(--display);font-size:24px}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);font-size:18px;font-weight:700;flex:none}
+.stepper input{text-align:center;font-family:var(--mono);font-size:16px}
+
+/* ---------- drawer, modal, lightbox ---------- */
+.scrim{position:fixed;inset:0;background:rgba(4,5,10,.5);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--panel);border-left:1px solid var(--line-2);z-index:50;transform:translateX(105%);transition:transform .38s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.drawer.on{transform:none}
+.dr-h{padding:22px 22px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px;position:relative}
+.dr-h h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em;line-height:1.15;padding-right:40px}
+.x{position:absolute;right:16px;top:18px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;width:32px;height:32px;display:grid;place-items:center}
+.dr-b{padding:18px 22px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;flex:1}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gallery button{border:0;padding:0;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--raise);position:relative}
+.gallery button:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.facts div{background:var(--panel-2);border-radius:10px;padding:10px 12px;border:1px solid var(--line);min-width:0}
+.facts label{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.facts b{font-size:14px;overflow-wrap:anywhere}
+.facts .wide{grid-column:1/-1}
+.modal{position:fixed;left:50%;top:50%;width:min(640px,calc(100% - 32px));max-height:calc(100% - 48px);overflow-y:auto;transform:translate(-50%,-46%) scale(.97);opacity:0;pointer-events:none;background:var(--panel);border:1px solid var(--line-2);border-radius:20px;z-index:60;transition:all .3s cubic-bezier(.2,.8,.2,1);box-shadow:var(--shadow)}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal .mbody{padding:24px;display:flex;flex-direction:column;gap:16px}
+.modal h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:90;display:none;align-items:center;justify-content:center;padding:24px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lightbox button{position:absolute;right:18px;top:calc(18px + env(safe-area-inset-top,0px));width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:18px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--raise);border:1px solid var(--line-2);padding:11px 16px;border-radius:12px;font-weight:600;opacity:0;transition:all .3s;z-index:95;pointer-events:none;display:flex;gap:8px;align-items:center;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good);flex:none}
+.toast.bad::before{background:var(--bad)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.split{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.login{grid-template-columns:minmax(0,1fr);overflow-y:auto}.login-hero{padding:24px 20px 0;min-height:300px}.login-panel{padding:16px 16px 32px}}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:fixed;left:0;right:0;bottom:0;z-index:30;flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);gap:0}
+  .rail .brand,.me{display:none}
+  .nav{flex-direction:row;width:100%;justify-content:space-around}
+  .nav button{flex-direction:column;gap:3px;font-size:10.5px;padding:6px 4px;flex:1;align-items:center;text-align:center}
+  .nav .count{display:none}
+  .work{padding-bottom:64px}
+  .top{padding:12px 16px}
+  .top h1{font-size:20px}
+  .top .sub{display:none}
+  .top .chip{display:none}
+  .top{flex-wrap:nowrap}
+  .top-right{gap:8px}
+  .scroll{padding:16px 16px 40px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stage{height:400px}
+  .fgrid{grid-template-columns:1fr}
+  .stage-hud .legend{display:none}
+  .hbar{grid-template-columns:96px minmax(0,1fr) 44px}
+}
+@media (max-width:420px){.kpi .v{font-size:23px}.cases b{font-size:20px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<!-- ============ LOGIN ============ -->
+<section class="login" id="login" aria-label="Sign in">
+  <canvas id="loginGL" aria-hidden="true"></canvas>
+  <div class="login-top"><button class="iconbtn themeBtn" type="button" aria-label="Switch light or dark mode"></button></div>
+  <div class="login-hero">
+    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small>Activations · Sampling · Trade</small></div></div>
+    <div>
+      <h1>Every outlet activation, <em>live</em> from the field.</h1>
+      <p>Brand ambassadors log activations with live photos, location and cases sold. Vendor managers and trade marketing see it on the map as it happens.</p>
+      <div class="brandrow" id="brandRow"></div>
+    </div>
+    <div></div>
+  </div>
+  <div class="login-panel">
+    <form class="login-card" id="loginForm" novalidate>
+      <div><h2>Sign in</h2><div class="muted" style="font-size:13px">Choose how you work with us.</div></div>
+      <div class="roles" id="roles" role="group" aria-label="Account type"></div>
+      <div class="field"><label for="l-id" id="l-id-label">Email</label><input id="l-id" autocomplete="username" required></div>
+      <div class="field"><label for="l-pw" id="l-pw-label">Password</label><input id="l-pw" type="password" autocomplete="current-password" required></div>
+      <div class="err" id="l-err" role="alert"></div>
+      <button class="btn primary block" type="submit">Sign in</button>
+      <div class="demo" id="demo"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<div class="app" id="app" hidden>
+  <aside class="rail">
+    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small id="roleLabel">Admin</small></div></div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="me" id="me"></div>
+  </aside>
+  <section class="work">
+    <header class="top">
+      <div><h1 id="vtitle">Dashboard</h1><div class="sub" id="vsub"></div></div>
+      <div class="top-right">
+        <span class="chip"><span class="dot"></span><span id="clock"></span></span>
+        <button class="iconbtn themeBtn" type="button" aria-label="Switch light or dark mode"></button>
+        <button class="btn sm" type="button" id="logout">Sign out</button>
+      </div>
+    </header>
+    <div class="scroll" id="scroll">
+      <div class="view" id="v-dashboard">
+        <div class="stage" id="stage">
+          <canvas id="gl" aria-label="3D map of Lagos showing running activations"></canvas>
+          <div class="labels" id="labels"></div>
+          <div class="stage-hud">
+            <div><h2 id="stageTitle">Activations running now</h2><p id="stageSub">Each beam is a brand ambassador on the ground. Tap one to see their photos, location and cases sold.</p></div>
+            <div class="legend"><span><i style="background:var(--act)"></i>Activation</span><span><i style="background:var(--samp)"></i>Sampling</span><span><i style="background:var(--trade)"></i>Trade activity</span></div>
+          </div>
+          <div class="stage-tip">Drag to orbit · scroll or pinch to zoom</div>
+        </div>
+        <div id="dashBody" style="display:flex;flex-direction:column;gap:20px"></div>
+      </div>
+      <div class="view" id="v-folders"></div>
+      <div class="view" id="v-outlets"></div>
+      <div class="view" id="v-vendors"></div>
+      <div class="view" id="v-team"></div>
+      <div class="view" id="v-log"></div>
+      <div class="view" id="v-history"></div>
+    </div>
+  </section>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Details"></aside>
+<div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Photo"><img id="lbImg" alt=""><button type="button" id="lbClose" aria-label="Close photo">✕</button></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(() => {
+"use strict";
+/* =====================================================================
+   Trade Activate
+   Data lives in this browser (IndexedDB). See README for moving it to a
+   shared backend so ambassadors' phones and the admin laptop share data.
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = (p = "") => p + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+const n = v => Math.round(v || 0).toLocaleString("en-NG");
+const pad = v => String(v).padStart(2, "0");
+const dayKey = ms => { const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const hm = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const fmtDay = key => { const [y, m, d] = key.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
+const dur = ms => { const m = Math.max(0, Math.round(ms / 60000)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${pad(m % 60)}m`; };
+const km = (a, b) => { const R = 6371, dLa = (b.lat - a.lat) * Math.PI / 180, dLo = (b.lng - a.lng) * Math.PI / 180; const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+/* ---------- reference data ---------- */
+const BRANDS = [
+  { name: "Trophy Lager", color: "#E3A52B", kind: "bottle" },
+  { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle" },
+  { name: "Budweiser", color: "#C8102E", kind: "can" },
+  { name: "Budweiser Royale", color: "#B8963E", kind: "bottle" },
+  { name: "Beta Malt", color: "#E2601B", kind: "can" },
+  { name: "Grand Malt", color: "#2F8F46", kind: "can" },
+  { name: "Flying Fish", color: "#17A9B5", kind: "bottle" },
+  { name: "Eagle", color: "#8FA31E", kind: "bottle" },
+  { name: "Castle Lite", color: "#2F6FD6", kind: "can" }
+];
+const BC = name => (BRANDS.find(b => b.name === name) || { color: "#999" }).color;
+const TYPES = ["Activation", "Sampling", "Trade Activity"];
+const TCLASS = t => "t-" + t.split(" ")[0];
+const TVAR = t => ({ Activation: "--act", Sampling: "--samp", "Trade Activity": "--trade" })[t];
+const AREAS = { ikeja: [6.6018, 3.3515], yaba: [6.5095, 3.3711], surulere: [6.5, 3.354], lekki: [6.4474, 3.4723], "victoria island": [6.4281, 3.4219], vi: [6.4281, 3.4219], ikoyi: [6.45, 3.435], festac: [6.4667, 3.2833], oshodi: [6.555, 3.343], ikorodu: [6.6194, 3.5105], ajah: [6.468, 3.57], apapa: [6.449, 3.359], ojota: [6.585, 3.38], maryland: [6.57, 3.367], gbagada: [6.556, 3.388], ogba: [6.63, 3.34], egbeda: [6.61, 3.29], "lagos island": [6.455, 3.394], agege: [6.618, 3.32], ikotun: [6.55, 3.27], magodo: [6.62, 3.39], ojo: [6.46, 3.18], mushin: [6.53, 3.35], isolo: [6.53, 3.32], ketu: [6.597, 3.39], ojodu: [6.64, 3.37], berger: [6.64, 3.37], ilupeju: [6.553, 3.357], anthony: [6.56, 3.37], ebute: [6.48, 3.38], obalende: [6.448, 3.41], sangotedo: [6.47, 3.63] };
+const HUB = { lat: 6.5965, lng: 3.3421 };
+const AV_COL = ["#FFB547", "#4FD8CB", "#A78BFF", "#FF8A5B", "#5BD68A", "#FF7EB6", "#7CB8FF", "#E3C64B"];
+const initials = s => s.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+const avColor = id => AV_COL[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % AV_COL.length];
+const avatar = (u, size) => `<span class="av" style="background:${avColor(u.id)}${size ? `;width:${size}px;height:${size}px;font-size:${size / 2.7}px` : ""}" title="${esc(u.name)}">${esc(initials(u.name))}</span>`;
+function areaCoords(text) {
+  const t = String(text || "").toLowerCase();
+  for (const k of Object.keys(AREAS)) if (t.includes(k)) return { lat: AREAS[k][0] + (Math.random() - .5) * .01, lng: AREAS[k][1] + (Math.random() - .5) * .01 };
+  return null;
+}
+
+/* ---------- storage (IndexedDB, falls back to memory) ---------- */
+const DB = (() => {
+  let db = null; const mem = { kv: {}, photos: {} };
+  const open = () => new Promise(res => {
+    try {
+      const r = indexedDB.open("trade-activate", 1);
+      r.onupgradeneeded = () => { r.result.createObjectStore("kv"); r.result.createObjectStore("photos"); };
+      r.onsuccess = () => { db = r.result; res(); };
+      r.onerror = () => res();
+      r.onblocked = () => res();
+    } catch (e) { res(); }
+  });
+  const get = (store, key) => new Promise(res => {
+    if (!db) return res(mem[store][key]);
+    try { const q = db.transaction(store).objectStore(store).get(key); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); } catch (e) { res(mem[store][key]); }
+  });
+  const put = (store, key, val) => new Promise(res => {
+    mem[store][key] = val;
+    if (!db) return res();
+    try { const t = db.transaction(store, "readwrite"); t.objectStore(store).put(val, key); t.oncomplete = () => res(); t.onerror = () => res(); } catch (e) { res(); }
+  });
+  const clear = () => new Promise(res => {
+    mem.kv = {}; mem.photos = {};
+    if (!db) return res();
+    try { const t = db.transaction(["kv", "photos"], "readwrite"); t.objectStore("kv").clear(); t.objectStore("photos").clear(); t.oncomplete = () => res(); t.onerror = () => res(); } catch (e) { res(); }
+  });
+  return { open, get, put, clear };
+})();
+const COLLS = ["vendors", "users", "outlets", "entries"];
+const S = { vendors: [], users: [], outlets: [], entries: [] };
+const bc = "BroadcastChannel" in window ? new BroadcastChannel("trade-activate") : null;
+async function save(...colls) {
+  for (const c of colls) await DB.put("kv", c, S[c]);
+  if (bc) bc.postMessage({ colls });
+}
+if (bc) bc.onmessage = async e => { for (const c of e.data.colls || []) S[c] = (await DB.get("kv", c)) || []; if (me()) refresh(); };
+const photoCache = new Map();
+async function photo(id) {
+  if (photoCache.has(id)) return photoCache.get(id);
+  const p = await DB.get("photos", id); if (p) photoCache.set(id, p); return p;
+}
+async function hydrate(root = document) {
+  for (const img of $$("img[data-photo]", root)) {
+    if (img.dataset.done) continue;
+    const p = await photo(img.dataset.photo); if (p) { img.dataset.done = 1; img.src = p.dataUrl; }
+  }
+}
+async function sha(pw) {
+  const s = "ta:" + pw;
+  try { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
+  catch (e) { let h = 5381; for (const c of s) h = (h * 33 ^ c.charCodeAt(0)) >>> 0; return "djb" + h.toString(16); }
+}
+
+/* ---------- photos: resize and stamp time + location on every image ---------- */
+async function stampImage(source, stamp) {
+  const w0 = source.width || source.naturalWidth, h0 = source.height || source.naturalHeight;
+  const k = Math.min(1, 1280 / Math.max(w0, h0));
+  const w = Math.round(w0 * k), h = Math.round(h0 * k);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d"); g.drawImage(source, 0, 0, w, h);
+  const bar = Math.max(46, Math.round(h * .12));
+  const grad = g.createLinearGradient(0, h - bar * 1.6, 0, h); grad.addColorStop(0, "rgba(0,0,0,0)"); grad.addColorStop(1, "rgba(0,0,0,.72)");
+  g.fillStyle = grad; g.fillRect(0, h - bar * 1.6, w, bar * 1.6);
+  const fs = Math.max(12, Math.round(bar * .3));
+  g.fillStyle = "#fff"; g.font = `700 ${fs}px Figtree, sans-serif`; g.textBaseline = "alphabetic";
+  g.fillText(`${stamp.brand} · ${stamp.outlet}`.slice(0, 70), fs * .8, h - bar * .55);
+  g.font = `500 ${Math.round(fs * .82)}px "JetBrains Mono", monospace`; g.fillStyle = "rgba(255,255,255,.85)";
+  const where = stamp.gps ? `${stamp.gps.lat.toFixed(5)}, ${stamp.gps.lng.toFixed(5)}` : "location not recorded";
+  g.fillText(`${new Date(stamp.time).toLocaleString("en-GB")} · ${where}`, fs * .8, h - bar * .18);
+  g.textAlign = "right"; g.fillStyle = "#FFB547"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
+  g.fillText("TRADE ACTIVATE", w - fs * .8, h - bar * .18);
+  return c.toDataURL("image/jpeg", .8);
+}
+async function fileToImage(file) {
+  if ("createImageBitmap" in window) { try { return await createImageBitmap(file); } catch (e) { } }
+  return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+}
+async function storePhoto(file, stamp) {
+  const img = await fileToImage(file);
+  const ageMin = (Date.now() - (file.lastModified || Date.now())) / 60000;
+  const dataUrl = await stampImage(img, stamp);
+  const p = { id: uid("ph_"), dataUrl, time: Date.now(), gps: stamp.gps || null, live: ageMin < 15, ageMin: Math.round(ageMin) };
+  await DB.put("photos", p.id, p); photoCache.set(p.id, p);
+  return p;
+}
+function samplePhoto(brand, outlet, time, gps, variant) {
+  const c = document.createElement("canvas"); c.width = 960; c.height = 720; // drawn at 960 and stamped/resized by stampImage
+  const g = c.getContext("2d"), col = BC(brand);
+  const bg = g.createLinearGradient(0, 0, 960, 720); bg.addColorStop(0, "#151822"); bg.addColorStop(1, col);
+  g.fillStyle = bg; g.fillRect(0, 0, 960, 720);
+  for (let i = 0; i < 26; i++) { g.fillStyle = `rgba(255,255,255,${.03 + rnd() * .06})`; g.beginPath(); g.arc(rnd() * 960, rnd() * 500, 20 + rnd() * 90, 0, 7); g.fill(); }
+  // canopy + table
+  g.fillStyle = col; g.beginPath(); g.moveTo(180, 230); g.lineTo(780, 230); g.lineTo(720, 160); g.lineTo(240, 160); g.closePath(); g.fill();
+  g.fillStyle = "rgba(255,255,255,.9)"; g.fillRect(180, 230, 600, 16);
+  g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(230, 420, 500, 22);
+  for (let i = 0; i < 7; i++) { const x = 260 + i * 66, h = 110 + (i % 2) * 18; g.fillStyle = i % 2 ? "#2a1a0f" : col; g.fillRect(x, 420 - h, 34, h); g.fillRect(x + 11, 420 - h - 30, 12, 30); g.fillStyle = "rgba(255,255,255,.85)"; g.fillRect(x, 420 - h * .6, 34, 22); }
+  g.fillStyle = "#fff"; g.font = "800 54px 'Bricolage Grotesque', sans-serif"; g.textAlign = "center"; g.fillText(brand.toUpperCase(), 480, 215);
+  g.font = "600 20px Figtree, sans-serif"; g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(["Sampling table", "Consumer engagement", "Shelf and cooler display", "Brand booth"][variant % 4] + " · sample photo", 480, 500);
+  return stampImage(c, { brand, outlet, time, gps });
+}
+
+/* ---------- demo data (first run only) ---------- */
+let pendingPhotos = [];
+async function paintSamplePhotos() {
+  const list = pendingPhotos; pendingPhotos = [];
+  await DB.put("kv", "pendingPhotos", list);
+  for (let i = 0; i < list.length; i++) {
+    const q = list[i];
+    if (!(await DB.get("photos", q.id))) { const p = { id: q.id, dataUrl: await samplePhoto(q.brand, q.outlet, q.t, q.gps, q.variant), time: q.t, gps: q.gps, live: true, ageMin: 1, sample: true }; await DB.put("photos", p.id, p); photoCache.set(p.id, p); }
+    if (i % 6 === 5 || i === list.length - 1) { await new Promise(r => setTimeout(r, 0)); hydrate(); }
+  }
+  await DB.put("kv", "pendingPhotos", []);
+}
+async function seedDemo() {
+  seed = 42;
+  const vendors = [
+    { id: "v_pin", name: "Pinnacle Activations", contact: "Tobi Adewale", phone: "0803 555 0141", email: "tobi@pinnacle.ng", brands: ["Trophy Lager", "Trophy Stout", "Eagle"], color: "#E3A52B" },
+    { id: "v_blu", name: "BlueWave Experiential", contact: "Nkechi Umeh", phone: "0805 555 0177", email: "nkechi@bluewave.ng", brands: ["Budweiser", "Budweiser Royale", "Castle Lite"], color: "#2F6FD6" },
+    { id: "v_kor", name: "Kora Field Marketing", contact: "Musa Garba", phone: "0809 555 0123", email: "musa@kora.ng", brands: ["Beta Malt", "Grand Malt", "Flying Fish"], color: "#2F8F46" }
+  ].map(v => ({ ...v, createdAt: Date.now() - 20 * 864e5 }));
+  const users = [{ id: "u_admin", role: "admin", name: "Trade Marketing Admin", login: "admin@tradeactivate.app", pw: await sha("Admin@123") }];
+  for (const v of vendors) users.push({ id: "u_" + v.id, role: "manager", name: v.contact, login: v.email, phone: v.phone, vendorId: v.id, pw: await sha("Manager@123") });
+  const baNames = { v_pin: ["Adaeze Okafor", "Tunde Bakare", "Chiamaka Eze", "Ibrahim Musa"], v_blu: ["Funmi Adeyemi", "Emeka Nwosu", "Zainab Bello", "Kelechi Obi"], v_kor: ["Damilola Ogun", "Ngozi Ike", "Segun Alabi", "Halima Yusuf"] };
+  let baNo = 1001; const pin = await sha("1234");
+  for (const v of vendors) for (const nm of baNames[v.id]) users.push({ id: "u_ba" + baNo, role: "ba", name: nm, login: "BA-" + baNo++, phone: "080" + Math.floor(10000000 + rnd() * 89999999), vendorId: v.id, pw: pin });
+  const O = [
+    ["Mama Tee Lounge", "Allen Avenue", "Ikeja", "Lounge", 6.6018, 3.3515], ["City Mall Bar", "Obafemi Awolowo Way", "Ikeja", "Bar", 6.6143, 3.3577], ["Oregun Chill Spot", "Kudirat Abiola Way", "Ikeja", "Beer parlour", 6.6067, 3.37],
+    ["Tejuosho Joint", "Ojuelegba Road", "Yaba", "Beer parlour", 6.508, 3.37], ["Sabo Beer Garden", "Herbert Macaulay Way", "Yaba", "Bar", 6.505, 3.378], ["Bode Thomas Lounge", "Bode Thomas Street", "Surulere", "Lounge", 6.498, 3.354],
+    ["Ogunsanya Spot", "Adeniran Ogunsanya Street", "Surulere", "Beer parlour", 6.492, 3.357], ["Phase 1 Bar & Grill", "Admiralty Road", "Lekki", "Bar", 6.447, 3.473], ["Admiralty Way Lounge", "Admiralty Way", "Lekki", "Lounge", 6.45, 3.476],
+    ["Chevron Drive Joint", "Chevron Drive", "Lekki", "Bar", 6.44, 3.527], ["Ajose Adeogun Hub", "Ajose Adeogun Street", "Victoria Island", "Lounge", 6.431, 3.425], ["Falomo Bar", "Awolowo Road", "Ikoyi", "Bar", 6.447, 3.43],
+    ["21 Road Spot", "21 Road", "Festac", "Beer parlour", 6.466, 3.283], ["2nd Avenue Bar", "2nd Avenue", "Festac", "Bar", 6.47, 3.29], ["Oshodi Market Bar", "Agege Motor Road", "Oshodi", "Beer parlour", 6.555, 3.343],
+    ["Garage Lounge", "Ikorodu Road", "Ikorodu", "Lounge", 6.619, 3.51], ["Roundabout Joint", "Lekki-Epe Expressway", "Ajah", "Beer parlour", 6.468, 3.57], ["Wharf Road Beer Garden", "Wharf Road", "Apapa", "Bar", 6.447, 3.364],
+    ["Ojota Park Bar", "Ikorodu Road", "Ojota", "Beer parlour", 6.585, 3.38], ["Maryland Chill", "Mobolaji Bank Anthony Way", "Maryland", "Lounge", 6.57, 3.367], ["Phase 2 Spot", "Gbagada Expressway", "Gbagada", "Beer parlour", 6.556, 3.388],
+    ["Ogba Retail Bar", "Ijaiye Road", "Ogba", "Bar", 6.63, 3.34], ["Akowonjo Lounge", "Akowonjo Road", "Egbeda", "Lounge", 6.61, 3.29], ["Isolo Corner Bar", "Okota Road", "Isolo", "Beer parlour", 6.53, 3.32]
+  ];
+  const outlets = O.map((o, i) => ({ id: "o" + (i + 1), name: o[0], address: o[1], area: o[2], channel: o[3], lat: o[4], lng: o[5], vendorId: i >= 21 ? null : vendors[i % 3].id, brands: [], uploadedAt: Date.now() - 10 * 864e5, source: "Demo list" }));
+  outlets.forEach(o => { if (o.vendorId) o.brands = vendors.find(v => v.id === o.vendorId).brands.slice(); });
+  const entries = [];
+  const bas = users.filter(u => u.role === "ba");
+  const now = Date.now();
+  const mk = async (ba, o, brand, type, start, end, opening, sold, reached, nPh) => {
+    const gps = { lat: o.lat + (rnd() - .5) * .0008, lng: o.lng + (rnd() - .5) * .0008, acc: Math.round(6 + rnd() * 20), time: start + 120000 };
+    const photos = [];
+    for (let i = 0; i < nPh; i++) { const t = start + i * 40 * 60000 + 90000; if (t > now) break; const id = uid("ph_"); pendingPhotos.push({ id, brand, outlet: o.name, t, gps, variant: i + Math.floor(rnd() * 4) }); photos.push(id); }
+    entries.push({ id: uid("e_"), baId: ba.id, vendorId: ba.vendorId, outletId: o.id, outletName: o.name, brand, type, start, end, opening, sold, reached, gps, photos, notes: "", demo: true });
+  };
+  // running now: nine of the twelve ambassadors
+  for (let i = 0; i < 9; i++) {
+    const ba = bas[i]; const v = vendors.find(x => x.id === ba.vendorId);
+    const mine = outlets.filter(o => o.vendorId === v.id);
+    const o = mine[(i * 2) % mine.length];
+    const opening = 20 + Math.floor(rnd() * 40);
+    await mk(ba, o, v.brands[i % 3], TYPES[i % 3], now - (25 + rnd() * 200) * 60000, null, opening, Math.floor(opening * (.2 + rnd() * .5)), 40 + Math.floor(rnd() * 160), 1 + (i % 3));
+  }
+  // the past six days
+  for (let dday = 1; dday <= 6; dday++) for (let j = 0; j < 7; j++) {
+    const ba = bas[(dday * 5 + j) % bas.length]; const v = vendors.find(x => x.id === ba.vendorId);
+    const mine = outlets.filter(o => o.vendorId === v.id); const o = mine[(dday + j) % mine.length];
+    const base = new Date(now - dday * 864e5); base.setHours(11 + (j % 5), Math.floor(rnd() * 59), 0, 0);
+    const opening = 20 + Math.floor(rnd() * 50);
+    await mk(ba, o, v.brands[(dday + j) % 3], TYPES[(dday + j) % 3], +base, +base + (3 + rnd() * 3) * 36e5, opening, Math.floor(opening * (.45 + rnd() * .45)), 60 + Math.floor(rnd() * 220), j < 3 ? 2 : 1);
+  }
+  Object.assign(S, { vendors, users, outlets, entries });
+  await save(...COLLS);
+  await DB.put("kv", "seeded", 2);
+}
+
+/* ---------- auth & session ---------- */
+const sessionStore = { get() { try { return localStorage.getItem("ta.session"); } catch (e) { return null; } }, set(v) { try { v ? localStorage.setItem("ta.session", v) : localStorage.removeItem("ta.session"); } catch (e) { } } };
+let currentId = null;
+const me = () => S.users.find(u => u.id === currentId);
+const vendorOf = id => S.vendors.find(v => v.id === id);
+const userOf = id => S.users.find(u => u.id === id);
+const outletOf = id => S.outlets.find(o => o.id === id);
+const ROLE_INFO = {
+  admin: { label: "Admin", id: "Email", pw: "Password", demo: [["Trade marketing admin", "admin@tradeactivate.app", "Admin@123"]] },
+  manager: { label: "Vendor Manager", id: "Email", pw: "Password", demo: [["Pinnacle Activations", "tobi@pinnacle.ng", "Manager@123"], ["BlueWave Experiential", "nkechi@bluewave.ng", "Manager@123"], ["Kora Field Marketing", "musa@kora.ng", "Manager@123"]] },
+  ba: { label: "Brand Ambassador", id: "BA ID or phone number", pw: "PIN", demo: [["Adaeze Okafor · Pinnacle", "BA-1001", "1234"], ["Damilola Ogun · Kora", "BA-1009", "1234"]] }
+};
+const ROLE_ICON = {
+  admin: '<path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  manager: '<rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" fill="none" stroke="currentColor" stroke-width="2"/>',
+  ba: '<circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+};
+let loginRole = "admin";
+function renderLogin() {
+  $("#roles").innerHTML = Object.keys(ROLE_INFO).map(r => `<button type="button" data-r="${r}" aria-pressed="${r === loginRole}"><svg viewBox="0 0 24 24" aria-hidden="true">${ROLE_ICON[r]}</svg>${ROLE_INFO[r].label}</button>`).join("");
+  const ri = ROLE_INFO[loginRole];
+  $("#l-id-label").textContent = ri.id; $("#l-pw-label").textContent = ri.pw;
+  $("#l-id").type = loginRole === "ba" ? "text" : "email";
+  $("#l-pw").inputMode = loginRole === "ba" ? "numeric" : "text";
+  $("#demo").innerHTML = `<div>Demo accounts. Tap one to fill it in.</div>` + ri.demo.map(d => `<button type="button" data-id="${esc(d[1])}" data-pw="${esc(d[2])}">${esc(d[0])}<span>${esc(d[1])} / ${esc(d[2])}</span></button>`).join("");
+}
+$("#roles").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; loginRole = b.dataset.r; $("#l-err").textContent = ""; renderLogin(); });
+$("#demo").addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (!b) return; $("#l-id").value = b.dataset.id; $("#l-pw").value = b.dataset.pw; $("#l-pw").focus(); });
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const sb = $("#loginForm button[type=submit]");
+  if (!readyDone) { sb.disabled = true; sb.textContent = "Preparing…"; await ready; sb.disabled = false; sb.textContent = "Sign in"; }
+  const id = $("#l-id").value.trim().toLowerCase(), pw = $("#l-pw").value;
+  if (!id || !pw) return $("#l-err").textContent = `Enter your ${ROLE_INFO[loginRole].id.toLowerCase()} and ${ROLE_INFO[loginRole].pw.toLowerCase()}.`;
+  const digits = id.replace(/\D/g, "");
+  const u = S.users.find(x => x.login.toLowerCase() === id || (x.role === "ba" && digits.length >= 10 && (x.phone || "").replace(/\D/g, "") === digits));
+  if (!u || u.pw !== await sha(pw)) return $("#l-err").textContent = "That sign-in didn't match an account. Check the details and try again.";
+  if (u.disabled) return $("#l-err").textContent = "This account has been switched off. Ask your vendor manager to turn it back on.";
+  if (u.role !== loginRole) return $("#l-err").textContent = `This is a ${ROLE_INFO[u.role].label} account. Choose "${ROLE_INFO[u.role].label}" above and sign in again.`;
+  $("#l-err").textContent = ""; $("#l-pw").value = "";
+  enter(u.id);
+});
+$("#brandRow").innerHTML = BRANDS.map(b => `<span><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</span>`).join("");
+
+function enter(id) {
+  currentId = id; sessionStore.set(id);
+  $("#login").hidden = true; $("#app").hidden = false;
+  loginScene.stop();
+  view = NAV[me().role][0][0];
+  try { const v = localStorage.getItem("ta.view." + me().role); if (v && NAV[me().role].some(x => x[0] === v)) view = v; } catch (e) { }
+  renderShell(); go(view);
+}
+$("#logout").onclick = () => { currentId = null; sessionStore.set(null); closeDrawer(); $("#app").hidden = true; $("#login").hidden = false; loginRole = "admin"; renderLogin(); loginScene.start(); };
+
+/* ---------- theme ---------- */
+const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+function paintThemeBtns() { $$(".themeBtn").forEach(b => { b.innerHTML = isDark() ? SUN : MOON; b.setAttribute("aria-label", isDark() ? "Switch to light mode" : "Switch to dark mode"); b.title = b.getAttribute("aria-label"); }); }
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("ta.theme", t); } catch (e) { }
+  paintThemeBtns(); city.theme(); loginScene.theme(); if (me()) renderView();
+}
+try { const t = localStorage.getItem("ta.theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) { }
+document.addEventListener("click", e => { if (e.target.closest(".themeBtn")) setTheme(isDark() ? "light" : "dark"); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (!document.documentElement.dataset.theme) { paintThemeBtns(); city.theme(); loginScene.theme(); } });
+
+/* ---------- navigation ---------- */
+const ICON = {
+  dashboard: '<path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 3v4M21 12h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  folders: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+  outlets: '<path d="M4 10l2-6h12l2 6M4 10v10h16V10M4 10h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20v-5h4v5" fill="none" stroke="currentColor" stroke-width="2"/>',
+  vendors: '<circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c1.8.8 3 2.6 3.5 5.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  log: '<rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+  history: '<path d="M3 12a9 9 0 1 0 3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 4v4h4M12 8v4l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+};
+ICON.team = ICON.vendors;
+const NAV = {
+  admin: [["dashboard", "Live dashboard"], ["folders", "Vendor folders"], ["outlets", "Outlets"], ["vendors", "Vendors & users"]],
+  manager: [["dashboard", "Live dashboard"], ["folders", "Our folder"], ["outlets", "Our outlets"], ["team", "Ambassadors"]],
+  ba: [["log", "My activation"], ["history", "History"]]
+};
+let view = "dashboard";
+function subtitle(v) {
+  const u = me(), vend = vendorOf(u.vendorId) || { name: "" };
+  return ({
+    dashboard: u.role === "admin" ? "Every vendor's activations, sampling and trade activities" : `${vend.name}: activations running now`,
+    folders: u.role === "admin" ? "Every entry ambassadors have logged, filed by vendor and day" : `Entries logged by ${vend.name} ambassadors`,
+    outlets: u.role === "admin" ? "Upload activating outlets and assign them to vendors" : `Outlets assigned to ${vend.name}`,
+    vendors: "Register vendors and give their managers and ambassadors sign-ins",
+    team: `${vend.name} brand ambassadors`,
+    log: `${vend.name} · Log what's happening at your outlet`,
+    history: "Everything you have logged"
+  })[v] || "";
+}
+function renderShell() {
+  const u = me(); const vend = vendorOf(u.vendorId);
+  $("#roleLabel").textContent = ROLE_INFO[u.role].label;
+  $("#me").innerHTML = `${avatar(u)}<div><b>${esc(u.name)}</b><span>${esc(vend ? vend.name : "Trade marketing")}</span></div>`;
+  paintThemeBtns();
+}
+function renderNav() {
+  const u = me();
+  const counts = { folders: scopeEntries().length, outlets: scopeOutlets().length, vendors: S.vendors.length, team: S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId).length, history: S.entries.filter(e => e.baId === u.id).length };
+  $("#nav").innerHTML = NAV[u.role].map(([k, label]) => `<button type="button" data-v="${k}" ${k === view ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg><span>${label}</span>${counts[k] ? `<span class="count">${counts[k]}</span>` : ""}</button>`).join("");
+}
+$("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(b.dataset.v); });
+function go(v) {
+  view = v;
+  try { localStorage.setItem("ta.view." + me().role, v); } catch (e) { }
+  renderNav();
+  $$(".view").forEach(el => el.classList.toggle("on", el.id === "v-" + v));
+  $("#vtitle").textContent = NAV[me().role].find(x => x[0] === v)[1];
+  $("#vsub").textContent = subtitle(v);
+  $("#scroll").scrollTop = 0;
+  renderView();
+  if (v === "dashboard") city.resize();
+}
+function renderView() {
+  ({ dashboard: renderDashboard, folders: renderFolders, outlets: renderOutlets, vendors: renderVendors, team: renderTeam, log: renderLog, history: renderHistory })[view]();
+}
+function refresh() { if (!me()) return; renderNav(); renderView(); }
+const tick = () => { const d = new Date(); $("#clock").textContent = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) + " · " + hm(+d); };
+tick(); setInterval(() => { tick(); if (me() && (view === "log" || view === "dashboard")) $$("[data-since]").forEach(el => el.textContent = dur(Date.now() - +el.dataset.since)); }, 15000);
+
+/* ---------- scopes ---------- */
+function scopeEntries() { const u = me(); if (!u) return []; if (u.role === "admin") return S.entries; if (u.role === "manager") return S.entries.filter(e => e.vendorId === u.vendorId); return S.entries.filter(e => e.baId === u.id); }
+function scopeOutlets() { const u = me(); if (!u) return []; if (u.role === "admin") return S.outlets; return S.outlets.filter(o => o.vendorId === u.vendorId); }
+const isLive = e => !e.end;
+const posOf = e => e.gps || outletOf(e.outletId) || HUB;
+
+/* ---------- dashboard ---------- */
+const dash = { type: "All", brand: "All", vendor: "All" };
+function renderDashboard() {
+  const u = me();
+  const all = scopeEntries();
+  const pass = e => (dash.type === "All" || e.type === dash.type) && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor);
+  const live = all.filter(e => isLive(e) && pass(e)).sort((a, b) => a.start - b.start);
+  const today = dayKey(Date.now());
+  const todays = all.filter(e => dayKey(e.start) === today && pass(e));
+  const sold = todays.reduce((a, e) => a + (+e.sold || 0), 0);
+  const reached = todays.reduce((a, e) => a + (+e.reached || 0), 0);
+  const nPhotos = todays.reduce((a, e) => a + e.photos.length, 0);
+  const outletsToday = new Set(todays.map(e => e.outletId || e.outletName)).size;
+  $("#stageTitle").innerHTML = `<em>${live.length}</em> ${live.length === 1 ? "activity is" : "activities are"} running right now`;
+  const vendorsInScope = u.role === "admin" ? S.vendors : [vendorOf(u.vendorId)];
+  const brandsInScope = u.role === "admin" ? BRANDS.map(b => b.name) : vendorOf(u.vendorId).brands;
+  const byType = TYPES.map(t => ({ t, c: all.filter(e => isLive(e) && e.type === t && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor)).length }));
+  const byBrand = brandsInScope.map(b => ({ b, v: todays.filter(e => e.brand === b).reduce((a, e) => a + (+e.sold || 0), 0) })).sort((a, b) => b.v - a.v);
+  const bmax = Math.max(1, ...byBrand.map(x => x.v));
+  const recentPh = all.filter(pass).flatMap(e => e.photos.map(p => ({ p, e }))).slice(-400).sort((a, b) => b.e.start - a.e.start).slice(0, 12);
+  $("#dashBody").innerHTML = `
+    <div class="toolbar">
+      <div class="seg" id="dType">${["All", ...TYPES].map(t => `<button type="button" aria-pressed="${dash.type === t}" data-o="${t}">${t === "All" ? "All activities" : t}</button>`).join("")}</div>
+      <select class="inline" id="dBrand" aria-label="Filter by brand"><option value="All">All brands</option>${brandsInScope.map(b => `<option ${dash.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select>
+      ${u.role === "admin" ? `<select class="inline" id="dVendor" aria-label="Filter by vendor"><option value="All">All vendors</option>${S.vendors.map(v => `<option value="${v.id}" ${dash.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+    </div>
+    <div class="kpis">
+      <div class="kpi"><label>Running now</label><div class="v">${live.length}</div><div class="d">${byType.map(x => `${x.c} ${x.t === "Trade Activity" ? "trade" : x.t.toLowerCase()}`).join(" · ")}</div></div>
+      <div class="kpi"><label>Ambassadors on ground</label><div class="v">${new Set(live.map(e => e.baId)).size}</div><div class="d">of ${S.users.filter(x => x.role === "ba" && vendorsInScope.some(v => v.id === x.vendorId)).length} registered</div></div>
+      <div class="kpi"><label>Cases sold today</label><div class="v">${n(sold)}</div><div class="d">${n(reached)} consumers reached</div></div>
+      <div class="kpi"><label>Outlets activated today</label><div class="v">${outletsToday}</div><div class="d">of ${scopeOutlets().length} assigned outlets</div></div>
+      <div class="kpi"><label>Live photos today</label><div class="v">${nPhotos}</div><div class="d">stamped with time and location</div></div>
+    </div>
+    <div class="split">
+      <div class="card"><div class="card-h"><h3>Running now</h3><div class="right"><span class="chip"><span class="dot"></span>Updates as ambassadors log</span></div></div>
+        <div id="liveList">${live.length ? live.map(e => liveRow(e)).join("") : `<div class="empty">Nothing is running for this filter. When an ambassador starts an activation it appears here and on the map.</div>`}</div></div>
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div class="card"><div class="card-h"><h3>Cases sold today by brand</h3></div>
+          ${byBrand.map(x => `<div class="hbar"><span class="nm"><i class="bdot" style="background:${BC(x.b)}"></i>${esc(x.b)}</span><span class="tr"><i style="width:${x.v / bmax * 100}%;background:${BC(x.b)}"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("")}
+        </div>
+        <div class="card"><div class="card-h"><h3>Latest photos from the field</h3></div>
+          ${recentPh.length ? `<div class="photostrip">${recentPh.map(({ p, e }) => `<button type="button" data-entry="${e.id}"><img data-photo="${p}" alt="${esc(e.brand)} at ${esc(e.outletName)}"><span>${esc(e.brand)}</span></button>`).join("")}</div>` : `<div class="empty">No photos yet.</div>`}
+        </div>
+      </div>
+    </div>`;
+  $("#dType").onclick = e => { const b = e.target.closest("button"); if (b) { dash.type = b.dataset.o; renderDashboard(); } };
+  $("#dBrand").onchange = e => { dash.brand = e.target.value; renderDashboard(); };
+  if ($("#dVendor")) $("#dVendor").onchange = e => { dash.vendor = e.target.value; renderDashboard(); };
+  hydrate($("#dashBody"));
+  city.setMarkers(live, scopeOutlets());
+}
+function liveRow(e) {
+  const ba = userOf(e.baId) || { name: "Unknown", id: "x" }, v = vendorOf(e.vendorId) || { name: "" };
+  return `<div class="lrow" data-entry="${e.id}" tabindex="0" role="button">
+    ${e.photos[0] ? `<img class="thumb" data-photo="${e.photos[e.photos.length - 1]}" alt="">` : `<span class="thumb" style="display:grid;place-items:center">${avatar(ba)}</span>`}
+    <div style="min-width:0"><div class="t"><i class="bdot" style="background:${BC(e.brand)}"></i>${esc(e.brand)} <span class="typ ${TCLASS(e.type)}">${esc(e.type)}</span></div>
+    <div class="m">${esc(e.outletName)} · ${esc(ba.name)}${me().role === "admin" ? " · " + esc(v.name) : ""}</div>
+    <div class="m">Running <span data-since="${e.start}">${dur(Date.now() - e.start)}</span> · ${e.gps ? "location recorded" : "no location yet"}</div></div>
+    <div class="r"><b>${n(e.sold)}</b>cases sold</div></div>`;
+}
+document.addEventListener("click", e => { const t = e.target.closest("[data-entry]"); if (t && !e.target.closest("[data-photo-open]")) openEntry(t.dataset.entry); });
+document.addEventListener("keydown", e => { if (e.key === "Enter") { const t = e.target.closest && e.target.closest("[data-entry]"); if (t) openEntry(t.dataset.entry); } });
+
+/* ---------- entry drawer ---------- */
+let drawerFor = null;
+function openEntry(id) {
+  const e = S.entries.find(x => x.id === id); if (!e) return;
+  drawerFor = id;
+  const ba = userOf(e.baId) || { name: "Unknown", id: "x" }, v = vendorOf(e.vendorId) || { name: "" }, o = outletOf(e.outletId);
+  const dist = e.gps && o && o.lat ? km(e.gps, o) : null;
+  const closing = Math.max(0, (+e.opening || 0) - (+e.sold || 0));
+  $("#drawer").innerHTML = `<div class="dr-h"><button class="x" type="button" id="dx" aria-label="Close">✕</button>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="typ ${TCLASS(e.type)}">${esc(e.type)}</span>${isLive(e) ? `<span class="pill p-live">Running</span>` : `<span class="pill p-closed">Ended</span>`}${e.demo ? `<span class="sample">Example entry</span>` : ""}</div>
+    <h3><i class="bdot" style="background:${BC(e.brand)};width:14px;height:14px;margin-right:8px;vertical-align:1px"></i>${esc(e.brand)} at ${esc(e.outletName)}</h3>
+    <div class="muted">${esc(v.name)} · ${fmtDay(dayKey(e.start))}</div></div>
+    <div class="dr-b">
+      ${e.photos.length ? `<div class="gallery">${e.photos.map(p => `<button type="button" data-photo-open="${p}"><img data-photo="${p}" alt="Photo from ${esc(e.outletName)}"></button>`).join("")}</div>` : `<div class="empty">No photos uploaded yet.</div>`}
+      <div class="cases"><div><label>Opening cases</label><b>${n(e.opening)}</b></div><div><label>Cases sold</label><b>${n(e.sold)}</b></div><div><label>Closing cases</label><b>${n(closing)}</b></div></div>
+      <div class="facts">
+        <div><label>Brand ambassador</label><b>${esc(ba.name)}</b><div class="dim num" style="font-size:12px">${esc(ba.login || "")}</div></div>
+        <div><label>Consumers reached</label><b class="num">${n(e.reached)}</b></div>
+        <div><label>Started</label><b class="num">${hm(e.start)}</b></div>
+        <div><label>${isLive(e) ? "Running for" : "Ended"}</label><b class="num">${isLive(e) ? dur(Date.now() - e.start) : hm(e.end) + " (" + dur(e.end - e.start) + ")"}</b></div>
+        <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
+        ${o ? `<div class="wide"><label>Outlet</label><b>${esc(o.name)}</b><div class="dim" style="font-size:12.5px">${esc([o.address, o.area, o.channel].filter(Boolean).join(" · "))}</div></div>` : ""}
+        ${e.notes ? `<div class="wide"><label>Notes</label><b style="font-weight:500">${esc(e.notes)}</b></div>` : ""}
+      </div>
+    </div>`;
+  $("#drawer").classList.add("on"); $("#scrim").classList.add("on");
+  $("#dx").onclick = closeDrawer; $("#dx").focus();
+  hydrate($("#drawer"));
+  city.focus(id);
+}
+function closeDrawer() { $("#drawer").classList.remove("on"); if (!$("#modal").classList.contains("on")) $("#scrim").classList.remove("on"); drawerFor = null; city.focus(null); }
+$("#scrim").addEventListener("click", () => { closeDrawer(); closeModal(); });
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-photo-open]"); if (!b) return;
+  const p = await photo(b.dataset.photoOpen); if (!p) return;
+  $("#lbImg").src = p.dataUrl; $("#lightbox").classList.add("on"); $("#lbClose").focus();
+});
+$("#lbClose").onclick = () => $("#lightbox").classList.remove("on");
+$("#lightbox").addEventListener("click", e => { if (e.target.id === "lightbox") $("#lightbox").classList.remove("on"); });
+addEventListener("keydown", e => { if (e.key === "Escape") { if ($("#lightbox").classList.contains("on")) return $("#lightbox").classList.remove("on"); closeDrawer(); closeModal(); } });
+
+/* ---------- modal ---------- */
+function openModal(html, onReady) { $("#modal").innerHTML = `<div class="mbody">${html}</div>`; $("#modal").classList.add("on"); $("#scrim").classList.add("on"); if (onReady) onReady($("#modal")); setTimeout(() => { const f = $("#modal input, #modal select"); if (f) f.focus(); }, 60); }
+function closeModal() { $("#modal").classList.remove("on"); if (!$("#drawer").classList.contains("on")) $("#scrim").classList.remove("on"); }
+let toastT;
+function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classList.toggle("bad", !!bad); t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2800); }
+
+/* ---------- vendor folders ---------- */
+const fold = { vendor: null, day: null, brand: "All" };
+function renderFolders() {
+  const u = me(), el = $("#v-folders");
+  if (u.role !== "admin") fold.vendor = u.vendorId;
+  const entries = scopeEntries();
+  const today = dayKey(Date.now());
+  if (!fold.vendor) {
+    el.innerHTML = `<div class="fgrid2">${S.vendors.map(v => {
+      const es = entries.filter(e => e.vendorId === v.id), live = es.filter(isLive).length;
+      const last = es.reduce((a, e) => Math.max(a, e.end || e.start), 0);
+      return `<button class="folder" type="button" data-vendor="${v.id}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${esc(v.name)}</h4><div class="meta">${es.length} entries · ${new Set(es.map(e => dayKey(e.start))).size} days</div><div class="meta">${last ? "Last entry " + (dayKey(last) === today ? "today at " + hm(last) : fmtDay(dayKey(last))) : "No entries yet"}</div></button>`;
+    }).join("") || `<div class="empty">No vendors registered yet. Add one under Vendors & users.</div>`}</div>`;
+    el.onclick = e => { const b = e.target.closest("[data-vendor]"); if (b) { fold.vendor = b.dataset.vendor; fold.day = null; renderFolders(); } };
+    return;
+  }
+  const v = vendorOf(fold.vendor);
+  const es = entries.filter(e => e.vendorId === v.id && (fold.brand === "All" || e.brand === fold.brand));
+  const crumbs = `<div class="crumbs">${u.role === "admin" ? `<button type="button" data-crumb="root">All vendors</button><span class="dim">/</span>` : ""}${fold.day ? `<button type="button" data-crumb="vendor">${esc(v.name)}</button><span class="dim">/</span><b>${fmtDay(fold.day)}</b>` : `<b>${esc(v.name)}</b>`}</div>`;
+  const filters = `<div class="toolbar">${crumbs}<span style="flex:1"></span><select class="inline" id="fBrand" aria-label="Filter by brand"><option value="All">All brands</option>${v.brands.concat(BRANDS.map(b => b.name).filter(b => !v.brands.includes(b))).map(b => `<option ${fold.brand === b ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></div>`;
+  if (!fold.day) {
+    const days = [...new Set(es.map(e => dayKey(e.start)))].sort().reverse();
+    el.innerHTML = filters + (days.length ? `<div class="fgrid2">${days.map(dk => {
+      const d = es.filter(e => dayKey(e.start) === dk), live = d.filter(isLive).length;
+      return `<button class="folder" type="button" data-day="${dk}" style="--fc:${v.color}">${live ? `<span class="pill p-live live">${live} running</span>` : ""}<span class="ficon" aria-hidden="true"></span><h4>${dk === today ? "Today" : fmtDay(dk)}</h4><div class="meta">${d.length} entries · ${d.reduce((a, e) => a + e.photos.length, 0)} photos</div><div class="meta">${n(d.reduce((a, e) => a + (+e.sold || 0), 0))} cases sold</div></button>`;
+    }).join("")}</div>` : `<div class="empty">No entries in this folder yet. They appear as soon as an ambassador logs an activation.</div>`);
+  } else {
+    const d = es.filter(e => dayKey(e.start) === fold.day).sort((a, b) => b.start - a.start);
+    el.innerHTML = filters + (d.length ? `<div class="files">${d.map(fileCard).join("")}</div>` : `<div class="empty">No entries for this brand on this day.</div>`);
+  }
+  el.onclick = e => {
+    const c = e.target.closest("[data-crumb]"); if (c) { if (c.dataset.crumb === "root") fold.vendor = null; fold.day = null; renderFolders(); return; }
+    const dd = e.target.closest("[data-day]"); if (dd) { fold.day = dd.dataset.day; renderFolders(); }
+  };
+  $("#fBrand").onchange = e => { fold.brand = e.target.value; renderFolders(); };
+  hydrate(el);
+}
+function fileCard(e) {
+  const ba = userOf(e.baId) || { name: "Unknown" };
+  return `<button class="file" type="button" data-entry="${e.id}"><div class="ph">${e.photos[0] ? `<img data-photo="${e.photos[0]}" alt="">` : ""}${isLive(e) ? `<span class="pill p-live">Running</span>` : ""}<span class="n">${e.photos.length} photo${e.photos.length === 1 ? "" : "s"}</span></div>
+    <div class="bd"><b><i class="bdot" style="background:${BC(e.brand)};margin-right:6px"></i>${esc(e.brand)} · <span class="typ ${TCLASS(e.type)}">${esc(e.type)}</span></b><span class="m">${esc(e.outletName)}</span><span class="m">${esc(ba.name)} · ${hm(e.start)}${e.end ? " to " + hm(e.end) : ""}</span></div>
+    <div class="st"><div><label>Opening</label><span>${n(e.opening)}</span></div><div><label>Sold</label><span>${n(e.sold)}</span></div><div><label>Closing</label><span>${n(Math.max(0, e.opening - e.sold))}</span></div></div></button>`;
+}
+
+/* ---------- outlets (upload + assign) ---------- */
+const ol = { q: "", vendor: "All", sel: new Set(), preview: null };
+const SAMPLE_CSV = `Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands
+Bayo's Joint,Ogunlana Drive,Surulere,Beer parlour,6.4985,3.3492,Pinnacle Activations,Trophy Lager;Eagle
+Ozumba Lounge,Ozumba Mbadiwe Avenue,Victoria Island,Lounge,6.4402,3.4265,BlueWave Experiential,Budweiser;Castle Lite
+Mile 12 Market Bar,Ikorodu Road,Ketu,Beer parlour,,,Kora Field Marketing,Beta Malt;Grand Malt
+Agege Stadium Spot,Old Abeokuta Road,Agege,Bar,,,,
+Okota Chill Zone,Okota Road,Isolo,Lounge,6.5112,3.3121,,
+Obalende Garage Bar,Obalende Road,Obalende,Beer parlour,,,Pinnacle Activations,Trophy Stout`;
+const HEAD = { name: ["outlet name", "outlet", "name", "outlet_name"], address: ["address", "street", "outlet address"], area: ["area", "lga", "location", "zone", "town", "city"], channel: ["channel", "outlet type", "type of outlet", "category"], lat: ["latitude", "lat"], lng: ["longitude", "lng", "lon", "long"], vendor: ["vendor", "agency", "assigned vendor"], brands: ["brands", "brand"] };
+function parseCSV(text) {
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+    else if (c === '"') q = true; else if (c === ",") { row.push(cell); cell = ""; } else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; } else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(x => String(x).trim()));
+}
+function rowsToOutlets(rows, source) {
+  if (rows.length < 2) return { items: [], error: "The file needs a header row and at least one outlet." };
+  const head = rows[0].map(h => String(h).trim().toLowerCase());
+  const idx = {}; for (const k in HEAD) idx[k] = head.findIndex(h => HEAD[k].includes(h));
+  if (idx.name < 0) return { items: [], error: `Couldn't find an outlet name column. Name one of the columns "Outlet name".` };
+  const items = rows.slice(1).map(r => {
+    const g = k => idx[k] >= 0 ? String(r[idx[k]] ?? "").trim() : "";
+    const name = g("name"); if (!name) return null;
+    let lat = parseFloat(g("lat")), lng = parseFloat(g("lng")), located = "file";
+    if (!(lat > 4 && lat < 14 && lng > 2 && lng < 15)) { const a = areaCoords(g("area") + " " + g("address")); if (a) { lat = a.lat; lng = a.lng; located = "area"; } else { lat = null; lng = null; located = "none"; } }
+    const vname = g("vendor").toLowerCase();
+    const vend = vname ? S.vendors.find(v => v.name.toLowerCase() === vname || v.name.toLowerCase().startsWith(vname)) : null;
+    const brands = g("brands").split(/[;,|/]/).map(s => s.trim()).filter(Boolean).map(s => (BRANDS.find(b => b.name.toLowerCase() === s.toLowerCase()) || {}).name).filter(Boolean);
+    return { id: uid("o_"), name, address: g("address"), area: g("area"), channel: g("channel"), lat, lng, located, vendorId: vend ? vend.id : null, vendorText: g("vendor"), brands, uploadedAt: Date.now(), source };
+  }).filter(Boolean);
+  return { items };
+}
+async function readOutletFile(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith(".csv") || name.endsWith(".txt")) return rowsToOutlets(parseCSV(await file.text()), file.name);
+  if (!window.XLSX) return { items: [], error: "Excel support didn't load. Save the sheet as CSV and upload that instead." };
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  return rowsToOutlets(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false }), file.name);
+}
+function renderOutlets() {
+  const u = me(), el = $("#v-outlets"), admin = u.role === "admin";
+  const today = dayKey(Date.now());
+  const activeToday = new Set(S.entries.filter(e => dayKey(e.start) === today).map(e => e.outletId));
+  const q = ol.q.toLowerCase();
+  const list = scopeOutlets().filter(o => (ol.vendor === "All" || (ol.vendor === "none" ? !o.vendorId : o.vendorId === ol.vendor)) && (!q || [o.name, o.address, o.area, o.channel].join(" ").toLowerCase().includes(q)));
+  const unassigned = S.outlets.filter(o => !o.vendorId).length;
+  const vopts = sel => `<option value="">Not assigned</option>` + S.vendors.map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+  el.innerHTML = `
+    ${admin ? `<label class="drop" id="drop" for="ofile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <b>Upload a list of activating outlets</b><span class="muted">Drop an Excel (.xlsx) or CSV file here, or click to choose one. Columns: Outlet name, Address, Area, Channel, Latitude, Longitude, Vendor, Brands.</span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="btn sm primary">Choose file</span><button class="btn sm" type="button" id="trySample">Try a sample list</button><button class="btn sm" type="button" id="copyTpl">Copy column headers</button></span>
+      <input id="ofile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden></label>` : ""}
+    <div class="toolbar">
+      <input class="input" id="oq" type="search" placeholder="Search outlets" style="max-width:280px" value="${esc(ol.q)}" aria-label="Search outlets">
+      ${admin ? `<select class="inline" id="ov" aria-label="Filter by vendor"><option value="All">All vendors</option><option value="none" ${ol.vendor === "none" ? "selected" : ""}>Not assigned (${unassigned})</option>${S.vendors.map(v => `<option value="${v.id}" ${ol.vendor === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>` : ""}
+      <span class="muted" style="margin-left:auto">${list.length} outlets</span>
+    </div>
+    ${admin && ol.sel.size ? `<div class="bulk"><b>${ol.sel.size} selected</b><span>Assign to</span><select class="inline" id="bulkV">${vopts("")}</select><button class="btn sm primary" type="button" id="bulkGo">Assign</button><button class="btn sm" type="button" id="bulkClear">Clear selection</button></div>` : ""}
+    <div class="twrap"><table><thead><tr>${admin ? `<th style="width:36px"><input type="checkbox" id="selAll" aria-label="Select all outlets"></th>` : ""}<th>Outlet</th><th>Area</th><th>Channel</th><th>Brands</th><th>${admin ? "Assigned vendor" : "Status"}</th><th>Today</th></tr></thead>
+    <tbody>${list.map(o => `<tr>
+      ${admin ? `<td><input type="checkbox" data-sel="${o.id}" ${ol.sel.has(o.id) ? "checked" : ""} aria-label="Select ${esc(o.name)}"></td>` : ""}
+      <td><b>${esc(o.name)}</b><small>${esc(o.address)}</small></td><td>${esc(o.area)}${o.located === "area" ? `<small>Placed by area</small>` : o.lat == null ? `<small style="color:var(--warn)">No location</small>` : ""}</td><td>${esc(o.channel)}</td>
+      <td><div class="chips">${(o.brands || []).map(b => `<span class="bchip sm"><i class="bdot" style="background:${BC(b)}"></i>${esc(b)}</span>`).join("") || `<span class="dim">Any</span>`}</div></td>
+      <td>${admin ? `<select class="inline" data-assign="${o.id}" aria-label="Vendor for ${esc(o.name)}">${vopts(o.vendorId)}</select>` : `<span class="pill p-closed">Assigned</span>`}</td>
+      <td>${activeToday.has(o.id) ? `<span class="pill p-live">Activated</span>` : `<span class="dim">–</span>`}</td></tr>`).join("") || `<tr><td colspan="7"><div class="empty" style="border:0">No outlets match.</div></td></tr>`}</tbody></table></div>`;
+  $("#oq").oninput = e => { ol.q = e.target.value; const pos = e.target.selectionStart; renderOutlets(); const i = $("#oq"); i.focus(); i.setSelectionRange(pos, pos); };
+  if (!admin) return;
+  $("#ov").onchange = e => { ol.vendor = e.target.value; renderOutlets(); };
+  $("#ofile").onchange = async e => { const f = e.target.files[0]; if (f) showPreview(await readOutletFile(f)); e.target.value = ""; };
+  $("#trySample").onclick = e => { e.preventDefault(); showPreview(rowsToOutlets(parseCSV(SAMPLE_CSV), "Sample list")); };
+  $("#copyTpl").onclick = async e => { e.preventDefault(); const t = "Outlet name,Address,Area,Channel,Latitude,Longitude,Vendor,Brands"; try { await navigator.clipboard.writeText(t); toast("Column headers copied"); } catch (er) { toast(t); } };
+  const drop = $("#drop");
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) showPreview(await readOutletFile(f)); });
+  el.onchange = async e => {
+    const a = e.target.closest("[data-assign]");
+    if (a) { const o = outletOf(a.dataset.assign); o.vendorId = a.value || null; if (o.vendorId && !(o.brands || []).length) o.brands = vendorOf(o.vendorId).brands.slice(); await save("outlets"); toast(o.vendorId ? `${o.name} assigned to ${vendorOf(o.vendorId).name}` : `${o.name} unassigned`); renderOutlets(); renderNav(); return; }
+    const s = e.target.closest("[data-sel]"); if (s) { s.checked ? ol.sel.add(s.dataset.sel) : ol.sel.delete(s.dataset.sel); renderOutlets(); return; }
+    if (e.target.id === "selAll") { list.forEach(o => e.target.checked ? ol.sel.add(o.id) : ol.sel.delete(o.id)); renderOutlets(); }
+  };
+  if ($("#bulkGo")) {
+    $("#bulkGo").onclick = async () => { const vid = $("#bulkV").value || null; for (const id of ol.sel) { const o = outletOf(id); if (o) { o.vendorId = vid; if (vid && !(o.brands || []).length) o.brands = vendorOf(vid).brands.slice(); } } await save("outlets"); toast(`${ol.sel.size} outlets ${vid ? "assigned to " + vendorOf(vid).name : "unassigned"}`); ol.sel.clear(); renderOutlets(); };
+    $("#bulkClear").onclick = () => { ol.sel.clear(); renderOutlets(); };
+  }
+}
+function showPreview(res) {
+  if (res.error) return toast(res.error, true);
+  const items = res.items; if (!items.length) return toast("No outlets found in that file.", true);
+  const vopts = sel => `<option value="">Not assigned</option>` + S.vendors.map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+  const dupes = items.filter(i => S.outlets.some(o => o.name.toLowerCase() === i.name.toLowerCase() && (o.area || "").toLowerCase() === (i.area || "").toLowerCase())).length;
+  openModal(`<h3>Import ${items.length} outlets</h3>
+    <div class="muted">${items.filter(i => i.vendorId).length} already matched to a vendor from the file. ${items.filter(i => i.located === "none").length ? `${items.filter(i => i.located === "none").length} have no coordinates or known area, so they won't appear on the map until edited.` : ""} ${dupes ? `${dupes} look like outlets you already have and will be skipped.` : ""}</div>
+    <div class="field"><label for="pvAll">Assign every outlet without a vendor to</label><select id="pvAll" class="input">${vopts("")}</select></div>
+    <div class="twrap" style="max-height:300px;overflow:auto"><table style="min-width:560px"><thead><tr><th>Outlet</th><th>Area</th><th>Vendor</th></tr></thead><tbody>${items.map((i, k) => `<tr><td><b>${esc(i.name)}</b><small>${esc(i.address)}</small></td><td>${esc(i.area)}${i.located === "area" ? "<small>Placed by area</small>" : ""}</td><td><select class="inline" data-pv="${k}">${vopts(i.vendorId)}</select>${i.vendorText && !i.vendorId ? `<small style="color:var(--warn)">"${esc(i.vendorText)}" isn't registered</small>` : ""}</td></tr>`).join("")}</tbody></table></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="pvCancel">Cancel</button><button class="btn primary" type="button" id="pvGo">Import outlets</button></div>`, m => {
+    $("#pvCancel", m).onclick = closeModal;
+    $("#pvAll", m).onchange = e => { $$("[data-pv]", m).forEach(s => { if (!items[+s.dataset.pv].vendorId) s.value = e.target.value; }); };
+    $("#pvGo", m).onclick = async () => {
+      let added = 0;
+      $$("[data-pv]", m).forEach(s => { items[+s.dataset.pv].vendorId = s.value || null; });
+      for (const i of items) {
+        if (S.outlets.some(o => o.name.toLowerCase() === i.name.toLowerCase() && (o.area || "").toLowerCase() === (i.area || "").toLowerCase())) continue;
+        if (i.vendorId && !i.brands.length) i.brands = vendorOf(i.vendorId).brands.slice();
+        delete i.vendorText; S.outlets.push(i); added++;
+      }
+      await save("outlets"); closeModal(); toast(`${added} outlets imported`); ol.vendor = "All"; renderOutlets(); renderNav();
+    };
+  });
+}
+
+/* ---------- vendors & users (admin) ---------- */
+function renderVendors() {
+  const el = $("#v-vendors");
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
+    <div class="vcards">${S.vendors.map(v => {
+      const mgr = S.users.filter(u => u.role === "manager" && u.vendorId === v.id), bas = S.users.filter(u => u.role === "ba" && u.vendorId === v.id);
+      const es = S.entries.filter(e => e.vendorId === v.id);
+      return `<article class="vcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4><i class="bdot" style="background:${v.color};margin-right:8px"></i>${esc(v.name)}</h4>${es.some(isLive) ? `<span class="pill p-live">${es.filter(isLive).length} running</span>` : ""}</div>
+        <div class="muted" style="font-size:12.5px">${esc(v.contact)} · ${esc(v.phone)} · ${esc(v.email)}</div>
+        <div class="chips">${v.brands.map(b => `<span class="bchip sm"><i class="bdot" style="background:${BC(b)}"></i>${esc(b)}</span>`).join("")}</div>
+        <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b></div><div><label>Ambassadors</label><b>${bas.length}</b></div><div><label>Entries</label><b>${es.length}</b></div></div>
+        <div style="font-size:12.5px"><span class="dim">Manager sign-in:</span> ${mgr.map(m => `<span class="num">${esc(m.login)}</span>`).join(", ") || "none"}</div></article>`;
+    }).join("")}</div>
+    <div class="card"><div class="card-h"><h3>Everyone with a sign-in</h3><div class="right"><span class="chip">${S.users.length} accounts</span></div></div>
+    <div class="twrap" style="border:0"><table><thead><tr><th>Name</th><th>Role</th><th>Vendor</th><th>Sign-in</th><th>Entries</th></tr></thead><tbody>
+    ${S.users.map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center">${avatar(u)}<b>${esc(u.name)}</b></div></td><td>${ROLE_INFO[u.role].label}</td><td>${esc((vendorOf(u.vendorId) || {}).name || "–")}</td><td class="num">${esc(u.login)}</td><td class="num">${S.entries.filter(e => e.baId === u.id).length || "–"}</td></tr>`).join("")}
+    </tbody></table></div></div>`;
+  $("#addVendor").onclick = vendorForm;
+  $("#addBA").onclick = () => baForm(null);
+  $("#resetDemo").onclick = () => openModal(`<h3>Reset to the example data?</h3><p class="muted">This deletes every vendor, outlet, account, entry and photo stored in this browser and puts the example data back. It can't be undone.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rsNo">Keep my data</button><button class="btn primary" type="button" id="rsYes">Reset</button></div>`, m => {
+    $("#rsNo", m).onclick = closeModal;
+    $("#rsYes", m).onclick = async () => { await DB.clear(); photoCache.clear(); await seedDemo(); closeModal(); toast("Example data restored"); refresh(); paintSamplePhotos(); };
+  });
+}
+function brandPicker(name, chosen = []) { return `<div class="chips">${BRANDS.map(b => `<label class="bchip"><input type="checkbox" name="${name}" value="${esc(b.name)}" ${chosen.includes(b.name) ? "checked" : ""}><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</label>`).join("")}</div>`; }
+function vendorForm() {
+  openModal(`<h3>Register a vendor</h3>
+    <form id="vf" class="fgrid" novalidate>
+      <div class="field full"><label for="vf-name">Vendor (agency) name</label><input id="vf-name" required placeholder="e.g. Apex Brand Experience"></div>
+      <div class="field"><label for="vf-contact">Vendor manager's name</label><input id="vf-contact" required></div>
+      <div class="field"><label for="vf-phone">Phone</label><input id="vf-phone" inputmode="tel"></div>
+      <div class="field"><label for="vf-email">Manager's sign-in email</label><input id="vf-email" type="email" required></div>
+      <div class="field"><label for="vf-pw">Temporary password</label><input id="vf-pw" value="Manager@${Math.floor(100 + Math.random() * 900)}"><small>Share this with the manager.</small></div>
+      <div class="field full"><span class="flabel">Brands this vendor activates</span>${brandPicker("vfb")}</div>
+      <div class="err full" id="vf-err" role="alert"></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="vfCancel">Cancel</button><button class="btn primary" type="submit">Register vendor</button></div>
+    </form>`, m => {
+    $("#vfCancel", m).onclick = closeModal;
+    $("#vf", m).onsubmit = async e => {
+      e.preventDefault();
+      const name = $("#vf-name").value.trim(), contact = $("#vf-contact").value.trim(), email = $("#vf-email").value.trim().toLowerCase(), pw = $("#vf-pw").value;
+      const brands = $$("input[name=vfb]:checked", m).map(i => i.value);
+      const err = t => $("#vf-err").textContent = t;
+      if (!name || !contact) return err("Add the vendor's name and its manager's name.");
+      if (!/^\S+@\S+\.\S+$/.test(email)) return err("Enter a valid email for the manager's sign-in.");
+      if (S.users.some(u => u.login.toLowerCase() === email)) return err("That email already has an account.");
+      if (pw.length < 6) return err("Use a password of at least 6 characters.");
+      if (!brands.length) return err("Pick at least one brand.");
+      const v = { id: uid("v_"), name, contact, phone: $("#vf-phone").value.trim(), email, brands, color: BC(brands[0]), createdAt: Date.now() };
+      S.vendors.push(v); S.users.push({ id: uid("u_"), role: "manager", name: contact, login: email, phone: v.phone, vendorId: v.id, pw: await sha(pw) });
+      await save("vendors", "users"); closeModal(); toast(`${name} registered. ${contact} can sign in with ${email}.`); refresh();
+    };
+  });
+}
+function baForm(vendorId) {
+  const nextNo = Math.max(1000, ...S.users.filter(u => u.role === "ba").map(u => +String(u.login).replace(/\D/g, "") || 0)) + 1;
+  openModal(`<h3>Add a brand ambassador</h3>
+    <form id="bf" class="fgrid" novalidate>
+      <div class="field full"><label for="bf-name">Full name</label><input id="bf-name" required></div>
+      <div class="field"><label for="bf-phone">Phone number</label><input id="bf-phone" inputmode="tel" placeholder="0803 000 0000"></div>
+      ${vendorId ? "" : `<div class="field"><label for="bf-v">Vendor</label><select id="bf-v">${S.vendors.map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("")}</select></div>`}
+      <div class="field"><label for="bf-id">BA ID</label><input id="bf-id" value="BA-${nextNo}"></div>
+      <div class="field"><label for="bf-pin">4-digit PIN</label><input id="bf-pin" inputmode="numeric" maxlength="6" value="${String(Math.floor(1000 + Math.random() * 9000))}"><small>They sign in with the BA ID or phone number and this PIN.</small></div>
+      <div class="err full" id="bf-err" role="alert"></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="bfCancel">Cancel</button><button class="btn primary" type="submit">Add ambassador</button></div>
+    </form>`, m => {
+    $("#bfCancel", m).onclick = closeModal;
+    $("#bf", m).onsubmit = async e => {
+      e.preventDefault();
+      const name = $("#bf-name").value.trim(), id = $("#bf-id").value.trim(), pin = $("#bf-pin").value.trim(), phone = $("#bf-phone").value.trim();
+      const err = t => $("#bf-err").textContent = t;
+      if (!name) return err("Add the ambassador's name.");
+      if (!/^\d{4,6}$/.test(pin)) return err("The PIN must be 4 to 6 digits.");
+      if (S.users.some(u => u.login.toLowerCase() === id.toLowerCase())) return err("That BA ID is already in use.");
+      const vid = vendorId || $("#bf-v").value;
+      S.users.push({ id: uid("u_"), role: "ba", name, login: id, phone, vendorId: vid, pw: await sha(pin) });
+      await save("users"); closeModal(); toast(`${name} added. Sign-in: ${id} with PIN ${pin}`); refresh();
+    };
+  });
+}
+
+/* ---------- team (manager) ---------- */
+function renderTeam() {
+  const u = me(), el = $("#v-team");
+  const bas = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId);
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="tAdd">Add a brand ambassador</button></div>
+    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>Sign-in</th><th>Status</th><th>Today</th><th>Cases sold (all time)</th><th>Entries</th></tr></thead><tbody>
+    ${bas.map(b => { const es = S.entries.filter(e => e.baId === b.id), live = es.find(isLive), td = es.filter(e => dayKey(e.start) === dayKey(Date.now()));
+      return `<tr ${live ? `data-entry="${live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.phone || "")}</small></div></div></td><td class="num">${esc(b.login)}</td>
+      <td>${live ? `<span class="pill p-live">At ${esc(live.outletName)}</span>` : `<span class="pill p-closed">Not running</span>`}</td><td class="num">${td.length ? n(td.reduce((a, e) => a + (+e.sold || 0), 0)) + " cases" : "–"}</td><td class="num">${n(es.reduce((a, e) => a + (+e.sold || 0), 0))}</td><td class="num">${es.length}</td></tr>`; }).join("") || `<tr><td colspan="6"><div class="empty" style="border:0">No ambassadors yet. Add your first one.</div></td></tr>`}
+    </tbody></table></div>`;
+  $("#tAdd").onclick = () => baForm(u.vendorId);
+}
+
+/* ---------- brand ambassador: log an activation ---------- */
+const draft = { outletId: "", type: "Activation", brand: "", opening: 0, sold: 0, reached: 0, notes: "", gps: null, files: [], status: "running", locMsg: "" };
+function locate(cb) {
+  if (!navigator.geolocation) { cb(null, "This device can't share its location."); return; }
+  navigator.geolocation.getCurrentPosition(p => cb({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, time: Date.now() }), err => cb(null, err.code === 1 ? "Location access was blocked. Allow location for this site in your browser settings, then try again." : "Couldn't get a location fix. Move outside or near a window and try again."), { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
+}
+const PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>';
+const CAM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+function stepper(id, val, label) { return `<div class="field"><label for="${id}">${label}</label><div class="stepper"><button type="button" data-step="${id}" data-d="-1" aria-label="Decrease ${label}">−</button><input id="${id}" class="input" type="number" inputmode="numeric" min="0" value="${val}"><button type="button" data-step="${id}" data-d="1" aria-label="Increase ${label}">+</button></div></div>`; }
+function renderLog() {
+  const u = me(), v = vendorOf(u.vendorId), el = $("#v-log");
+  const live = S.entries.find(e => e.baId === u.id && isLive(e));
+  const firstName = u.name.split(" ")[0];
+  if (live) {
+    el.innerHTML = `<div class="ba-wrap">
+      <div class="hello">${avatar(u, 46)}<div><h2>You're live, ${esc(firstName)}</h2><div class="muted">${esc(v.name)} · BA ID ${esc(u.login)}</div></div></div>
+      <div class="livecard" style="--bc:${BC(live.brand)}">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start"><div><span class="typ ${TCLASS(live.type)}">${esc(live.type)}</span><h3>${esc(live.brand)} at ${esc(live.outletName)}</h3><div class="muted">Started ${hm(live.start)}</div></div><div style="text-align:right"><div class="timer" data-since="${live.start}">${dur(Date.now() - live.start)}</div><span class="pill p-live">Running</span></div></div>
+        <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${live.gps ? `<b>Location recorded</b><span>${live.gps.lat.toFixed(5)}, ${live.gps.lng.toFixed(5)} · ±${Math.round(live.gps.acc)} m at ${hm(live.gps.time)}</span>` : `<b>No location yet</b><span>Record it so your manager can see you on the map.</span>`}</div><button class="btn sm" type="button" id="relocate">${live.gps ? "Update location" : "Record location"}</button></div>
+        <div><div class="flabel" style="margin-bottom:8px">Live photos (${live.photos.length})</div><div class="shots">${live.photos.map(p => `<div class="shot"><button type="button" data-photo-open="${p}" style="border:0;padding:0;width:100%;height:100%"><img data-photo="${p}" alt="Activation photo"></button></div>`).join("")}<label class="addshot">${CAM_SVG}Take photo<input type="file" accept="image/*" capture="environment" multiple id="livePh"></label></div></div>
+        <div class="fgrid">${stepper("lv-sold", live.sold, "Cases sold so far")}${stepper("lv-reached", live.reached, "Consumers reached")}</div>
+        <div class="cases"><div><label>Opening</label><b>${n(live.opening)}</b></div><div><label>Sold</label><b id="lvSoldShow">${n(live.sold)}</b></div><div><label>Closing</label><b id="lvClose">${n(Math.max(0, live.opening - live.sold))}</b></div></div>
+        <div class="field"><label for="lv-notes">Notes for your manager</label><textarea id="lv-notes" rows="2" placeholder="Stock issues, competitor activity, what consumers said">${esc(live.notes)}</textarea></div>
+        <div class="err" id="lv-err" role="alert"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" id="lvSave">Save update</button><button class="btn primary" type="button" id="lvEnd">End activation</button></div>
+      </div></div>`;
+    hydrate(el);
+    const syncCases = () => { const s = +$("#lv-sold").value || 0; $("#lvSoldShow").textContent = n(s); $("#lvClose").textContent = n(Math.max(0, live.opening - s)); };
+    $("#lv-sold").oninput = syncCases;
+    el.onclick = e => { const b = e.target.closest("[data-step]"); if (b) { const i = $("#" + b.dataset.step); i.value = Math.max(0, (+i.value || 0) + +b.dataset.d); syncCases(); } };
+    const commit = () => {
+      const sold = +$("#lv-sold").value || 0;
+      if (sold > live.opening && live.opening > 0) { $("#lv-err").textContent = `Cases sold (${sold}) is more than your opening cases (${live.opening}). Check the numbers.`; return false; }
+      live.sold = sold; live.reached = +$("#lv-reached").value || 0; live.notes = $("#lv-notes").value.trim(); $("#lv-err").textContent = ""; return true;
+    };
+    $("#lvSave").onclick = async () => { if (!commit()) return; await save("entries"); toast("Update saved"); renderLog(); };
+    $("#lvEnd").onclick = () => { if (!commit()) return; openModal(`<h3>End this activation?</h3><p class="muted">${esc(live.brand)} at ${esc(live.outletName)}. You sold ${n(live.sold)} of ${n(live.opening)} opening cases and reached ${n(live.reached)} consumers. You can't add photos after it ends.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="enNo">Keep running</button><button class="btn primary" type="button" id="enYes">End activation</button></div>`, m => { $("#enNo", m).onclick = closeModal; $("#enYes", m).onclick = async () => { live.end = Date.now(); await save("entries"); closeModal(); toast("Activation ended and filed in your vendor folder"); renderLog(); renderNav(); }; }); };
+    $("#relocate").onclick = () => { $("#relocate").textContent = "Finding you…"; locate(async (g, msg) => { if (g) { live.gps = g; await save("entries"); toast("Location recorded"); } else toast(msg, true); renderLog(); }); };
+    $("#livePh").onchange = async e => {
+      const files = [...e.target.files]; if (!files.length) return;
+      toast(`Uploading ${files.length} photo${files.length > 1 ? "s" : ""}…`);
+      for (const f of files) { const p = await storePhoto(f, { brand: live.brand, outlet: live.outletName, time: Date.now(), gps: live.gps }); live.photos.push(p.id); }
+      commit(); await save("entries"); toast(`${files.length} photo${files.length > 1 ? "s" : ""} added`); renderLog();
+    };
+    return;
+  }
+  const outlets = S.outlets.filter(o => o.vendorId === u.vendorId);
+  if (!draft.brand || !BRANDS.some(b => b.name === draft.brand)) draft.brand = v.brands[0];
+  const near = draft.gps ? outlets.filter(o => o.lat != null).map(o => ({ o, d: km(draft.gps, o) })).sort((a, b) => a.d - b.d)[0] : null;
+  el.innerHTML = `<div class="ba-wrap">
+    <div class="hello">${avatar(u, 46)}<div><h2>Hi ${esc(firstName)}, ready to start?</h2><div class="muted">${esc(v.name)} · BA ID ${esc(u.login)}</div></div></div>
+    <form class="card" id="logForm" novalidate style="display:flex;flex-direction:column;gap:16px">
+      <div class="card-h" style="margin:0"><h3>Log an activation</h3></div>
+      <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${draft.gps ? `<b>Location recorded</b><span>${draft.gps.lat.toFixed(5)}, ${draft.gps.lng.toFixed(5)} · ±${Math.round(draft.gps.acc)} m</span>${near ? `<div style="font-size:12px;color:var(--muted)">Nearest outlet: ${esc(near.o.name)}, ${near.d < 1 ? Math.round(near.d * 1000) + " m" : near.d.toFixed(1) + " km"} away</div>` : ""}` : `<b>Record your location</b><span style="font-family:var(--body)">${esc(draft.locMsg || "Your manager sees where you are when you start.")}</span>`}</div><button class="btn sm ${draft.gps ? "" : "primary"}" type="button" id="getLoc">${draft.gps ? "Refresh" : "Record location"}</button></div>
+      <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${outlets.map(o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`).join("")}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
+      <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"></div>
+      <div class="field"><span class="flabel">Activity</span><div class="seg" id="lg-type">${TYPES.map(t => `<button type="button" aria-pressed="${draft.type === t}" data-o="${t}">${t}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}><i class="bdot" style="background:${b.color}"></i>${esc(b.name)}</label>`).join("")}</div></div>
+      <div class="fgrid">${stepper("lg-open", draft.opening, "Opening cases")}${stepper("lg-sold", draft.sold, "Cases sold")}</div>
+      ${stepper("lg-reached", draft.reached, "Consumers reached")}
+      <div class="field"><span class="flabel">Live photos of the activation (at least one)</span><div class="shots" id="lgShots">${draft.files.map((f, i) => `<div class="shot"><img src="${f.url}" alt="Selected photo ${i + 1}"><span class="tag">${f.live ? "Live" : "Older photo"}</span><button class="x" type="button" data-rm="${i}" aria-label="Remove photo">✕</button></div>`).join("")}<label class="addshot">${CAM_SVG}Take photo<input type="file" accept="image/*" capture="environment" multiple id="lgPh"></label></div><small class="dim">Each photo is stamped with the time and your location.</small></div>
+      <div class="field"><label for="lg-notes">Notes (optional)</label><textarea id="lg-notes" rows="2">${esc(draft.notes)}</textarea></div>
+      <div class="field"><span class="flabel">Status</span><div class="seg" id="lg-status"><button type="button" data-o="running" aria-pressed="${draft.status === "running"}">Still running</button><button type="button" data-o="done" aria-pressed="${draft.status === "done"}">Already finished</button></div></div>
+      <div class="err" id="lg-err" role="alert"></div>
+      <button class="btn primary block" type="submit" style="padding:13px">${draft.status === "running" ? "Start activation" : "Submit activation"}</button>
+    </form></div>`;
+  const keep = () => { draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
+  el.oninput = keep;
+  $("#lg-outlet").onchange = () => { keep(); $("#otherWrap").hidden = draft.outletId !== "other"; };
+  el.onclick = e => {
+    const st = e.target.closest("[data-step]"); if (st) { const i = $("#" + st.dataset.step); i.value = Math.max(0, (+i.value || 0) + +st.dataset.d); keep(); return; }
+    const t = e.target.closest("#lg-type button"); if (t) { keep(); draft.type = t.dataset.o; renderLog(); return; }
+    const s = e.target.closest("#lg-status button"); if (s) { keep(); draft.status = s.dataset.o; renderLog(); return; }
+    const rm = e.target.closest("[data-rm]"); if (rm) { keep(); const f = draft.files.splice(+rm.dataset.rm, 1)[0]; URL.revokeObjectURL(f.url); renderLog(); }
+  };
+  $("#getLoc").onclick = () => { keep(); $("#getLoc").textContent = "Finding you…"; locate((g, msg) => { draft.gps = g || draft.gps; draft.locMsg = msg || ""; if (g && !draft.outletId) { const nr = outlets.filter(o => o.lat != null).map(o => ({ o, d: km(g, o) })).sort((a, b) => a.d - b.d)[0]; if (nr && nr.d < .3) draft.outletId = nr.o.id; } if (msg) toast(msg, true); renderLog(); }); };
+  $("#lgPh").onchange = e => { keep(); for (const f of e.target.files) draft.files.push({ file: f, url: URL.createObjectURL(f), live: (Date.now() - (f.lastModified || Date.now())) < 15 * 60000 }); renderLog(); };
+  $("#logForm").onsubmit = async e => {
+    e.preventDefault(); keep();
+    const err = t => { $("#lg-err").textContent = t; };
+    const o = outletOf(draft.outletId);
+    const outletName = draft.outletId === "other" ? draft.otherName.trim() : o && o.name;
+    if (!outletName) return err("Choose the outlet you're at, or type its name.");
+    if (!draft.files.length) return err("Add at least one live photo of the activation.");
+    if (draft.sold > draft.opening && draft.opening > 0) return err(`Cases sold (${draft.sold}) is more than opening cases (${draft.opening}). Check the numbers.`);
+    const btn = $("#logForm button[type=submit]"); btn.disabled = true; btn.textContent = "Saving photos…";
+    const start = Date.now();
+    const photos = [];
+    for (const f of draft.files) { const p = await storePhoto(f.file, { brand: draft.brand, outlet: outletName, time: start, gps: draft.gps }); photos.push(p.id); URL.revokeObjectURL(f.url); }
+    let gps = draft.gps;
+    if (!gps && o && o.lat != null) gps = null;
+    const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim() };
+    if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
+    S.entries.push(entry); await save("entries");
+    Object.assign(draft, { outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", files: [], status: "running" });
+    toast(entry.end ? "Activation submitted" : "You're live. Your manager can see you on the map.");
+    renderNav(); renderLog();
+  };
+}
+function renderHistory() {
+  const u = me(), el = $("#v-history");
+  const es = S.entries.filter(e => e.baId === u.id).sort((a, b) => b.start - a.start);
+  const sold = es.reduce((a, e) => a + (+e.sold || 0), 0);
+  el.innerHTML = `<div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><label>Activations</label><div class="v">${es.length}</div></div><div class="kpi"><label>Cases sold</label><div class="v">${n(sold)}</div></div><div class="kpi"><label>Photos</label><div class="v">${es.reduce((a, e) => a + e.photos.length, 0)}</div></div></div>` +
+    (es.length ? `<div class="files">${es.map(fileCard).join("")}</div>` : `<div class="empty">Nothing logged yet. Your activations will be listed here.</div>`);
+  hydrate(el);
+}
+
+/* =====================================================================
+   3D: city map of Lagos for the dashboard
+   ===================================================================== */
+const project = (lat, lng) => ({ x: (lng - 3.42) * 300, z: -(lat - 6.53) * 300 });
+const city = (() => {
+  const noop = { resize() { }, setMarkers() { }, focus() { }, theme() { } };
+  if (!window.THREE) { $("#stage").insertAdjacentHTML("beforeend", '<div class="empty" style="position:absolute;left:20px;right:20px;bottom:50px;z-index:4">The 3D map could not load. Everything else still works.</div>'); return noop; }
+  const canvas = $("#gl"), stage = $("#stage");
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" }); } catch (e) { return noop; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0B0E18, .0105);
+  const camera = new THREE.PerspectiveCamera(40, 2, .5, 600);
+  const hemi = new THREE.HemisphereLight(0x8aa0ff, 0x0b0b14, .55); scene.add(hemi);
+  const moon = new THREE.DirectionalLight(0xb9c6ff, .7); moon.position.set(-40, 80, 30); scene.add(moon);
+  const gc = document.createElement("canvas"); gc.width = gc.height = 128;
+  const g2 = gc.getContext("2d"), grd = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.25, "rgba(255,255,255,.55)"); grd.addColorStop(1, "rgba(255,255,255,0)");
+  g2.fillStyle = grd; g2.fillRect(0, 0, 128, 128);
+  const glowTex = new THREE.CanvasTexture(gc);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(280, 280), new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uBase: { value: new THREE.Color(.035, .045, .075) }, uGrid: { value: new THREE.Color(.16, .19, .32) }, uEdge: { value: 1 } },
+    vertexShader: "varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }",
+    fragmentShader: `varying vec2 vP; uniform float uTime; uniform vec3 uBase; uniform vec3 uGrid; uniform float uEdge;
+      float line(float x,float w){ float f=abs(fract(x)-.5); return smoothstep(w,0.,.5-f); }
+      void main(){ vec2 p=vP/4.; float g=max(line(p.x,.04),line(p.y,.04)); float r=length(vP)/130.;
+        vec3 col=uBase+uGrid*g*(1.-r)*.55;
+        float scan=smoothstep(.02,0.,abs(fract(length(vP)/60.-uTime*.08)-.5)-.48);
+        col+=vec3(.9,.6,.25)*scan*.06*(1.-r);
+        gl_FragColor=vec4(mix(col, col*(1.-smoothstep(.55,1.,r)), uEdge),1.); }`
+  }));
+  ground.rotation.x = -Math.PI / 2; scene.add(ground);
+  // water: Lagos Lagoon ribbon + the Atlantic to the south
+  const lagZ = x => 16 + Math.sin(x * .06) * 2.2 - Math.max(0, x - 20) * .05;
+  const lagW = x => 2.6 + Math.cos(x * .09) * .9;
+  const lpos = [], lidx = [];
+  for (let i = 0; i <= 80; i++) { const x = -14 + i * 90 / 80; lpos.push(x, .05, lagZ(x) - lagW(x), x, .05, lagZ(x) + lagW(x)); if (i) { const a = (i - 1) * 2; lidx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } }
+  const lgeo = new THREE.BufferGeometry(); lgeo.setAttribute("position", new THREE.Float32BufferAttribute(lpos, 3)); lgeo.setIndex(lidx);
+  const waterMat = new THREE.ShaderMaterial({ transparent: true, uniforms: { uTime: { value: 0 }, uA: { value: new THREE.Color(.04, .12, .2) }, uB: { value: new THREE.Color(.12, .42, .55) } },
+    vertexShader: "varying vec3 vW; void main(){ vW=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }",
+    fragmentShader: "varying vec3 vW; uniform float uTime; uniform vec3 uA; uniform vec3 uB; void main(){ float w=sin(vW.x*.6+uTime*1.3)*.5+sin(vW.z*1.4-uTime)*.5; gl_FragColor=vec4(mix(uA,uB,.35+.25*w),.85); }" });
+  scene.add(new THREE.Mesh(lgeo, waterMat));
+  const oceanMat = waterMat.clone(); oceanMat.uniforms = THREE.UniformsUtils.clone(waterMat.uniforms); oceanMat.fragmentShader = waterMat.fragmentShader.replace(".85);", ".45);");
+  const ocean = new THREE.Mesh(new THREE.PlaneGeometry(280, 60), oceanMat); ocean.rotation.x = -Math.PI / 2; ocean.position.set(0, .04, 66); scene.add(ocean);
+  const inWater = (x, z) => z > 35.5 || (x > -14 && x < 76 && Math.abs(z - lagZ(x)) < lagW(x) + 1.2);
+  const allOutlets = () => S.outlets.filter(o => o.lat != null).map(o => project(o.lat, o.lng));
+  // buildings
+  const N = 1500;
+  const bgeo = new THREE.BoxGeometry(1, 1, 1); bgeo.translate(0, .5, 0);
+  const bmat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .75, metalness: .25, emissive: 0x0b1020 });
+  const blocks = new THREE.InstancedMesh(bgeo, bmat, N);
+  const m4 = new THREE.Matrix4(), col = new THREE.Color();
+  const tints = [];
+  seed = 99; let placed = 0;
+  const centers = Object.values(AREAS).map(a => project(a[0], a[1]));
+  for (let tries = 0; placed < N && tries < N * 6; tries++) {
+    const c = centers[Math.floor(rnd() * centers.length)], near = rnd() < .72;
+    const x = near ? c.x + (rnd() - .5) * 16 : (rnd() - .5) * 140, z = near ? c.z + (rnd() - .5) * 16 : (rnd() - .5) * 90 - 6;
+    if (inWater(x, z)) continue;
+    const dist = Math.min(...centers.map(cc => Math.hypot(cc.x - x, cc.z - z)));
+    const vi = (x > -2 && x < 18 && z > 18 && z < 34) ? 2.4 : 1;
+    const h = (.8 + rnd() * 2.6 + Math.max(0, 7 - dist) * rnd() * 1.2) * vi;
+    m4.makeScale(.9 + rnd() * 1.4, h, .9 + rnd() * 1.4); m4.setPosition(x, 0, z);
+    blocks.setMatrixAt(placed, m4); tints.push(rnd()); placed++;
+  }
+  blocks.count = placed; scene.add(blocks);
+  const wpos = [], wcol = [];
+  const tmp = new THREE.Matrix4(), pv = new THREE.Vector3(), sv = new THREE.Vector3(), qv = new THREE.Quaternion();
+  for (let i = 0; i < placed; i++) {
+    blocks.getMatrixAt(i, tmp); tmp.decompose(pv, qv, sv);
+    for (let j = 0; j < Math.ceil(sv.y * 1.6); j++) if (rnd() < .55) {
+      const face = rnd() < .5;
+      wpos.push(pv.x + (face ? (rnd() - .5) * sv.x : sv.x / 2 + .02), .3 + rnd() * (sv.y - .4), pv.z + (face ? sv.z / 2 + .02 : (rnd() - .5) * sv.z));
+      const warm = rnd() < .7; wcol.push(warm ? 1 : .55, warm ? .78 : .8, warm ? .45 : 1);
+    }
+  }
+  const wgeo = new THREE.BufferGeometry(); wgeo.setAttribute("position", new THREE.Float32BufferAttribute(wpos, 3)); wgeo.setAttribute("color", new THREE.Float32BufferAttribute(wcol, 3));
+  const winMat = new THREE.PointsMaterial({ size: .22, vertexColors: true, transparent: true, opacity: .8, blending: THREE.AdditiveBlending, depthWrite: false });
+  scene.add(new THREE.Points(wgeo, winMat));
+  const DP = 500, dpos = new Float32Array(DP * 3);
+  for (let i = 0; i < DP; i++) { dpos[i * 3] = (rnd() - .5) * 150; dpos[i * 3 + 1] = rnd() * 40; dpos[i * 3 + 2] = (rnd() - .5) * 120; }
+  const dgeo = new THREE.BufferGeometry(); dgeo.setAttribute("position", new THREE.BufferAttribute(dpos, 3));
+  const dustMat = new THREE.PointsMaterial({ size: .5, map: glowTex, color: 0x8fa6ff, transparent: true, opacity: .35, blending: THREE.AdditiveBlending, depthWrite: false });
+  const dust = new THREE.Points(dgeo, dustMat); scene.add(dust);
+  // trade marketing hub
+  const hp = project(HUB.lat, HUB.lng);
+  const hubCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.4, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffb547, emissiveIntensity: .7, metalness: .6, roughness: .2, flatShading: true }));
+  hubCore.position.set(hp.x, 8, hp.z); scene.add(hubCore);
+  const hubGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffb547, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .8 }));
+  hubGlow.scale.set(9, 9, 1); hubGlow.position.set(hp.x, 8, hp.z); scene.add(hubGlow);
+  // outlet pins (assigned outlets, faint)
+  let pins = null;
+  function setPins(outlets) {
+    if (pins) { scene.remove(pins); pins.geometry.dispose(); }
+    const pp = []; outlets.filter(o => o.lat != null).forEach(o => { const p = project(o.lat, o.lng); pp.push(p.x, .4, p.z); });
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pp, 3));
+    pins = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, map: glowTex, color: isDark() ? 0xffffff : 0x4a5578, transparent: true, opacity: isDark() ? .55 : .7, depthWrite: false, blending: isDark() ? THREE.AdditiveBlending : THREE.NormalBlending }));
+    scene.add(pins);
+  }
+  // beacons
+  let beacons = [];
+  const beamMat = c => new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: isDark() ? THREE.AdditiveBlending : THREE.NormalBlending, side: THREE.DoubleSide,
+    uniforms: { uCol: { value: new THREE.Color(c) }, uTime: { value: 0 }, uAmp: { value: 1 }, uGain: { value: isDark() ? 1.2 : .9 } },
+    vertexShader: "varying vec2 vU; void main(){ vU=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }",
+    fragmentShader: "varying vec2 vU; uniform vec3 uCol; uniform float uTime; uniform float uAmp; uniform float uGain; void main(){ float a=pow(1.-vU.y,1.6)*.9; a*=.75+.25*sin(vU.y*30.-uTime*4.); gl_FragColor=vec4(uCol*uGain,min(1.,a*uAmp)); }" });
+  function clear() {
+    beacons.forEach(b => { b.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); scene.remove(b.group); b.label.remove(); if (b.arc) { scene.remove(b.arc); b.arc.geometry.dispose(); } b.dots.forEach(s => scene.remove(s)); });
+    beacons = [];
+  }
+  let sig = "";
+  function setMarkers(live, outlets) {
+    const s = live.map(e => e.id + (e.gps ? e.gps.time : "") + e.sold).join("|") + "#" + outlets.length + (isDark() ? "d" : "l");
+    if (s === sig) return; sig = s;
+    clear(); setPins(outlets);
+    const BL = isDark() ? THREE.AdditiveBlending : THREE.NormalBlending;
+    const slot = {};
+    live.forEach(e => {
+      const pos = posOf(e), p = project(pos.lat, pos.lng); const k = Math.round(p.x) + ":" + Math.round(p.z); const off = slot[k] = (slot[k] || 0) + 1;
+      const x = p.x + (off - 1) * 1.6, z = p.z + (off - 1) * 1.2;
+      const color = css(TVAR(e.type)) || "#FFB547";
+      const g = new THREE.Group(); g.position.set(x, 0, z);
+      const h = 12 + Math.min(14, (+e.sold || 0) / 3);
+      const beam = new THREE.Mesh(new THREE.CylinderGeometry(.5, .85, h, 24, 1, true), beamMat(color)); beam.geometry.translate(0, h / 2, 0); g.add(beam);
+      const core = new THREE.Mesh(new THREE.SphereGeometry(.7, 24, 16), new THREE.MeshBasicMaterial({ color: BC(e.brand) })); core.position.y = h; g.add(core);
+      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, blending: BL, depthWrite: false, opacity: .9 })); halo.scale.set(6, 6, 1); halo.position.y = h; g.add(halo);
+      const rings = [0, 1, 2].map(i => { const r = new THREE.Mesh(new THREE.RingGeometry(.9, 1.15, 64), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .6, side: THREE.DoubleSide, depthWrite: false, blending: BL })); r.rotation.x = -Math.PI / 2; r.position.y = .12; r.userData.phase = i / 3; g.add(r); return r; });
+      const hit = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, h + 2, 8), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = h / 2; hit.userData.id = e.id; g.add(hit);
+      const a = new THREE.Vector3(hp.x, 8, hp.z), b = new THREE.Vector3(x, h, z); const mid = a.clone().lerp(b, .5); mid.y += 8 + a.distanceTo(b) * .25;
+      const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+      const arc = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(64)), new THREE.LineBasicMaterial({ color, transparent: true, opacity: .35, blending: BL, depthWrite: false }));
+      arc.userData.curve = curve; scene.add(arc);
+      const dots = [0, .5].map(o => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, blending: BL, depthWrite: false })); s.scale.set(1.5, 1.5, 1); s.userData.o = o; scene.add(s); return s; });
+      scene.add(g);
+      const label = document.createElement("div"); label.className = "blabel";
+      label.innerHTML = `<i style="background:${BC(e.brand)}"></i>${esc(e.brand)}<small>${esc(e.outletName)}</small>`;
+      label.onclick = () => openEntry(e.id);
+      $("#labels").appendChild(label);
+      beacons.push({ id: e.id, group: g, beam, halo, rings, hit, arc, dots, label, top: new THREE.Vector3(x, h + 1.4, z), burst: 0 });
+    });
+  }
+  const rig = { theta: .5, phi: .8, radius: 112, target: new THREE.Vector3(-4, 4, 0) };
+  const HOME = { phi: .8, radius: 112, target: new THREE.Vector3(-4, 4, 0) };
+  const want = { theta: .5, phi: HOME.phi, radius: HOME.radius, target: HOME.target.clone() };
+  let focusId = null, lastInteract = 0;
+  function focus(id) {
+    focusId = id; const b = beacons.find(x => x.id === id);
+    if (b) { want.target.set(b.group.position.x, 4, b.group.position.z); want.radius = 58; want.phi = .85; }
+    else { want.target.copy(HOME.target); want.radius = stage.clientWidth < 600 ? 150 : HOME.radius; want.phi = HOME.phi; }
+  }
+  let drag = null; const pointers = new Map();
+  canvas.addEventListener("pointerdown", e => { canvas.setPointerCapture(e.pointerId); pointers.set(e.pointerId, [e.clientX, e.clientY]); drag = { moved: 0, pinch: null }; lastInteract = performance.now(); });
+  canvas.addEventListener("pointermove", e => {
+    if (!drag || !pointers.has(e.pointerId)) { canvas.style.cursor = pick(e) ? "pointer" : ""; return; }
+    const prev = pointers.get(e.pointerId); pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pointers.size === 2) { const [p1, p2] = [...pointers.values()], d = Math.hypot(p1[0] - p2[0], p1[1] - p2[1]); if (drag.pinch) want.radius = THREE.MathUtils.clamp(want.radius * drag.pinch / d, 40, 190); drag.pinch = d; drag.moved = 99; return; }
+    const dx = e.clientX - prev[0], dy = e.clientY - prev[1]; drag.moved += Math.abs(dx) + Math.abs(dy);
+    want.theta -= dx * .006; want.phi = THREE.MathUtils.clamp(want.phi - dy * .004, .35, 1.35); lastInteract = performance.now();
+  });
+  const up = e => { pointers.delete(e.pointerId); if (drag && drag.moved < 6 && !pointers.size) { const id = pick(e); if (id) openEntry(id); } if (!pointers.size) drag = null; };
+  canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", up);
+  canvas.addEventListener("wheel", e => { e.preventDefault(); want.radius = THREE.MathUtils.clamp(want.radius * (1 + e.deltaY * .001), 40, 190); lastInteract = performance.now(); }, { passive: false });
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  function pick(e) { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, camera); const h = ray.intersectObjects(beacons.map(b => b.hit))[0]; return h && h.object.userData.id; }
+  function resize() { const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); if (!focusId) want.radius = rig.radius = w < 600 ? 150 : HOME.radius; }
+  addEventListener("resize", resize);
+  if ("ResizeObserver" in window) new ResizeObserver(resize).observe(stage);
+  function theme() {
+    const dark = isDark();
+    renderer.setClearColor(dark ? 0x0A0C13 : 0xE7EBF4, 1);
+    scene.fog.color.set(dark ? 0x0B0E18 : 0xE4E9F3); scene.fog.density = dark ? .0105 : .008;
+    ground.material.uniforms.uBase.value.set(dark ? 0x090b13 : 0xE9EDF6); ground.material.uniforms.uGrid.value.set(dark ? 0x29304f : 0x9AA6C8); ground.material.uniforms.uEdge.value = dark ? 1 : 0;
+    for (const m of [waterMat, oceanMat]) { m.uniforms.uA.value.set(dark ? 0x0a1f33 : 0x8FC3DA); m.uniforms.uB.value.set(dark ? 0x1f6b8c : 0xBFE3F0); }
+    hemi.intensity = dark ? .55 : 1.0; hemi.color.set(dark ? 0x8aa0ff : 0xffffff); hemi.groundColor.set(dark ? 0x0b0b14 : 0xb9c0d6);
+    moon.intensity = dark ? .7 : .8;
+    bmat.emissive.set(dark ? 0x0b1020 : 0x000000);
+    for (let i = 0; i < placed; i++) { const t = tints[i]; if (dark) col.setRGB((.07 + t * .07) * .9, .07 + t * .07, (.07 + t * .07) * 1.5); else col.setRGB(.86 + t * .1, .88 + t * .09, .93 + t * .06); blocks.setColorAt(i, col); }
+    if (blocks.instanceColor) blocks.instanceColor.needsUpdate = true;
+    winMat.opacity = dark ? .8 : .0; dustMat.opacity = dark ? .35 : .12; dustMat.color.set(dark ? 0x8fa6ff : 0x6b7bb0);
+    sig = ""; if (me() && view === "dashboard") renderDashboard();
+  }
+  const proj = new THREE.Vector3();
+  let last = performance.now();
+  function frame(t) {
+    requestAnimationFrame(frame);
+    if (!me() || view !== "dashboard" || document.hidden) { last = t; return; }
+    const dt = Math.min(.05, (t - last) / 1000); last = t; const s = t / 1000;
+    if (!RM && !focusId && t - lastInteract > 2500 && !drag) want.theta += dt * .05;
+    const k = 1 - Math.pow(.0015, dt);
+    rig.theta += (want.theta - rig.theta) * k; rig.phi += (want.phi - rig.phi) * k; rig.radius += (want.radius - rig.radius) * k; rig.target.lerp(want.target, k);
+    camera.position.set(rig.target.x + rig.radius * Math.sin(rig.phi) * Math.sin(rig.theta), rig.target.y + rig.radius * Math.cos(rig.phi), rig.target.z + rig.radius * Math.sin(rig.phi) * Math.cos(rig.theta));
+    camera.lookAt(rig.target);
+    ground.material.uniforms.uTime.value = s; waterMat.uniforms.uTime.value = s; oceanMat.uniforms.uTime.value = s;
+    hubCore.rotation.y = s * .8; hubCore.position.y = 8 + Math.sin(s * 1.5) * .4; hubGlow.position.y = hubCore.position.y;
+    if (!RM) dust.rotation.y = s * .01;
+    const w = stage.clientWidth, h = stage.clientHeight; const isDarkNow = isDark();
+    beacons.forEach(b => {
+      const sel = focusId === b.id, dim = focusId && !sel;
+      b.beam.material.uniforms.uTime.value = s; b.beam.material.uniforms.uAmp.value = (dim ? .3 : 1) * (isDarkNow ? 1 : 1.6);
+      b.halo.material.opacity = (dim ? .35 : .9) * (isDarkNow ? 1 : .45);
+      const hs = 6 + Math.sin(s * 3 + b.top.x) * .6 + (sel ? 3 : 0); b.halo.scale.set(hs, hs, 1);
+      b.rings.forEach(r => { const p = ((RM ? .5 : s * .45) + r.userData.phase) % 1; const sc = 1 + p * 6; r.scale.set(sc, sc, sc); r.material.opacity = (1 - p) * (dim ? .15 : .55); });
+      b.arc.material.opacity = dim ? .08 : .35;
+      b.dots.forEach(d => { const p = ((RM ? .5 : s * .22) + d.userData.o) % 1; d.position.copy(b.arc.userData.curve.getPoint(p)); d.material.opacity = dim ? .15 : Math.sin(p * Math.PI); });
+      proj.copy(b.top).project(camera);
+      const vis = proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05 && (sel || (!focusId && w >= 700));
+      b.label.style.opacity = vis ? 1 : 0; b.label.style.pointerEvents = vis ? "auto" : "none";
+      b.label.style.transform = `translate(${(proj.x * .5 + .5) * w}px,${(-proj.y * .5 + .5) * h}px) translate(-50%,-100%)`;
+    });
+    renderer.render(scene, camera);
+  }
+  theme(); resize(); requestAnimationFrame(frame);
+  return { resize, setMarkers, focus, theme };
+})();
+
+/* =====================================================================
+   3D: floating brand bottles and cans behind the sign-in
+   ===================================================================== */
+const loginScene = (() => {
+  const noop = { start() { }, stop() { }, theme() { } };
+  if (!window.THREE) return noop;
+  const canvas = $("#loginGL");
+  let r; try { r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return noop; }
+  r.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); r.outputEncoding = THREE.sRGBEncoding;
+  const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(35, 1, .1, 100); cam.position.set(0, 0, 22);
+  const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x221422, .9); sc.add(hemi);
+  const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(5, 8, 10); sc.add(key);
+  const rim = new THREE.PointLight(0xffb547, 2.5, 60); rim.position.set(-10, 4, 6); sc.add(rim);
+  const rim2 = new THREE.PointLight(0x4fd8cb, 1.8, 60); rim2.position.set(12, -6, 4); sc.add(rim2);
+  const bottle = new THREE.LatheGeometry([[0, -1.6], [.55, -1.6], [.62, -1.4], [.62, .2], [.5, .55], [.22, .95], [.2, 1.55], [.24, 1.6], [0, 1.6]].map(p => new THREE.Vector2(p[0], p[1])), 40);
+  const can = new THREE.CylinderGeometry(.62, .62, 2.1, 40);
+  const label = new THREE.CylinderGeometry(.635, .635, .8, 40, 1, true);
+  const items = [];
+  seed = 5;
+  for (let i = 0; i < 22; i++) {
+    const b = BRANDS[i % BRANDS.length];
+    const grp = new THREE.Group();
+    const body = new THREE.Mesh(b.kind === "can" ? can : bottle, new THREE.MeshPhysicalMaterial({ color: b.kind === "can" ? b.color : (i % 2 ? 0x3a1f0c : 0x2d4a1c), metalness: b.kind === "can" ? .75 : .1, roughness: b.kind === "can" ? .25 : .08, clearcoat: 1, transparent: b.kind !== "can", opacity: b.kind === "can" ? 1 : .92 }));
+    grp.add(body);
+    const lb = new THREE.Mesh(label, new THREE.MeshStandardMaterial({ color: b.kind === "can" ? 0xffffff : b.color, roughness: .5, metalness: .2 }));
+    lb.position.y = b.kind === "can" ? 0 : -.5; grp.add(lb);
+    const back = i % 3 === 0;
+    const sx = back ? (rnd() - .5) * 34 : 1 + rnd() * 15, sy = (rnd() - .5) * 18, sz = back ? -14 - rnd() * 8 : -rnd() * 8;
+    grp.position.set(sx, sy, sz); grp.rotation.set(rnd() * 6, rnd() * 6, rnd() * 6);
+    grp.userData = { sx, sy, sz, sp: .2 + rnd() * .5, ph: rnd() * 6, ry: (rnd() - .5) * .8, rx: (rnd() - .5) * .5 };
+    sc.add(grp); items.push(grp);
+  }
+  let mx = 0, my = 0, running = true, raf;
+  addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
+  const size = () => { const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+  addEventListener("resize", size);
+  const loop = t => {
+    if (!running) return; raf = requestAnimationFrame(loop);
+    const s = t / 1000;
+    items.forEach(g => { const u = g.userData; if (!RM) { g.rotation.y += u.ry * .01; g.rotation.x += u.rx * .01; g.position.y = u.sy + Math.sin(s * u.sp + u.ph) * .8; } });
+    cam.position.x += (mx * 3 - cam.position.x) * .04; cam.position.y += (-my * 2 - cam.position.y) * .04; cam.lookAt(0, 0, 0);
+    r.render(sc, cam);
+  };
+  function theme() { const d = isDark(); hemi.intensity = d ? .9 : 1.25; rim.intensity = d ? 2.5 : 1.2; }
+  size(); theme(); raf = requestAnimationFrame(loop);
+  return { start() { if (!running) { running = true; size(); raf = requestAnimationFrame(loop); } }, stop() { running = false; cancelAnimationFrame(raf); }, theme };
+})();
+
+/* ---------- boot ---------- */
+let readyDone = false, markReady;
+const ready = new Promise(r => markReady = r);
+(async () => {
+  paintThemeBtns(); renderLogin();
+  await DB.open();
+  if (!(await DB.get("kv", "seeded"))) await seedDemo();
+  else { for (const c of COLLS) S[c] = (await DB.get("kv", c)) || []; pendingPhotos = (await DB.get("kv", "pendingPhotos")) || []; }
+  readyDone = true; markReady();
+  setTimeout(paintSamplePhotos, 50);
+  const sid = sessionStore.get();
+  if (sid && S.users.some(u => u.id === sid)) enter(sid);
+})();
+})();
+</script>
