@@ -20,10 +20,12 @@
   --bg:#F6F3EC; --panel:#FFFFFF; --panel-2:#FAF8F3; --raise:#F0EBDF;
   --line:rgba(58,42,10,.10); --line-2:rgba(58,42,10,.18);
   --fg:#1F1A10; --muted:#665C48; --dim:#968B74;
-  --accent:#C68D16; --accent-ink:#1E1404; --accent-text:#8A5F08;
-  --grad:linear-gradient(135deg,#F2C14E 0%,#C68D16 52%,#8E5E0A 100%);
-  --grad-soft:linear-gradient(135deg,rgba(242,193,78,.22),rgba(198,141,22,.10) 55%,rgba(142,94,10,.04));
-  --act:#C68D16; --samp:#0E9C8F; --trade:#7357F0;
+  --accent:#FFD300; --accent-ink:#1F1600; --accent-text:#7A5C00;
+  --grad:linear-gradient(120deg,#FFF3A0 0%,#FFE14D 22%,#FFD300 45%,#FFB800 72%,#FF9500 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,225,77,.26),rgba(255,211,0,.12) 55%,rgba(255,149,0,.05));
+  --glow:rgba(255,190,0,.75);
+  --tgrad:linear-gradient(90deg,#8A6500,#C99A00,#E07B00,#C99A00,#8A6500);
+  --act:#D9AE00; --samp:#0E9C8F; --trade:#7357F0;
   --good:#1B9653; --warn:#B86E00; --bad:#D13A3A;
   --stage-top:#F1E6CC; --stage-bot:#F8F4EA;
   --shadow:0 18px 50px -24px rgba(60,40,8,.35);
@@ -36,10 +38,12 @@
   --bg:#0D0B08; --panel:#16130D; --panel-2:#1D1910; --raise:#272115;
   --line:rgba(214,180,110,.13); --line-2:rgba(214,180,110,.24);
   --fg:#F3EDE0; --muted:#A99D85; --dim:#6F6552;
-  --accent:#D9A02A; --accent-text:#E8B54A;
-  --grad:linear-gradient(135deg,#F5CB62 0%,#D9A02A 50%,#9A660C 100%);
-  --grad-soft:linear-gradient(135deg,rgba(245,203,98,.16),rgba(217,160,42,.07) 55%,rgba(154,102,12,.02));
-  --act:#B88214; --samp:#14988D; --trade:#8B6CF0;
+  --accent:#FFD300; --accent-text:#FFDB3D;
+  --grad:linear-gradient(120deg,#FFF3A0 0%,#FFE14D 22%,#FFD300 45%,#FFB800 72%,#FF9500 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,225,77,.18),rgba(255,211,0,.08) 55%,rgba(255,149,0,.02));
+  --glow:rgba(255,200,0,.6);
+  --tgrad:linear-gradient(90deg,#FFB800,#FFD300,#FFF3A0,#FFD300,#FF9500,#FFB800);
+  --act:#FFD300; --samp:#14988D; --trade:#8B6CF0;
   --good:#5BD68A; --warn:#E8B54A; --bad:#FF6B6B;
   --stage-top:#2A2110; --stage-bot:#0E0C08;
   --shadow:0 30px 80px -30px rgba(0,0,0,.8);
@@ -48,10 +52,12 @@
   --bg:#0D0B08; --panel:#16130D; --panel-2:#1D1910; --raise:#272115;
   --line:rgba(214,180,110,.13); --line-2:rgba(214,180,110,.24);
   --fg:#F3EDE0; --muted:#A99D85; --dim:#6F6552;
-  --accent:#D9A02A; --accent-text:#E8B54A;
-  --grad:linear-gradient(135deg,#F5CB62 0%,#D9A02A 50%,#9A660C 100%);
-  --grad-soft:linear-gradient(135deg,rgba(245,203,98,.16),rgba(217,160,42,.07) 55%,rgba(154,102,12,.02));
-  --act:#B88214; --samp:#14988D; --trade:#8B6CF0;
+  --accent:#FFD300; --accent-text:#FFDB3D;
+  --grad:linear-gradient(120deg,#FFF3A0 0%,#FFE14D 22%,#FFD300 45%,#FFB800 72%,#FF9500 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,225,77,.18),rgba(255,211,0,.08) 55%,rgba(255,149,0,.02));
+  --glow:rgba(255,200,0,.6);
+  --tgrad:linear-gradient(90deg,#FFB800,#FFD300,#FFF3A0,#FFD300,#FF9500,#FFB800);
+  --act:#FFD300; --samp:#14988D; --trade:#8B6CF0;
   --good:#5BD68A; --warn:#E8B54A; --bad:#FF6B6B;
   --stage-top:#2A2110; --stage-bot:#0E0C08;
   --shadow:0 30px 80px -30px rgba(0,0,0,.8);
@@ -69,7 +75,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:9px 15px;font-weight:700;font-size:13.5px;border:1px solid var(--line-2);background:var(--panel-2);transition:transform .15s,background .2s,border-color .2s;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 24px -10px rgba(198,141,22,.8)}
+.btn.primary{background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 24px -10px var(--glow)}
 .btn.primary:hover{filter:brightness(1.05)}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
@@ -124,8 +130,8 @@ h1,h2,h3,h4{text-wrap:balance}
 .live-note{margin-top:16px;padding:13px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
 .code{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:300px;overflow:auto}
 .sect{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:4px 0 -8px}
-.folder.custom .ficon::after{background:linear-gradient(transparent 56%,rgba(255,255,255,.6) 56% 68%,transparent 68%),linear-gradient(160deg,var(--fc,#E0A82E),color-mix(in srgb,var(--fc,#E0A82E) 60%,#000))}
-.beta{font-family:var(--body);font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;vertical-align:2px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent-text)}
+.folder.custom .ficon::after{background:linear-gradient(transparent 56%,rgba(255,255,255,.6) 56% 68%,transparent 68%),linear-gradient(160deg,var(--fc,#FFD300),color-mix(in srgb,var(--fc,#FFD300) 60%,#000))}
+.beta{font-family:var(--body);font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;vertical-align:2px;background:var(--grad);color:var(--accent-ink)}
 .lb{display:grid;grid-template-columns:28px 32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:13px}
 .lb:first-of-type{border-top:0}
 .lb .rk{font-family:var(--mono);font-weight:800;text-align:center;color:var(--muted)}
@@ -167,7 +173,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .login-top{position:absolute;right:20px;top:18px;z-index:2}
 
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg,#F5CB62,#C68D16,#8E5E0A,#E9B949,#F5CB62);position:relative;box-shadow:0 0 24px rgba(198,141,22,.35);flex:none}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg,#FFF3A0,#FFD300,#FF9500,#FFE14D,#FFF3A0);position:relative;box-shadow:0 0 24px rgba(255,211,0,.45);flex:none}
 .brand-mark::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--panel)}
 .brand b{font-family:var(--display);font-size:19px;letter-spacing:-.02em;font-weight:800}
 .brand small{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:-3px}
@@ -202,7 +208,7 @@ h1,h2,h3,h4{text-wrap:balance}
 .mapviews{position:absolute;right:16px;bottom:12px;z-index:3;background:color-mix(in srgb,var(--panel) 75%,transparent);backdrop-filter:blur(8px)}
 .maptip{position:absolute;left:0;top:0;z-index:4;pointer-events:none;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line-2);border-radius:10px;padding:8px 11px;font-size:12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 30px -12px rgba(0,0,0,.5)}
 .maptip span{color:var(--muted)}
-.svbtn{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 10px 30px -10px rgba(198,141,22,.8)}
+.svbtn{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;background:var(--grad);color:var(--accent-ink);border-color:transparent;box-shadow:0 10px 30px -10px var(--glow)}
 .linkbtn{background:none;border:0;padding:0;color:var(--accent-text);font-weight:600;cursor:pointer;font:inherit;font-weight:600}
 .svpanel{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(10,8,4,.55);backdrop-filter:blur(6px);padding:16px}
 .svpanel .svbox{width:min(1000px,100%);height:min(680px,86vh);background:var(--panel);border:1px solid var(--line-2);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow)}
@@ -238,9 +244,9 @@ h1,h2,h3,h4{text-wrap:balance}
 .kpi label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .kpi .v{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
 .kpi .d{font-size:12px;color:var(--muted)}
-:root{--k1:#C68D16;--k2:#0E9C8F;--k3:#D9534F;--k4:#7357F0;--k5:#2E8A3E}
-:root[data-theme="dark"]{--k1:#E0A82E;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k1:#E0A82E;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}}
+:root{--k1:#D9AE00;--k2:#0E9C8F;--k3:#D9534F;--k4:#7357F0;--k5:#2E8A3E}
+:root[data-theme="dark"]{--k1:#FFD300;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k1:#FFD300;--k2:#2FBFB2;--k3:#FF7A6B;--k4:#A08BFF;--k5:#5BC46A}}
 .kpi{position:relative;overflow:hidden;isolation:isolate}
 .kpi::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--kc) 22%,transparent),transparent 60%),linear-gradient(180deg,transparent 60%,color-mix(in srgb,var(--kc) 7%,transparent))}
 .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--kc),color-mix(in srgb,var(--kc) 30%,transparent))}
@@ -258,12 +264,12 @@ h1,h2,h3,h4{text-wrap:balance}
 .legend2 div{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:13px}.legend2 i{width:12px;height:12px;border-radius:4px}.legend2 b{font-family:var(--mono)}
 .cols{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px;align-items:end;padding-top:6px}
 .col{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;outline:none}
-.col i{width:100%;max-width:38px;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#F2C14E,#C68D16 70%,#A8740F);opacity:.55;transition:height .8s cubic-bezier(.2,.8,.2,1),opacity .2s}
-.col.today i{opacity:1;box-shadow:0 8px 20px -8px rgba(198,141,22,.9)}
+.col i{width:100%;max-width:38px;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#FFE96B,#FFD300 55%,#FFA200);opacity:.55;transition:height .8s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.col.today i{opacity:1;box-shadow:0 8px 20px -8px var(--glow)}
 .col:hover i,.col:focus i{opacity:1}
 .col small{font-size:11px;color:var(--muted)}.col.today small{color:var(--accent-text);font-weight:700}
 .col .cv{font-size:10.5px;font-family:var(--mono);color:var(--muted)}
-.hbar .tr i.gold{background:linear-gradient(90deg,#F2C14E,#C68D16)}
+.hbar .tr i.gold{background:linear-gradient(90deg,#FFE14D,#FFD300,#FFA200)}
 [data-tip]{position:relative}
 [data-tip]:hover::after,[data-tip]:focus::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:11.5px;font-weight:600;padding:6px 9px;border-radius:8px;white-space:nowrap;z-index:5;pointer-events:none}
 .vscore{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
@@ -306,8 +312,8 @@ h1,h2,h3,h4{text-wrap:balance}
 .folder{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:10px;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden}
 .folder:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:var(--shadow)}
 .folder .ficon{width:54px;height:44px;position:relative}
-.folder .ficon::before{content:"";position:absolute;left:0;top:0;width:24px;height:10px;border-radius:5px 5px 0 0;background:var(--fc,#E0A82E);opacity:.8}
-.folder .ficon::after{content:"";position:absolute;left:0;top:7px;right:0;bottom:0;border-radius:4px 8px 8px 8px;background:linear-gradient(160deg,var(--fc,#E0A82E),color-mix(in srgb,var(--fc,#E0A82E) 60%,#000));box-shadow:0 6px 16px -6px var(--fc,#E0A82E)}
+.folder .ficon::before{content:"";position:absolute;left:0;top:0;width:24px;height:10px;border-radius:5px 5px 0 0;background:var(--fc,#FFD300);opacity:.8}
+.folder .ficon::after{content:"";position:absolute;left:0;top:7px;right:0;bottom:0;border-radius:4px 8px 8px 8px;background:linear-gradient(160deg,var(--fc,#FFD300),color-mix(in srgb,var(--fc,#FFD300) 60%,#000));box-shadow:0 6px 16px -6px var(--fc,#FFD300)}
 .folder h4{margin:0;font-family:var(--display);font-size:17px}
 .folder .meta{font-size:12px;color:var(--muted)}
 .folder .live{position:absolute;right:14px;top:14px}
@@ -365,7 +371,7 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
 .ba-wrap{max-width:760px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 .hello{display:flex;gap:14px;align-items:center}
 .hello h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:-.02em}
-.livecard{border-radius:20px;padding:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--bc,#E0A82E) 22%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--bc,#E0A82E) 45%,transparent);display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.livecard{border-radius:20px;padding:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--bc,#FFD300) 22%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--bc,#FFD300) 45%,transparent);display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
 .livecard h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em}
 .timer{font-family:var(--mono);font-size:26px;font-weight:600}
 .locbox{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);flex-wrap:wrap}
@@ -448,6 +454,20 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
   .hbar{grid-template-columns:96px minmax(0,1fr) 44px}
 }
 @media (max-width:420px){.kpi .v{font-size:23px}.cases b{font-size:20px}}
+/* #FFD300 super-gradient: flowing fills, a light sweep across primary buttons, a turning logo ring and shimmering headline words */
+@property --ang{syntax:"<angle>";inherits:false;initial-value:200deg}
+.btn.primary,.svbtn{background-size:260% 260%;animation:gradflow 7s ease-in-out infinite;overflow:hidden;isolation:isolate}
+.btn.primary{position:relative}
+.btn.primary::after,.svbtn::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);transform:translateX(-130%);animation:shine 5s ease-in-out infinite}
+.btn.primary:hover{box-shadow:0 14px 34px -10px var(--glow);transform:translateY(-1px)}
+.btn.primary:active{transform:translateY(0)}
+.brand-mark{background:conic-gradient(from var(--ang),#FFF3A0,#FFD300,#FF9500,#FFE14D,#FFF3A0);animation:spinang 6s linear infinite,pulseglow 3.2s ease-in-out infinite}
+.login-hero h1 em,.stage-hud h2 em{background:var(--tgrad);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradflow 6s linear infinite}
+.seg-pill,.beta{background-size:220% 220%;animation:gradflow 9s ease-in-out infinite}
+@keyframes gradflow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes shine{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@keyframes spinang{to{--ang:560deg}}
+@keyframes pulseglow{0%,100%{box-shadow:0 0 18px rgba(255,211,0,.35)}50%{box-shadow:0 0 34px rgba(255,190,0,.7)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -458,7 +478,7 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
   <div class="login-hero">
     <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><b>Trade Activate</b><small>Activations · Sampling · Trade</small></div></div>
     <div class="hero-copy">
-      <span class="kicker"><i></i>Live from 10 brands across Nigeria</span>
+      <span class="kicker"><i></i>Live from 11 brands across Nigeria</span>
       <h1>Every outlet activation, <em>live</em> from the field.</h1>
       <p>Brand ambassadors log activations with live photos, location and cases sold. Vendor managers and trade marketing see it on the map as it happens.</p>
       <div class="brandrow" id="brandRow"></div>
@@ -560,13 +580,16 @@ const BRANDS = [
   { name: "Trophy Stout", color: "#7A4A2E", kind: "bottle", img: "trophy-stout", photos: ["trophy-stout-1", "trophy-stout-2"] },
   { name: "Budweiser", color: "#C8102E", kind: "can", img: "budweiser", photos: ["budweiser-1", "budweiser-2", "budweiser-3"] },
   { name: "Budweiser Royale", color: "#B8963E", kind: "bottle", img: "budweiser-royale", photos: [] },
-  { name: "Hero Lager", color: "#B5121B", kind: "bottle", img: "", photos: [] },
+  { name: "Hero Lager", color: "#B5121B", kind: "bottle", img: "hero-lager", photos: [] },
   { name: "Beta Malt", color: "#E2601B", kind: "can", img: "beta-malt", photos: ["beta-malt-1", "brand-range"] },
   { name: "Grand Malt", color: "#2F8F46", kind: "can", img: "grand-malt", photos: ["grand-malt-1", "brand-range"] },
   { name: "Flying Fish", color: "#17A9B5", kind: "bottle", img: "flying-fish", photos: ["flying-fish-1", "flying-fish-2"] },
   { name: "Eagle", color: "#8FA31E", kind: "bottle", img: "eagle", photos: ["eagle-1", "eagle-2"] },
+  { name: "Eagle Extra Stout", color: "#A0662B", kind: "bottle", img: "eagle-stout", photos: [] },
   { name: "Castle Lite", color: "#2F6FD6", kind: "can", img: "castle-lite", photos: ["castle-lite-1", "castle-lite-2"] }
 ];
+// High-resolution pack shots (assets/products/*.webp) for the sign-in showcase; h is the pack's height relative to a 60cl bottle.
+const PRODUCTS = [["hero-lager", 1], ["budweiser", .92], ["castle-lite", 1], ["eagle-lager", 1], ["beta-malt-pet", .9], ["flying-fish", .94], ["grand-malt-can", .62], ["eagle-stout", 1], ["beta-malt-can", .62], ["grand-malt-bottle", .86], ["beta-malt-bottle", .66], ["grand-malt-pet", .9], ["grand-malt-pet-small", .72]];
 const BC = name => (BRANDS.find(b => b.name === name) || { color: "#999" }).color;
 // Product shot for a brand, falling back to its colour dot if the image can't load.
 const bmark = name => { const b = BRANDS.find(x => x.name === name); return b && b.img ? `<img class="bimg" src="${ART}brands/${b.img}.png" alt="" onerror="this.outerHTML='<i class=&quot;bdot&quot; style=&quot;background:${b.color}&quot;></i>'">` : `<i class="bdot" style="background:${BC(name)}"></i>`; };
@@ -595,7 +618,7 @@ const TCLASS = t => "t-" + t.split(" ")[0];
 const TVAR = t => ({ Activation: "--act", Sampling: "--samp", "Trade Activity": "--trade" })[t];
 const AREAS = { ikeja: [6.6018, 3.3515], yaba: [6.5095, 3.3711], surulere: [6.5, 3.354], lekki: [6.4474, 3.4723], "victoria island": [6.4281, 3.4219], vi: [6.4281, 3.4219], ikoyi: [6.45, 3.435], festac: [6.4667, 3.2833], oshodi: [6.555, 3.343], ikorodu: [6.6194, 3.5105], ajah: [6.468, 3.57], apapa: [6.449, 3.359], ojota: [6.585, 3.38], maryland: [6.57, 3.367], gbagada: [6.556, 3.388], ogba: [6.63, 3.34], egbeda: [6.61, 3.29], "lagos island": [6.455, 3.394], agege: [6.618, 3.32], ikotun: [6.55, 3.27], magodo: [6.62, 3.39], ojo: [6.46, 3.18], mushin: [6.53, 3.35], isolo: [6.53, 3.32], ketu: [6.597, 3.39], ojodu: [6.64, 3.37], berger: [6.64, 3.37], ilupeju: [6.553, 3.357], anthony: [6.56, 3.37], ebute: [6.48, 3.38], obalende: [6.448, 3.41], sangotedo: [6.47, 3.63], wuse: [9.0795, 7.471], garki: [9.0333, 7.489], abuja: [9.0765, 7.3986], "port harcourt": [4.8156, 7.0498], ibadan: [7.3775, 3.947], enugu: [6.4584, 7.5464], "benin city": [6.335, 5.6037], calabar: [4.9757, 8.3417], jos: [9.8965, 8.8583], warri: [5.5167, 5.75], uyo: [5.0377, 7.9128], onitsha: [6.1413, 6.8029], abeokuta: [7.1475, 3.3619], kaduna: [10.5105, 7.4165] };
 const HUB = { lat: 6.5965, lng: 3.3421 };
-const AV_COL = ["#E0A82E", "#4FD8CB", "#A78BFF", "#FF8A5B", "#5BD68A", "#FF7EB6", "#7CB8FF", "#E3C64B"];
+const AV_COL = ["#FFD300", "#4FD8CB", "#A78BFF", "#FF8A5B", "#5BD68A", "#FF7EB6", "#7CB8FF", "#E3C64B"];
 const initials = s => s.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 const avColor = id => AV_COL[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % AV_COL.length];
 const avatar = (u, size) => `<span class="av" style="background:${avColor(u.id)}${size ? `;width:${size}px;height:${size}px;font-size:${size / 2.7}px` : ""}" title="${esc(u.name)}">${esc(initials(u.name))}</span>`;
@@ -674,7 +697,7 @@ async function stampImage(source, stamp) {
   g.font = `500 ${Math.round(fs * .82)}px "JetBrains Mono", monospace`; g.fillStyle = "rgba(255,255,255,.85)";
   const where = stamp.gps ? `${stamp.gps.lat.toFixed(5)}, ${stamp.gps.lng.toFixed(5)}` : "location not recorded";
   g.fillText(`${new Date(stamp.time).toLocaleString("en-GB")} · ${where}`, fs * .8, h - bar * .18);
-  g.textAlign = "right"; g.fillStyle = "#E0A82E"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
+  g.textAlign = "right"; g.fillStyle = "#FFD300"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
   g.fillText("TRADE ACTIVATE", w - fs * .8, h - bar * .18);
   return c.toDataURL("image/jpeg", .8);
 }
@@ -1153,7 +1176,7 @@ function renderDashboard() {
       <div class="card"><div class="card-h"><h3>Cases by segment this week</h3></div>
         ${bySeg.length ? bySeg.map(x => `<div class="hbar" data-tip="${esc(x.s)}: ${n(x.v)} cases from ${x.n} ${x.n === 1 ? "activity" : "activities"}"><span class="nm">${esc(x.s)}</span><span class="tr"><i class="gold" style="width:${x.v / smax * 100}%"></i></span><span class="num" style="text-align:right">${n(x.v)}</span></div>`).join("") : `<div class="empty">No activity this week yet.</div>`}</div>
     </div>
-    ${u.role === "admin" ? `<div class="card"><div class="card-h"><h3>Vendors today</h3><div class="right"><span class="chip">outlets activated of outlets assigned</span></div></div><div class="vscore">${liveVendors().map(v => { const ve = todays.filter(e => e.vendorId === v.id), vo = S.outlets.filter(o => o.vendorId === v.id).length, act = new Set(ve.map(e => e.outletId || e.outletName)).size, run = live.filter(e => e.vendorId === v.id).length; return `<button type="button" class="vs" data-dv="${v.id}" style="--vc:${v.color}"><div class="vs-h"><b>${esc(v.name)}</b>${run ? `<span class="pill p-live">${run} live</span>` : ""}</div><div class="vs-n"><span><b>${n(ve.reduce((a, e) => a + (+e.sold || 0), 0))}</b> cases</span><span><b>${ve.length}</b> activities</span></div><div class="vs-bar"><i style="width:${vo ? act / vo * 100 : 0}%"></i></div><small>${act} of ${vo} outlets</small></button>`; }).join("")}</div></div>` : `<div class="card"><div class="card-h"><h3>Your outlet coverage this week</h3></div>${(() => { const mine = scopeOutlets(), wk = new Set(all.filter(e => e.start >= Date.now() - 7 * 864e5).map(e => e.outletId)), cov = mine.filter(o => wk.has(o.id)).length, pc = mine.length ? cov / mine.length : 0, staffed = mine.filter(o => basOf(o).length).length; return `<div class="cover"><svg viewBox="0 0 120 120" class="ring" role="img" aria-label="${cov} of ${mine.length} outlets activated this week"><circle r="48" cx="60" cy="60" fill="none" stroke="var(--raise)" stroke-width="12"/><circle r="48" cx="60" cy="60" fill="none" stroke="url(#goldg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${pc * 301.6} 301.6" transform="rotate(-90 60 60)"/><defs><linearGradient id="goldg" x1="0" x2="1"><stop offset="0" stop-color="#F2C14E"/><stop offset="1" stop-color="#8E5E0A"/></linearGradient></defs><text x="60" y="64" text-anchor="middle" class="dv">${Math.round(pc * 100)}%</text></svg><div class="cover-t"><div><b>${cov}</b> of ${mine.length} outlets activated in the last 7 days</div><div><b>${staffed}</b> of ${mine.length} outlets have an ambassador assigned</div><div><b>${mine.length - cov}</b> outlets still to visit this week</div></div></div>`; })()}</div>`}
+    ${u.role === "admin" ? `<div class="card"><div class="card-h"><h3>Vendors today</h3><div class="right"><span class="chip">outlets activated of outlets assigned</span></div></div><div class="vscore">${liveVendors().map(v => { const ve = todays.filter(e => e.vendorId === v.id), vo = S.outlets.filter(o => o.vendorId === v.id).length, act = new Set(ve.map(e => e.outletId || e.outletName)).size, run = live.filter(e => e.vendorId === v.id).length; return `<button type="button" class="vs" data-dv="${v.id}" style="--vc:${v.color}"><div class="vs-h"><b>${esc(v.name)}</b>${run ? `<span class="pill p-live">${run} live</span>` : ""}</div><div class="vs-n"><span><b>${n(ve.reduce((a, e) => a + (+e.sold || 0), 0))}</b> cases</span><span><b>${ve.length}</b> activities</span></div><div class="vs-bar"><i style="width:${vo ? act / vo * 100 : 0}%"></i></div><small>${act} of ${vo} outlets</small></button>`; }).join("")}</div></div>` : `<div class="card"><div class="card-h"><h3>Your outlet coverage this week</h3></div>${(() => { const mine = scopeOutlets(), wk = new Set(all.filter(e => e.start >= Date.now() - 7 * 864e5).map(e => e.outletId)), cov = mine.filter(o => wk.has(o.id)).length, pc = mine.length ? cov / mine.length : 0, staffed = mine.filter(o => basOf(o).length).length; return `<div class="cover"><svg viewBox="0 0 120 120" class="ring" role="img" aria-label="${cov} of ${mine.length} outlets activated this week"><circle r="48" cx="60" cy="60" fill="none" stroke="var(--raise)" stroke-width="12"/><circle r="48" cx="60" cy="60" fill="none" stroke="url(#goldg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${pc * 301.6} 301.6" transform="rotate(-90 60 60)"/><defs><linearGradient id="goldg" x1="0" x2="1"><stop offset="0" stop-color="#FFF3A0"/><stop offset="1" stop-color="#FF9500"/></linearGradient></defs><text x="60" y="64" text-anchor="middle" class="dv">${Math.round(pc * 100)}%</text></svg><div class="cover-t"><div><b>${cov}</b> of ${mine.length} outlets activated in the last 7 days</div><div><b>${staffed}</b> of ${mine.length} outlets have an ambassador assigned</div><div><b>${mine.length - cov}</b> outlets still to visit this week</div></div></div>`; })()}</div>`}
     <div class="split">
       <div class="card"><div class="card-h"><h3>Running now</h3><div class="right">${flagged ? `<span class="pill p-warn">${flagged} need a location check</span>` : ""}<span class="chip"><span class="dot"></span>Updates as ambassadors log</span></div></div>
         <div id="liveList">${live.length ? live.map(e => liveRow(e)).join("") : `<div class="empty">Nothing is running for this filter. When an ambassador starts an activation it appears here and on the map.</div>`}</div></div>
@@ -2068,7 +2091,7 @@ const city = (() => {
   const camera = new THREE.PerspectiveCamera(38, 2, .5, 1200);
   const hemi = new THREE.HemisphereLight(0x8aa0ff, 0x0b0b14, .6); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xffffff, .9); sun.position.set(-60, 120, 80); scene.add(sun);
-  const rim = new THREE.DirectionalLight(0xE0A82E, .35); rim.position.set(80, 40, -90); scene.add(rim);
+  const rim = new THREE.DirectionalLight(0xFFD300, .35); rim.position.set(80, 40, -90); scene.add(rim);
   const gc = document.createElement("canvas"); gc.width = gc.height = 128;
   const g2 = gc.getContext("2d"), grd = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.25, "rgba(255,255,255,.55)"); grd.addColorStop(1, "rgba(255,255,255,0)");
@@ -2128,7 +2151,7 @@ const city = (() => {
   }
   const borderMat = new THREE.LineBasicMaterial({ color: 0x3a4670, transparent: true, opacity: .8 });
   const riverMat = new THREE.LineBasicMaterial({ color: 0x3fa7d6, transparent: true, opacity: .9 });
-  const outlineMat = new THREE.LineBasicMaterial({ color: 0xE0A82E, transparent: true, opacity: .95 });
+  const outlineMat = new THREE.LineBasicMaterial({ color: 0xFFD300, transparent: true, opacity: .95 });
   const lakeMat = new THREE.MeshStandardMaterial({ color: 0x1d6f95, roughness: .3, metalness: .2 });
   const cityLabels = [];
   function build() {
@@ -2154,7 +2177,7 @@ const city = (() => {
     // national outline, drawn twice for a soft glow
     const opts = []; NG.country.forEach(p => { const pts = lineOf(p[0], 0); for (let i = 1; i < pts.length; i++) opts.push(pts[i - 1], pts[i]); });
     outline = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(opts), outlineMat); outline.position.y = .12; mapGroup.add(outline);
-    outlineGlow = new THREE.LineSegments(outline.geometry, new THREE.LineBasicMaterial({ color: 0xE0A82E, transparent: true, opacity: .25 })); outlineGlow.position.y = .5; mapGroup.add(outlineGlow);
+    outlineGlow = new THREE.LineSegments(outline.geometry, new THREE.LineBasicMaterial({ color: 0xFFD300, transparent: true, opacity: .25 })); outlineGlow.position.y = .5; mapGroup.add(outlineGlow);
     // rivers (the Niger and Benue are the wide ones) and lakes
     NG.rivers.forEach(r => r.lines.forEach(ln => { const ln2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(lineOf(ln, LAND_H + .29)), riverMat); ln2.userData.st = ln.map(([lng, lat]) => stateAt(lat, lng)); mapGroup.add(ln2); riverLines.push(ln2); }));
     NG.lakes.forEach(k => { if (k.poly.length) { const m = slab(k.poly, .06, lakeMat); m.position.y = LAND_H + .24; const [lng, lat] = k.poly[0][0][Math.floor(k.poly[0][0].length / 2)]; m.userData.st = stateAt(lat, lng); mapGroup.add(m); lakeMeshes.push(m); } });
@@ -2186,9 +2209,9 @@ const city = (() => {
   fetch(ART + "nigeria.json").then(r => r.ok ? r.json() : null).then(d => { if (d) { NG = d; stateCache.clear(); build(); if (me() && view === "dashboard") renderDashboard(); } }).catch(() => { });
   // trade marketing hub in Lagos
   const hp = project(HUB.lat, HUB.lng), HUB_Y = 12;
-  const hubCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xE0A82E, emissiveIntensity: .7, metalness: .6, roughness: .2, flatShading: true }));
+  const hubCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xFFD300, emissiveIntensity: .7, metalness: .6, roughness: .2, flatShading: true }));
   hubCore.position.set(hp.x, HUB_Y, hp.z); scene.add(hubCore);
-  const hubGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xE0A82E, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .8 }));
+  const hubGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xFFD300, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .8 }));
   hubGlow.scale.set(7, 7, 1); hubGlow.position.copy(hubCore.position); scene.add(hubGlow);
   // floating dust
   const DP = 420, dpos = new Float32Array(DP * 3); seed = 77;
@@ -2263,7 +2286,7 @@ const city = (() => {
       const h = m.userData.heat, hov = hoverState === m.userData.state;
       cLand.copy(m.userData.base);
       if (dark) { cLand.multiplyScalar(.62); } else cLand.lerp(new THREE.Color(0xF3F0E6), .04);
-      cHot.set(dark ? 0xD9A02A : 0xE3AE3A);
+      cHot.set(dark ? 0xFFD300 : 0xFFCF1A);
       cLand.lerp(cHot, h ? .04 + h * .1 : 0);
       if (hov) cLand.lerp(new THREE.Color(dark ? 0x7d8fd0 : 0xffffff), .35);
       m.userData.top.color.copy(cLand);
@@ -2282,7 +2305,7 @@ const city = (() => {
     live.forEach(e => {
       const pos = posOf(e), p = project(pos.lat, pos.lng); const k = Math.round(p.x * 2) + ":" + Math.round(p.z * 2); const off = slot[k] = (slot[k] || 0) + 1;
       const x = p.x + (off - 1) * .7, z = p.z + (off - 1) * .5;
-      const color = css(TVAR(e.type)) || "#E0A82E";
+      const color = css(TVAR(e.type)) || "#FFD300";
       const g = new THREE.Group(); g.position.set(x, topAt(pos.lat, pos.lng) + .05, z);
       const h = 6 + Math.min(8, (+e.sold || 0) / 4);
       const beam = new THREE.Mesh(new THREE.CylinderGeometry(.22, .4, h, 20, 1, true), beamMat(color)); beam.geometry.translate(0, h / 2, 0); g.add(beam);
@@ -2389,7 +2412,7 @@ const city = (() => {
     sun.intensity = dark ? 1 : .55; rim.intensity = dark ? .35 : .15;
     neighbourMat.uniforms.uCol.value.set(dark ? 0x1f1c16 : 0xE6E0D0); neighbourMat.uniforms.uSea.value.set(dark ? 0x0a1626 : 0xB9DCEC);
     borderMat.color.set(dark ? 0x7a8a62 : 0xFFFFFF); borderMat.opacity = dark ? .75 : .85;
-    outlineMat.color.set(dark ? 0xE0A82E : 0xD98A12); outlineGlow && outlineGlow.material.color.set(dark ? 0xE0A82E : 0xD98A12);
+    outlineMat.color.set(dark ? 0xFFD300 : 0xD98A12); outlineGlow && outlineGlow.material.color.set(dark ? 0xFFD300 : 0xD98A12);
     riverMat.color.set(dark ? 0x3fa7d6 : 0x3D93C4); lakeMat.color.set(dark ? 0x1d6f95 : 0x8EC7E0);
     cityPts.forEach(d => d.material.color.set(dark ? 0xffffff : 0x2b3350));
     dustMat.opacity = dark ? .3 : .1; dustMat.color.set(dark ? 0x8fa6ff : 0x6b7bb0);
@@ -2481,18 +2504,31 @@ const loginScene = (() => {
     loader.load(ART + "login/" + name + ".jpg", t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; mat.map = rmat.map = t; mat.color.set(0xffffff); rmat.color.set(0xffffff); mat.needsUpdate = rmat.needsUpdate = true; });
     ring.add(g); return { g, mat, rmat, a };
   });
+  // the brands' pack shots parade around the outside of the ring, standing on its floor and always turned to face you
+  const PR = R + 3.4, BH = 3.9, bottles = PRODUCTS.map(([name, hk], i) => {
+    const a = (i + .5) / PRODUCTS.length * Math.PI * 2, h = BH * hk;
+    const g = new THREE.Group(); g.position.set(Math.sin(a) * PR, -H / 2 - .06, Math.cos(a) * PR);
+    const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });
+    const geo = new THREE.PlaneGeometry(1, 1); geo.translate(0, .5, 0);
+    const m = new THREE.Mesh(geo, mat); g.add(m);
+    const rmat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, alphaMap: reflMask });
+    const rm = new THREE.Mesh(geo, rmat); rm.scale.y = -1; rm.position.y = -.04; g.add(rm);
+    loader.load(ART + "products/" + name + ".webp", t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; const ar = t.image.width / t.image.height; m.scale.set(h * ar, h, 1); rm.scale.set(h * ar, -h * .7, 1); mat.map = rmat.map = t; mat.needsUpdate = rmat.needsUpdate = true; mat.userData.ok = 1; });
+    ring.add(g); return { g, m, rm, mat, rmat, a, h };
+  });
+  const qInv = new THREE.Quaternion();
   // glowing floor disc under the ring and drifting amber bokeh
   const gc = document.createElement("canvas"); gc.width = gc.height = 128;
   const g2 = gc.getContext("2d"), grd = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.3, "rgba(255,255,255,.4)"); grd.addColorStop(1, "rgba(255,255,255,0)");
   g2.fillStyle = grd; g2.fillRect(0, 0, 128, 128);
   const glow = new THREE.CanvasTexture(gc);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R * 3.4, R * 3.4), new THREE.MeshBasicMaterial({ map: glow, color: 0xE0A82E, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R * 3.4, R * 3.4), new THREE.MeshBasicMaterial({ map: glow, color: 0xFFD300, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -H / 2 - .06; ring.add(floor);
   const BP = 160, bpos = new Float32Array(BP * 3); seed = 11;
   for (let i = 0; i < BP; i++) { bpos[i * 3] = (rnd() - .5) * 46; bpos[i * 3 + 1] = (rnd() - .5) * 20; bpos[i * 3 + 2] = -rnd() * 24 + 6; }
   const bgeo = new THREE.BufferGeometry(); bgeo.setAttribute("position", new THREE.BufferAttribute(bpos, 3));
-  const bokeh = new THREE.Points(bgeo, new THREE.PointsMaterial({ size: .5, map: glow, color: 0xffc46b, transparent: true, opacity: .55, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const bokeh = new THREE.Points(bgeo, new THREE.PointsMaterial({ size: .5, map: glow, color: 0xFFE066, transparent: true, opacity: .55, depthWrite: false, blending: THREE.AdditiveBlending }));
   sc.add(bokeh);
   // layout: on wide screens the ring sits over the left half, behind the headline; on phones it crowns the top
   let wide = true;
@@ -2527,13 +2563,24 @@ const loginScene = (() => {
       c.mat.opacity = k; c.rmat.opacity = k * (isDark() ? .32 : .22);
       c.g.position.y = RM ? 0 : Math.sin(t / 1000 * .8 + c.a * 2) * .12;
     });
+    // bottles: billboard toward the camera, the front ones grow and brighten, a gentle bob out of step with each other
+    ring.getWorldQuaternion(qInv); qInv.invert();
+    bottles.forEach((b, i) => {
+      b.g.quaternion.copy(qInv).multiply(cam.quaternion);
+      b.g.getWorldPosition(wp); toCam.subVectors(cam.position, wp).normalize();
+      fwd.set(Math.sin(b.a + spin), 0, Math.cos(b.a + spin));
+      const f = fwd.dot(toCam), k = THREE.MathUtils.clamp(f * .9 + .3, .08, 1), pop = 1 + Math.max(0, f - .85) * 1.6;
+      if (b.mat.userData.ok) { b.mat.opacity += (k - b.mat.opacity) * .1; b.rmat.opacity = b.mat.opacity * (isDark() ? .28 : .18); }
+      b.g.scale.setScalar(pop);
+      b.m.position.y = RM ? 0 : Math.abs(Math.sin(t / 1000 * 1.1 + i * 1.7)) * .12;
+    });
     if (!RM) { bokeh.rotation.y = t / 1000 * .01; bokeh.position.y = Math.sin(t / 3000) * .4; }
     r.render(sc, cam);
   };
   function theme() {
     const d = isDark();
     sc.fog.color.set(d ? 0x0E0C08 : 0xF5EFE2);
-    floor.material.opacity = d ? .22 : .35; floor.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending; floor.material.color.set(d ? 0xE0A82E : 0xF2B04E);
+    floor.material.opacity = d ? .22 : .35; floor.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending; floor.material.color.set(d ? 0xFFD300 : 0xFFC800);
     bokeh.material.opacity = d ? .55 : .35; bokeh.material.blending = d ? THREE.AdditiveBlending : THREE.NormalBlending;
   }
   size(); theme(); raf = requestAnimationFrame(loop);
