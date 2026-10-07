@@ -1,1 +1,86 @@
-# TradeMarketing-Activation
+# Trade Activate
+
+Trade Activate is a web app for trade marketing activations. Vendors (activation agencies) send brand ambassadors (BAs) to outlets to run activations, sampling and trade activities for our brands. BAs log what is happening from their phones, and the trade marketing team and each vendor's manager watch it live.
+
+**Brands:** Trophy Lager, Trophy Stout, Budweiser, Budweiser Royale, Beta Malt, Grand Malt, Flying Fish, Eagle, Castle Lite.
+
+## Who signs in, and what they see
+
+| Role | Signs in with | Panes |
+| --- | --- | --- |
+| **Admin** (trade marketing) | Email and password | Live dashboard (all vendors), Vendor folders (every vendor), Outlets (upload and assign), Vendors & users (register vendors, managers and BAs) |
+| **Vendor Manager** | Email and password | Live dashboard (their vendor only), their vendor folder, their assigned outlets, their ambassadors |
+| **Brand Ambassador** | BA ID or phone number, plus a PIN | My activation (log form, live card), History |
+
+### Example accounts (created on first run)
+
+| Role | Sign-in | Password / PIN |
+| --- | --- | --- |
+| Admin | `admin@tradeactivate.app` | `Admin@123` |
+| Vendor Manager, Pinnacle Activations | `tobi@pinnacle.ng` | `Manager@123` |
+| Vendor Manager, BlueWave Experiential | `nkechi@bluewave.ng` | `Manager@123` |
+| Vendor Manager, Kora Field Marketing | `musa@kora.ng` | `Manager@123` |
+| Brand Ambassadors | `BA-1001` to `BA-1012` | `1234` |
+
+The example vendors, people, outlets and photos are made up. An admin can wipe them under **Vendors & users → Reset example data**.
+
+## Features
+
+- **Live dashboard.** A 3D map of Lagos with a beam for every activation, sampling session or trade activity that is running now, coloured by activity type. KPIs show what is running, ambassadors on the ground, cases sold today, outlets activated and live photos. You can filter by activity type, brand and (for admins) vendor. Tapping a beam or row opens the entry: photos, recorded location (with a Google Maps link and distance from the outlet), opening cases, cases sold and closing cases.
+- **Vendor folders.** One folder per vendor, holding a folder per day, holding every entry ambassadors logged. You can filter by brand. Vendor managers only see their own folder.
+- **Brand ambassador log form.**
+  - Pick the outlet. Outlets assigned to the BA's vendor are listed, or they can type a new one.
+  - Choose the activity type and brand.
+  - Enter opening cases, cases sold and consumers reached.
+  - Record GPS location. The form shows the nearest assigned outlet.
+  - Take live photos with the phone camera. Every photo is resized and stamped with the brand, outlet, time and coordinates. Photos older than 15 minutes are flagged.
+  - Start it as **Still running**, then add more photos, update cases sold and **End activation** later. Or submit it as **Already finished**.
+- **Outlets.** Upload an Excel (`.xlsx`) or CSV list of activating outlets, preview it, assign outlets to vendors (one by one, in bulk, or from a `Vendor` column), and import. Outlets without coordinates are placed by their area name (Ikeja, Lekki, Surulere and others). See `sample-data/outlets-sample.csv` for the columns.
+- **Vendors & users.** Register a vendor, pick its brands, and create its manager's sign-in. Add brand ambassadors with a BA ID and PIN. Vendor managers can add their own ambassadors.
+- **Light and dark mode.** Use the sun or moon button on the sign-in screen and in the top bar. The choice is remembered on each device. Before you pick, the app follows the device setting.
+
+## Running it
+
+It is a single static page with no build tooling. It needs no server.
+
+```sh
+./build.sh                 # writes index.html from src/app.html
+python3 -m http.server     # then open http://localhost:8000
+```
+
+To host it, turn on **GitHub Pages** for this repository (Settings → Pages → deploy from the `main` branch, root folder). Ambassadors can then open it on their phones. GPS and the camera need HTTPS, which Pages provides.
+
+`src/app.html` is the source. `index.html` is generated from it by `build.sh` (it adds the `<!doctype>` and `<head>`). Edit the source, run the build, and commit both.
+
+Three.js (3D) and SheetJS (Excel import) load from cdnjs.
+
+## Important: where data is stored today
+
+All data (accounts, outlets, entries, photos) is stored **in the browser of the device using the app** (IndexedDB). That makes it a working prototype, not yet a shared system:
+
+- An ambassador's entries on their phone **won't** appear on the admin's laptop.
+- Two tabs in the same browser do stay in sync live. Try a BA in one tab and the admin in another.
+- Passwords are hashed in the browser. This isn't real security.
+
+### Next step: a shared backend
+
+To make it multi-user, replace the `DB` and `save()` layer in `src/app.html` with a hosted backend. The data model is already split the way a database needs it:
+
+| Collection | Holds |
+| --- | --- |
+| `vendors` | Name, contact, brands, colour |
+| `users` | Role (`admin`, `manager`, `ba`), sign-in, `vendorId` |
+| `outlets` | Name, address, area, channel, lat/lng, `vendorId`, brands |
+| `entries` | BA, vendor, outlet, brand, type, start/end, opening/sold cases, consumers reached, GPS, photo ids, notes |
+| `photos` | Stamped JPEG, time, GPS |
+
+A good fit is **Supabase** (Postgres, auth with email/password and phone OTP, file storage for photos, and row-level security so vendor managers only read their own vendor's rows). **Firebase** works the same way.
+
+## Project layout
+
+```
+src/app.html                    the app (HTML, CSS and JS in one file)
+index.html                      built page for hosting (generated by build.sh)
+build.sh                        builds index.html
+sample-data/outlets-sample.csv  example outlet upload
+```
