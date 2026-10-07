@@ -2,7 +2,7 @@
 
 Trade Activate is a web app for trade marketing activations. Vendors (activation agencies) send brand ambassadors (BAs) to outlets to run activations, sampling and trade activities for our brands. BAs log what is happening from their phones, and the trade marketing team and each vendor's manager watch it live.
 
-**Brands:** Trophy Lager, Trophy Stout, Budweiser, Budweiser Royale, Beta Malt, Grand Malt, Flying Fish, Eagle, Castle Lite.
+**Brands:** Trophy Lager, Trophy Stout, Budweiser, Budweiser Royale, Hero Lager, Beta Malt, Grand Malt, Flying Fish, Eagle, Castle Lite.
 
 ## Who signs in, and what they see
 
