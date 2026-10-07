@@ -10,7 +10,7 @@ Trade Activate is a web app for trade marketing activations. Vendors (activation
 | --- | --- | --- |
 | **Admin** (trade marketing) | Email and password | Live dashboard (all vendors), Vendor folders (every vendor), Outlets (upload and assign), Vendors & users (register, edit and delete vendors, share outlets with them, add managers and BAs) |
 | **Vendor Manager** | Email and password | Live dashboard (their vendor only), their vendor folder, the outlets shared with them (and which ambassador covers each), their ambassadors |
-| **Brand Ambassador** | BA ID or phone number, plus a PIN | My activation (log form, live card), History |
+| **Brand Ambassador** | BA ID, email or phone number, plus a PIN | My activation (log form, live card), History |
 
 ### Owner account
 
@@ -47,6 +47,7 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 - **Photo folders and zip download.** Every live photo is named after its outlet and time (`Mama Tee Lounge 2026-10-07 14.32.05.jpg`). Vendor folders have a By outlet section with each outlet's photos. **Download photos (.zip)** saves the current vendor, folder, day or outlet, and the admin's **Download all photos** saves everything; unzipped, it is one folder per vendor and outlet, with a `photo-index.csv`.
 - **Outlets.** Upload an Excel (`.xlsx`) or CSV list of activating outlets, preview it, assign outlets to vendors (one by one, in bulk, or from a `Vendor` column), and import. Outlets without coordinates are placed by their area name (Ikeja, Lekki, Surulere and others). See `sample-data/outlets-sample.csv` for the columns.
 - **Vendors & users.** Register a vendor, pick its brands, and create its manager's sign-in. Each vendor card has **Edit** (name, manager, phone, sign-in email, brands, password reset), **Outlets** (tick which outlets the vendor activates), **Upload outlet list** (import a file straight to that vendor) and **Delete**. Deleting a vendor switches off its sign-ins, ends its running activations and returns its outlets to Not assigned; its past entries stay in reports under its name. Add brand ambassadors with a BA ID and PIN. Vendor managers can add their own ambassadors.
+- **Bulk upload ambassadors (admin and vendor manager).** Upload an Excel or CSV file with the columns **Full name, Email, Phone number, State, Agency name** (download the template from the upload window, or see `sample-data/users-sample.csv`). A preview flags bad emails, phone numbers that aren't 11 digits, people who already have a sign-in, and agency names that don't match a registered vendor (the admin can pick the vendor in the preview). Each person gets a BA ID and a random 4-digit PIN straight away, and can sign in with the BA ID, email or phone. Download the sign-in sheet at the end: PINs are stored scrambled, so that is the only time they are shown. When a vendor manager uploads, everyone goes to their own agency.
 - **Ambassadors per outlet (vendor manager).** On Our outlets, a manager assigns one or more of their ambassadors to each shared outlet, one row at a time or by ticking several outlets. A filter shows outlets that have no ambassador yet. The admin's Outlets page and the outlets download show who covers each outlet.
 - **Beta features.**
   - **Top ambassadors today.** A leaderboard on the dashboard ranks BAs by cases sold, with consumers reached.
@@ -88,7 +89,7 @@ To make it multi-user, replace the `DB` and `save()` layer in `src/app.html` wit
 | Collection | Holds |
 | --- | --- |
 | `vendors` | Name, contact, brands, colour |
-| `users` | Role (`admin`, `manager`, `ba`), sign-in, `vendorId` |
+| `users` | Role (`admin`, `manager`, `ba`), sign-in, email, phone, state, `vendorId` |
 | `outlets` | Name, address, area, channel, lat/lng, `vendorId`, brands, `baIds` (assigned ambassadors) |
 | `entries` | BA, vendor, outlet, brand, type, start/end, opening/sold cases, consumers reached, GPS, photo ids, notes |
 | `photos` | Stamped JPEG, time, GPS |
@@ -108,4 +109,5 @@ assets/field/                   brand photos used for the example entries
 assets/login/                   photos on the 3D sign-in ring
 assets/nigeria.json             Nigeria map data: states, rivers, lakes, cities (Natural Earth)
 sample-data/outlets-sample.csv  example outlet upload
+sample-data/users-sample.csv    example ambassador bulk upload
 ```

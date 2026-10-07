@@ -349,6 +349,7 @@ td .seg-pill+small,td select+small{display:block}
 .ogal button{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);padding:0;display:flex;flex-direction:column;text-align:left}
 .ogal img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--raise)}
 .ogal span{font-size:11px;font-family:var(--mono);padding:6px 8px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
 .vactions{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
 .stats3 small{display:block;font-size:11px;font-weight:500}
 .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
@@ -409,6 +410,7 @@ td .seg-pill+small,td select+small{display:block}
 .facts .wide{grid-column:1/-1}
 .modal{position:fixed;left:50%;top:50%;width:min(640px,calc(100% - 32px));max-height:calc(100% - 48px);overflow-y:auto;transform:translate(-50%,-46%) scale(.97);opacity:0;pointer-events:none;background:var(--panel);border:1px solid var(--line-2);border-radius:20px;z-index:60;transition:all .3s cubic-bezier(.2,.8,.2,1);box-shadow:var(--shadow)}
 .modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal.wide{width:min(980px,calc(100% - 32px))}
 .modal .mbody{padding:24px;display:flex;flex-direction:column;gap:16px}
 .modal h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:90;display:none;align-items:center;justify-content:center;padding:24px}
@@ -923,7 +925,7 @@ const outletOf = id => S.outlets.find(o => o.id === id);
 const ROLE_INFO = {
   admin: { label: "Admin", id: "Email", pw: "Password", demo: [["Trade marketing admin", "admin@tradeactivate.app", "Admin@123"]] },
   manager: { label: "Vendor Manager", id: "Email", pw: "Password", demo: [["Pinnacle Activations", "tobi@pinnacle.ng", "Manager@123"], ["BlueWave Experiential", "nkechi@bluewave.ng", "Manager@123"], ["Kora Field Marketing", "musa@kora.ng", "Manager@123"]] },
-  ba: { label: "Brand Ambassador", id: "BA ID or phone number", pw: "PIN", demo: [["Adaeze Okafor · Pinnacle", "BA-1001", "1234"], ["Damilola Ogun · Kora", "BA-1009", "1234"]] }
+  ba: { label: "Brand Ambassador", id: "BA ID, email or phone", pw: "PIN", demo: [["Adaeze Okafor · Pinnacle", "BA-1001", "1234"], ["Damilola Ogun · Kora", "BA-1009", "1234"]] }
 };
 const ROLE_ICON = {
   admin: '<path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
@@ -948,7 +950,7 @@ $("#loginForm").addEventListener("submit", async e => {
   const id = $("#l-id").value.trim().toLowerCase(), pw = $("#l-pw").value;
   if (!id || !pw) return $("#l-err").textContent = `Enter your ${ROLE_INFO[loginRole].id.toLowerCase()} and ${ROLE_INFO[loginRole].pw.toLowerCase()}.`;
   const digits = id.replace(/\D/g, "");
-  const u = S.users.find(x => x.login.toLowerCase() === id || (x.role === "ba" && digits.length >= 10 && (x.phone || "").replace(/\D/g, "") === digits));
+  const u = S.users.find(x => x.login.toLowerCase() === id || (x.role === "ba" && x.email && x.email.toLowerCase() === id) || (x.role === "ba" && digits.length >= 10 && (x.phone || "").replace(/\D/g, "") === digits));
   if (!u || u.pw !== await sha(pw)) return $("#l-err").textContent = "That sign-in didn't match an account. Check the details and try again.";
   if (u.disabled) return $("#l-err").textContent = "This account has been switched off. Ask your vendor manager to turn it back on.";
   if (u.role !== loginRole) return $("#l-err").textContent = `This is a ${ROLE_INFO[u.role].label} account. Choose "${ROLE_INFO[u.role].label}" above and sign in again.`;
@@ -1368,7 +1370,7 @@ $("#lightbox").addEventListener("click", e => { if (e.target.id === "lightbox") 
 addEventListener("keydown", e => { if (e.key === "Escape") { if ($("#lightbox").classList.contains("on")) return $("#lightbox").classList.remove("on"); closeDrawer(); closeModal(); } });
 
 /* ---------- modal ---------- */
-function openModal(html, onReady) { $("#modal").innerHTML = `<div class="mbody">${html}</div>`; $("#modal").classList.add("on"); $("#scrim").classList.add("on"); if (onReady) onReady($("#modal")); setTimeout(() => { const f = $("#modal input, #modal select"); if (f) f.focus(); }, 60); }
+function openModal(html, onReady, wide) { $("#modal").classList.toggle("wide", !!wide); $("#modal").innerHTML = `<div class="mbody">${html}</div>`; $("#modal").classList.add("on"); $("#scrim").classList.add("on"); if (onReady) onReady($("#modal")); setTimeout(() => { const f = $("#modal input, #modal select"); if (f) f.focus(); }, 60); }
 function closeModal() { $("#modal").classList.remove("on"); if (!$("#drawer").classList.contains("on")) $("#scrim").classList.remove("on"); }
 let toastT;
 function toast(msg, bad) { const t = $("#toast"); t.textContent = msg; t.classList.toggle("bad", !!bad); t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2800); }
@@ -1632,7 +1634,7 @@ function showPreview(res, forVendor) {
 /* ---------- vendors & users (admin) ---------- */
 function renderVendors() {
   const el = $("#v-vendors");
-  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><button class="btn" type="button" id="bulkUsers">${UP_SVG}Bulk upload ambassadors</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
     <div class="vcards">${liveVendors().map(v => {
       const mgr = S.users.filter(u => u.role === "manager" && u.vendorId === v.id && !u.disabled), bas = S.users.filter(u => u.role === "ba" && u.vendorId === v.id && !u.disabled);
       const es = S.entries.filter(e => e.vendorId === v.id);
@@ -1645,8 +1647,8 @@ function renderVendors() {
     }).join("")}</div>
     <input id="vupFile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden>
     <div class="card"><div class="card-h"><h3>Everyone with a sign-in</h3><div class="right"><span class="chip">${S.users.filter(u => !u.disabled).length} accounts</span></div></div>
-    <div class="twrap" style="border:0"><table><thead><tr><th>Name</th><th>Role</th><th>Vendor</th><th>Sign-in</th><th>Entries</th></tr></thead><tbody>
-    ${S.users.filter(u => !u.disabled).map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center">${avatar(u)}<b>${esc(u.name)}</b></div></td><td>${ROLE_INFO[u.role].label}</td><td>${esc((vendorOf(u.vendorId) || {}).name || "–")}</td><td class="num">${esc(u.login)}</td><td class="num">${S.entries.filter(e => e.baId === u.id).length || "–"}</td></tr>`).join("")}
+    <div class="twrap" style="border:0"><table><thead><tr><th>Name</th><th>Role</th><th>Vendor</th><th>State</th><th>Sign-in</th><th>Entries</th></tr></thead><tbody>
+    ${S.users.filter(u => !u.disabled).map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center">${avatar(u)}<b>${esc(u.name)}</b></div></td><td>${ROLE_INFO[u.role].label}</td><td>${esc((vendorOf(u.vendorId) || {}).name || "–")}</td><td>${esc(u.state || "–")}</td><td class="num">${esc(u.login)}</td><td class="num">${S.entries.filter(e => e.baId === u.id).length || "–"}</td></tr>`).join("")}
     </tbody></table></div></div>`;
   $("#addVendor").onclick = () => vendorForm(null);
   let upFor = null;
@@ -1658,6 +1660,7 @@ function renderVendors() {
     else { upFor = v.id; $("#vupFile").click(); }
   };
   $("#addBA").onclick = () => baForm(null);
+  $("#bulkUsers").onclick = () => bulkUsers(null);
   $("#resetDemo").onclick = () => openModal(`<h3>Reset to the example data?</h3><p class="muted">This deletes every vendor, outlet, account, entry and photo stored in this browser and puts the example data back. It can't be undone.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rsNo">Keep my data</button><button class="btn primary" type="button" id="rsYes">Reset</button></div>`, m => {
     $("#rsNo", m).onclick = closeModal;
     $("#rsYes", m).onclick = async () => { await DB.clear(); photoCache.clear(); await seedDemo(); closeModal(); toast("Example data restored"); refresh(); paintSamplePhotos(); };
@@ -1761,38 +1764,148 @@ function baForm(vendorId) {
     <form id="bf" class="fgrid" novalidate>
       <div class="field full"><label for="bf-name">Full name</label><input id="bf-name" required></div>
       <div class="field"><label for="bf-phone">Phone number</label><input id="bf-phone" inputmode="tel" placeholder="0803 000 0000"></div>
+      <div class="field"><label for="bf-email">Email</label><input id="bf-email" type="email" inputmode="email"></div>
+      <div class="field"><label for="bf-state">State</label><select id="bf-state"><option value="">Choose state</option>${NG_STATES.map(x => `<option>${x}</option>`).join("")}</select></div>
       ${vendorId ? "" : `<div class="field"><label for="bf-v">Vendor</label><select id="bf-v">${liveVendors().map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("")}</select></div>`}
       <div class="field"><label for="bf-id">BA ID</label><input id="bf-id" value="BA-${nextNo}"></div>
-      <div class="field"><label for="bf-pin">4-digit PIN</label><input id="bf-pin" inputmode="numeric" maxlength="6" value="${String(Math.floor(1000 + Math.random() * 9000))}"><small>They sign in with the BA ID or phone number and this PIN.</small></div>
+      <div class="field"><label for="bf-pin">4-digit PIN</label><input id="bf-pin" inputmode="numeric" maxlength="6" value="${String(Math.floor(1000 + Math.random() * 9000))}"><small>They sign in with the BA ID, email or phone number and this PIN.</small></div>
       <div class="err full" id="bf-err" role="alert"></div>
       <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="bfCancel">Cancel</button><button class="btn primary" type="submit">Add ambassador</button></div>
     </form>`, m => {
     $("#bfCancel", m).onclick = closeModal;
     $("#bf", m).onsubmit = async e => {
       e.preventDefault();
-      const name = $("#bf-name").value.trim(), id = $("#bf-id").value.trim(), pin = $("#bf-pin").value.trim(), phone = $("#bf-phone").value.trim();
+      const name = $("#bf-name").value.trim(), id = $("#bf-id").value.trim(), pin = $("#bf-pin").value.trim(), phone = $("#bf-phone").value.trim(), email = $("#bf-email").value.trim().toLowerCase(), state = $("#bf-state").value;
       const err = t => $("#bf-err").textContent = t;
       if (!name) return err("Add the ambassador's name.");
       if (!/^\d{4,6}$/.test(pin)) return err("The PIN must be 4 to 6 digits.");
       if (S.users.some(u => u.login.toLowerCase() === id.toLowerCase())) return err("That BA ID is already in use.");
+      if (email && !/^\S+@\S+\.\S+$/.test(email)) return err("That email doesn't look right.");
+      if (email && S.users.some(u => !u.disabled && (u.email || "").toLowerCase() === email)) return err("That email already has a sign-in.");
       const vid = vendorId || $("#bf-v").value;
-      S.users.push({ id: uid("u_"), role: "ba", name, login: id, phone, vendorId: vid, pw: await sha(pin) });
+      S.users.push({ id: uid("u_"), role: "ba", name, login: id, email, phone, state, vendorId: vid, pw: await sha(pin) });
       await save("users"); closeModal(); toast(`${name} added. Sign-in: ${id} with PIN ${pin}`); refresh();
     };
   });
+}
+
+/* ---------- bulk upload of brand ambassadors ----------
+   Columns: Full name, Email, Phone number, State, Agency name. Each row gets a
+   BA ID and a 4-digit PIN; they can sign in with the BA ID, email or phone. */
+const NG_STATES = ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT Abuja", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"];
+const USER_HEAD = ["Full name", "Email", "Phone number", "State", "Agency name"];
+const matchState = t => { const k = String(t || "").toLowerCase().replace(/\bstate\b/g, "").replace(/[^a-z]/g, ""); if (!k) return ""; if (/^(fct|abuja|federalcapitalterritory|fctabuja)$/.test(k)) return "FCT Abuja"; if (k === "nassarawa") return "Nasarawa"; if (k === "akwaibom" || k === "akwa") return "Akwa Ibom"; return NG_STATES.find(s => s.toLowerCase().replace(/[^a-z]/g, "") === k) || ""; };
+const matchVendor = t => { const k = String(t || "").trim().toLowerCase(); if (!k) return null; return liveVendors().find(v => v.name.toLowerCase() === k) || liveVendors().find(v => v.name.toLowerCase().startsWith(k) || k.startsWith(v.name.toLowerCase())) || null; };
+const normPhone = t => { let d = String(t || "").replace(/\D/g, ""); if (d.startsWith("234") && d.length === 13) d = "0" + d.slice(3); if (d.length === 10 && /^[789]/.test(d)) d = "0" + d; return d; };
+async function readRows(file) {
+  const nm = file.name.toLowerCase();
+  if (nm.endsWith(".csv") || nm.endsWith(".txt")) return parseCSV(await file.text());
+  if (!window.XLSX) throw new Error("Excel support didn't load. Save the sheet as CSV and upload that instead.");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false });
+}
+function parseUserRows(rows, forVendor) {
+  if (rows.length < 2) return { error: "The file needs the header row and at least one person." };
+  const head = rows[0].map(h => String(h).trim().toLowerCase().replace(/[^a-z]/g, ""));
+  const col = { name: ["fullname", "name", "ambassador", "baname"], email: ["email", "emailaddress", "mail"], phone: ["phonenumber", "phone", "mobile", "phoneno", "tel", "telephone"], state: ["state", "location", "region"], agency: ["agencyname", "agency", "vendor", "vendorname", "company"] };
+  const idx = {}; for (const k in col) idx[k] = head.findIndex(h => col[k].includes(h));
+  if (idx.name < 0) return { error: `Couldn't find a "Full name" column. Use the template headers: ${USER_HEAD.join(", ")}.` };
+  const seenE = new Set(), seenP = new Set();
+  const items = rows.slice(1).map((r, i) => {
+    const g = k => idx[k] >= 0 ? String(r[idx[k]] ?? "").trim() : "";
+    const name = g("name").replace(/\s+/g, " "); if (!name && !g("email") && !g("phone")) return null;
+    const email = g("email").toLowerCase(), phone = normPhone(g("phone")), stateText = g("state"), state = matchState(stateText), agencyText = g("agency");
+    const vendor = forVendor ? vendorOf(forVendor) : matchVendor(agencyText);
+    const issues = [];
+    if (!name) issues.push("No name");
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) issues.push("Email looks wrong");
+    if (g("phone") && phone.length !== 11) issues.push("Phone should be 11 digits");
+    if (!email && !phone) issues.push("Add an email or phone");
+    if (email && (seenE.has(email) || S.users.some(u => !u.disabled && ((u.email || "").toLowerCase() === email || u.login.toLowerCase() === email)))) issues.push("Email already has a sign-in");
+    if (phone && (seenP.has(phone) || S.users.some(u => !u.disabled && normPhone(u.phone) === phone))) issues.push("Phone already has a sign-in");
+    if (!vendor) issues.push(agencyText ? `Agency "${agencyText}" isn't registered` : "No agency");
+    if (stateText && !state) issues.push(`"${stateText}" isn't a Nigerian state`);
+    if (email) seenE.add(email); if (phone) seenP.add(phone);
+    return { row: i + 2, name, email, phone, state: state || stateText, vendorId: vendor ? vendor.id : "", agencyText, issues };
+  }).filter(Boolean);
+  if (!items.length) return { error: "No people found under the header row." };
+  return { items };
+}
+function bulkUsers(forVendor) {
+  const v = forVendor && vendorOf(forVendor);
+  openModal(`<h3>Bulk upload brand ambassadors</h3>
+    <div class="muted">Upload an Excel or CSV file with these columns, in this order: <b>${USER_HEAD.join(", ")}</b>. Everyone gets a sign-in straight away: a BA ID and a 4-digit PIN. They can sign in with the BA ID, their email or their phone number.${v ? ` Everyone in the file is added to ${esc(v.name)}.` : " The agency name must match a registered vendor."}</div>
+    <label class="drop" id="buDrop" for="buFile">${UP_SVG.replace('width="15" height="15"', 'width="26" height="26"')}<b>Drop the file here, or click to choose it</b><span class="muted">.xlsx, .xls or .csv</span><input id="buFile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden></label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sm" type="button" id="buTplX">Download template (Excel)</button><button class="btn sm" type="button" id="buTplC">Download template (CSV)</button></div>
+    <div class="err" id="buErr" role="alert"></div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn" type="button" id="buNo">Close</button></div>`, m => {
+    const tpl = () => { const ex = v || liveVendors()[0]; return [{ "Full name": "Amaka Obi", Email: "amaka.obi@example.com", "Phone number": "08031234567", State: "Lagos", "Agency name": ex ? ex.name : "Your agency" }, { "Full name": "Sani Bello", Email: "", "Phone number": "08097654321", State: "Kano", "Agency name": ex ? ex.name : "Your agency" }]; };
+    $("#buTplX", m).onclick = () => downloadSheets("trade-activate-ambassadors-template", [["Ambassadors", tpl()]], "xlsx");
+    $("#buTplC", m).onclick = () => downloadSheets("trade-activate-ambassadors-template", [["Ambassadors", tpl()]], "csv");
+    $("#buNo", m).onclick = closeModal;
+    const take = async f => { try { const res = parseUserRows(await readRows(f), forVendor); if (res.error) { $("#buErr", m).textContent = res.error; return; } previewUsers(res.items, forVendor); } catch (e) { $("#buErr", m).textContent = e.message || "Couldn't read that file."; } };
+    $("#buFile", m).onchange = e => { const f = e.target.files[0]; if (f) take(f); };
+    const d = $("#buDrop", m);
+    ["dragenter", "dragover"].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.add("over"); }));
+    ["dragleave", "drop"].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.remove("over"); }));
+    d.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) take(f); });
+  });
+}
+function previewUsers(items, forVendor) {
+  const vopts = sel => `<option value="">Choose agency</option>` + liveVendors().map(v => `<option value="${v.id}" ${sel === v.id ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+  const blocking = i => i.issues.filter(x => !/isn't a Nigerian state/.test(x));
+  const draw = m => {
+    items.forEach(i => { i.issues = i.issues.filter(x => !(/isn't registered|No agency/.test(x) && i.vendorId)); });
+    const ok = items.filter(i => !blocking(i).length).length;
+    $("#puBody", m).innerHTML = items.map((i, k) => `<tr class="${blocking(i).length ? "bad" : ""}"><td class="num dim">${i.row}</td><td><b>${esc(i.name || "–")}</b><small>${esc(i.email || "")}</small></td><td class="num">${esc(i.phone || "–")}</td><td>${esc(i.state || "–")}</td>
+      <td>${forVendor ? esc(vendorOf(forVendor).name) : `<select class="inline" data-pu="${k}">${vopts(i.vendorId)}</select>`}</td>
+      <td>${i.issues.length ? i.issues.map(x => `<span class="pill ${blocking(i).includes(x) ? "p-warn" : "p-closed"}">${esc(x)}</span>`).join(" ") : `<span class="pill p-live">Ready</span>`}</td></tr>`).join("");
+    $("#puGo", m).textContent = `Create ${ok} ${ok === 1 ? "sign-in" : "sign-ins"}`; $("#puGo", m).disabled = !ok;
+    $("#puNote", m).textContent = ok < items.length ? `${items.length - ok} ${items.length - ok === 1 ? "row" : "rows"} with a problem will be skipped. Fix them in the file and upload again, or pick the agency here.` : "";
+  };
+  openModal(`<h3>Check ${items.length} ${items.length === 1 ? "person" : "people"} before creating sign-ins</h3>
+    <div class="twrap" style="max-height:340px;overflow:auto"><table style="min-width:760px"><thead><tr><th>Row</th><th>Name</th><th>Phone</th><th>State</th><th>Agency</th><th>Check</th></tr></thead><tbody id="puBody"></tbody></table></div>
+    <div class="muted" id="puNote" style="font-size:12.5px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="puBack">Back</button><button class="btn primary" type="button" id="puGo">Create</button></div>`, m => {
+    draw(m);
+    $("#puBody", m).onchange = e => { const s2 = e.target.closest("[data-pu]"); if (s2) { const i = items[+s2.dataset.pu]; i.vendorId = s2.value; if (!i.vendorId && !i.issues.some(x => /agency|Agency/.test(x))) i.issues.push("No agency"); draw(m); } };
+    $("#puBack", m).onclick = () => bulkUsers(forVendor);
+    $("#puGo", m).onclick = async () => {
+      $("#puGo", m).disabled = true; $("#puGo", m).textContent = "Creating sign-ins…";
+      let no = Math.max(1000, ...S.users.filter(u => u.role === "ba").map(u => +String(u.login).replace(/\D/g, "") || 0));
+      const made = [];
+      for (const i of items.filter(x => !blocking(x).length)) {
+        const pin = String(1000 + Math.floor(Math.random() * 9000)), login = "BA-" + ++no;
+        S.users.push({ id: uid("u_"), role: "ba", name: i.name, login, email: i.email, phone: i.phone, state: i.state, vendorId: forVendor || i.vendorId, pw: await sha(pin), createdBy: me().id, createdAt: Date.now(), bulk: true });
+        made.push({ "Full name": i.name, Agency: vendorOf(forVendor || i.vendorId).name, State: i.state, "BA ID": login, PIN: pin, Email: i.email, "Phone number": i.phone, "Sign in at": location.origin + location.pathname });
+      }
+      await save("users"); refresh();
+      openModal(`<h3>${made.length} ${made.length === 1 ? "sign-in" : "sign-ins"} created</h3>
+        <div class="hint"><b>Download the sign-in sheet now.</b> PINs are stored scrambled, so this is the only time they can be shown. Share each person's BA ID and PIN with them.</div>
+        <div class="twrap" style="max-height:300px;overflow:auto"><table style="min-width:520px"><thead><tr><th>Name</th><th>Agency</th><th>BA ID</th><th>PIN</th></tr></thead><tbody>${made.map(r => `<tr><td><b>${esc(r["Full name"])}</b><small>${esc(r.Email || r["Phone number"])}</small></td><td>${esc(r.Agency)}</td><td class="num">${esc(r["BA ID"])}</td><td class="num">${esc(r.PIN)}</td></tr>`).join("")}</tbody></table></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="mkCsv">Download (CSV)</button><button class="btn primary" type="button" id="mkX">Download sign-in sheet (Excel)</button><button class="btn" type="button" id="mkDone">Done</button></div>`, m2 => {
+        const base = `trade-activate-sign-ins-${dayKey(Date.now())}`;
+        $("#mkX", m2).onclick = () => downloadSheets(base, [["Sign-ins", made]], "xlsx");
+        $("#mkCsv", m2).onclick = () => downloadSheets(base, [["Sign-ins", made]], "csv");
+        $("#mkDone", m2).onclick = closeModal;
+      });
+      toast(`${made.length} ambassadors added`);
+    };
+  }, true);
 }
 
 /* ---------- team (manager) ---------- */
 function renderTeam() {
   const u = me(), el = $("#v-team");
   const bas = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId);
-  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="tAdd">Add a brand ambassador</button></div>
-    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>Sign-in</th><th>Status</th><th>Today</th><th>Cases sold (all time)</th><th>Entries</th></tr></thead><tbody>
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="tAdd">Add a brand ambassador</button><button class="btn" type="button" id="tBulk">${UP_SVG}Bulk upload ambassadors</button></div>
+    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>State</th><th>Sign-in</th><th>Status</th><th>Today</th><th>Cases sold (all time)</th><th>Entries</th></tr></thead><tbody>
     ${bas.map(b => { const es = S.entries.filter(e => e.baId === b.id), live = es.find(isLive), td = es.filter(e => dayKey(e.start) === dayKey(Date.now()));
-      return `<tr ${live ? `data-entry="${live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.phone || "")}</small></div></div></td><td class="num">${esc(b.login)}</td>
-      <td>${live ? `<span class="pill p-live">At ${esc(live.outletName)}</span>` : `<span class="pill p-closed">Not running</span>`}</td><td class="num">${td.length ? n(td.reduce((a, e) => a + (+e.sold || 0), 0)) + " cases" : "–"}</td><td class="num">${n(es.reduce((a, e) => a + (+e.sold || 0), 0))}</td><td class="num">${es.length}</td></tr>`; }).join("") || `<tr><td colspan="6"><div class="empty" style="border:0">No ambassadors yet. Add your first one.</div></td></tr>`}
+      return `<tr ${live ? `data-entry="${live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.email || b.phone || "")}</small></div></div></td><td>${esc(b.state || "–")}</td><td class="num">${esc(b.login)}</td>
+      <td>${live ? `<span class="pill p-live">At ${esc(live.outletName)}</span>` : `<span class="pill p-closed">Not running</span>`}</td><td class="num">${td.length ? n(td.reduce((a, e) => a + (+e.sold || 0), 0)) + " cases" : "–"}</td><td class="num">${n(es.reduce((a, e) => a + (+e.sold || 0), 0))}</td><td class="num">${es.length}</td></tr>`; }).join("") || `<tr><td colspan="7"><div class="empty" style="border:0">No ambassadors yet. Add your first one.</div></td></tr>`}
     </tbody></table></div>`;
   $("#tAdd").onclick = () => baForm(u.vendorId);
+  $("#tBulk").onclick = () => bulkUsers(u.vendorId);
 }
 
 /* ---------- brand ambassador: log an activation ---------- */
@@ -1801,6 +1914,7 @@ function locate(cb) {
   if (!navigator.geolocation) { cb(null, "This device can't share its location."); return; }
   navigator.geolocation.getCurrentPosition(p => cb({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, time: Date.now() }), err => cb(null, err.code === 1 ? "Location access was blocked. Allow location for this site in your browser settings, then try again." : "Couldn't get a location fix. Move outside or near a window and try again."), { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
 }
+const UP_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const ZIP_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M11 6h2M11 9h2M11 12h2M10.5 15h3v3h-3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 const PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>';
 const CAM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
