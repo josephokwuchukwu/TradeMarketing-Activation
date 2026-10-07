@@ -68,7 +68,9 @@ It is a single static page with no build tooling. It needs no server.
 python3 -m http.server     # then open http://localhost:8000
 ```
 
-To host it, turn on **GitHub Pages** for this repository (Settings → Pages → deploy from the `main` branch, root folder). Ambassadors can then open it on their phones. GPS and the camera need HTTPS, which Pages provides.
+**Live app:** https://josephokwuchukwu.github.io/TradeMarketing-Activation/
+
+It is hosted with **GitHub Pages** for this repository (Settings → Pages → deploy from the `main` branch, root folder), so every merge to `main` updates the live link. Ambassadors open it on their phones. GPS and the camera need HTTPS, which Pages provides.
 
 `src/app.html` is the source. `index.html` is generated from it by `build.sh` (it adds the `<!doctype>` and `<head>`). Edit the source, run the build, and commit both.
 
