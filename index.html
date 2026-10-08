@@ -216,6 +216,16 @@ h1,h2,h3,h4{text-wrap:balance}
 .svpanel header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
 .svpanel header b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .svpanel iframe{flex:1;border:0;width:100%;background:var(--panel-2)}
+.bingbtn{position:absolute;right:16px;bottom:62px;z-index:3;background:color-mix(in srgb,var(--panel) 80%,transparent);backdrop-filter:blur(8px)}
+.bingp .svbox{width:min(1200px,100%);height:min(760px,90vh)}
+.bingp header .seg{flex:none}
+.bgbody{flex:1;display:flex;min-height:0}
+.bglist{width:260px;flex:none;overflow:auto;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.bglist button{text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 12px;display:flex;flex-direction:column;gap:2px;color:var(--fg);font-size:13px}
+.bglist button small{color:var(--muted);font-size:11.5px}
+.bglist button.on{background:color-mix(in srgb,var(--accent) 16%,var(--panel))}
+.bgacts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:720px){.bgbody{flex-direction:column-reverse}.bglist{width:auto;max-height:150px;border-right:0;border-top:1px solid var(--line)}.bingp header{flex-wrap:wrap}.bingp header b{flex-basis:calc(100% - 50px)}}
 .svpanel .svnote{font-size:12px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--line)}
 .slabel{position:absolute;left:0;top:0;white-space:nowrap;font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:color-mix(in srgb,var(--fg) 70%,transparent);text-shadow:0 0 3px var(--stage-bot),0 0 8px var(--stage-bot);pointer-events:none;transition:opacity .3s,color .2s;margin-top:8px}
 .slabel.hot{color:var(--accent-text);font-size:11px}
@@ -447,6 +457,8 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
 .cam .thumbs img{width:54px;height:54px;object-fit:cover;border-radius:8px;border:2px solid #FFD300;flex:none}
 .cam .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
 .cam .flash.on{opacity:.85;transition:none}
+.cam .camgps{font-size:11.5px;font-family:var(--mono);opacity:.75}
+.cam .camgps.ok{color:#9BE7B0;opacity:1}
 .cam .cam-msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;line-height:1.5}
 .cam .cam-msg label{position:relative}
 .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -586,6 +598,7 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
           </div>
           <div class="stage-tip">Drag to orbit · scroll or pinch to zoom · tap a state to fly in</div>
           <div class="seg mapviews" id="mapViews" aria-label="Map view"><button type="button" data-mv="nigeria" aria-pressed="true">Nigeria</button><button type="button" data-mv="lagos" aria-pressed="false">Lagos</button></div>
+          <button class="btn sm bingbtn" type="button" id="bingBtn"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 3v15M15 6v15" fill="none" stroke="currentColor" stroke-width="2"/></svg>Bing Maps</button>
           <div class="maptip" id="mapTip" hidden></div>
           <button class="btn sm svbtn" type="button" id="svBtn" hidden><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="12" cy="5" r="2.5" fill="currentColor"/><path d="M9 9h6l-1 6h-4zM10 15l-1 6M14 15l1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Street view here</button>
         </div>
@@ -756,13 +769,57 @@ async function stampImage(source, stamp) {
   g.fillStyle = grad; g.fillRect(0, h - bar * 1.6, w, bar * 1.6);
   const fs = Math.max(12, Math.round(bar * .3));
   g.fillStyle = "#fff"; g.font = `700 ${fs}px Figtree, sans-serif`; g.textBaseline = "alphabetic";
-  g.fillText(`${stamp.brand} · ${stamp.outlet}`.slice(0, 70), fs * .8, h - bar * .55);
+  g.fillText(`${stamp.brand} · ${stamp.outlet}`.slice(0, 48), fs * .8, h - bar * .55);
   g.font = `500 ${Math.round(fs * .82)}px "JetBrains Mono", monospace`; g.fillStyle = "rgba(255,255,255,.85)";
-  const where = stamp.gps ? `${stamp.gps.lat.toFixed(5)}, ${stamp.gps.lng.toFixed(5)}` : "location not recorded";
-  g.fillText(`${new Date(stamp.time).toLocaleString("en-GB")} · ${where}`, fs * .8, h - bar * .18);
+  const where = stamp.gps ? `Lat ${Math.abs(stamp.gps.lat).toFixed(5)}°${stamp.gps.lat >= 0 ? "N" : "S"}  Lng ${Math.abs(stamp.gps.lng).toFixed(5)}°${stamp.gps.lng >= 0 ? "E" : "W"}${stamp.gps.acc ? `  ±${Math.round(stamp.gps.acc)} m` : ""}` : "Location not recorded";
+  g.fillText(`${new Date(stamp.time).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })} · ${where}`, fs * .8, h - bar * .18);
   g.textAlign = "right"; g.fillStyle = "#FFD300"; g.font = `800 ${Math.round(fs * .8)}px "Bricolage Grotesque", sans-serif`;
-  g.fillText("TRADE ACTIVATE", w - fs * .8, h - bar * .18);
+  g.fillText("TRADE ACTIVATE", w - fs * .8, h - bar * .55);
   return c.toDataURL("image/jpeg", .8);
+}
+/* EXIF geotag: GPS latitude/longitude, GPS date and time (UTC), the local date
+   taken and a description, written into the JPEG so Google Photos, Windows,
+   Power BI and any EXIF reader see where and when it was shot. */
+function exifSegment({ desc, time, gps }) {
+  const asc = t => [...new TextEncoder().encode(t), 0], z = x => String(x).padStart(2, "0"), d = new Date(time);
+  const local = `${d.getFullYear()}:${z(d.getMonth() + 1)}:${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`;
+  const dms = v => { v = Math.abs(v); const dg = Math.floor(v), mf = (v - dg) * 60, mn = Math.floor(mf); return [[dg, 1], [mn, 1], [Math.round((mf - mn) * 60 * 10000), 10000]]; };
+  const SZ = { 1: 1, 2: 1, 4: 4, 5: 8 };
+  const ifd0 = [[0x010E, 2, asc(desc)], [0x010F, 2, asc("Trade Activate")], [0x0132, 2, asc(local)], [0x8769, 4, [0]]];
+  if (gps) ifd0.push([0x8825, 4, [0]]);
+  const exif = [[0x9003, 2, asc(local)], [0x9004, 2, asc(local)]];
+  const blocks = [ifd0, exif];
+  if (gps) {
+    const g = [[0x00, 1, [2, 3, 0, 0]], [0x01, 2, asc(gps.lat >= 0 ? "N" : "S")], [0x02, 5, dms(gps.lat)], [0x03, 2, asc(gps.lng >= 0 ? "E" : "W")], [0x04, 5, dms(gps.lng)], [0x07, 5, [[d.getUTCHours(), 1], [d.getUTCMinutes(), 1], [d.getUTCSeconds(), 1]]], [0x1D, 2, asc(`${d.getUTCFullYear()}:${z(d.getUTCMonth() + 1)}:${z(d.getUTCDate())}`)]];
+    if (gps.acc) g.push([0x1F, 5, [[Math.round(gps.acc * 10), 10]]]);
+    blocks.push(g);
+  }
+  const sizeOf = es => es.reduce((a, [, t, v]) => { const n = v.length * SZ[t]; return a + (n > 4 ? n + (n & 1) : 0); }, 2 + es.length * 12 + 4);
+  const offs = []; let o = 8; for (const b of blocks) { offs.push(o); o += sizeOf(b); }
+  ifd0.find(e => e[0] === 0x8769)[2] = [offs[1]]; if (gps) ifd0.find(e => e[0] === 0x8825)[2] = [offs[2]];
+  const dv = new DataView(new ArrayBuffer(o));
+  dv.setUint16(0, 0x4949); dv.setUint16(2, 42, true); dv.setUint32(4, 8, true);
+  blocks.forEach((es, bi) => {
+    let p = offs[bi], data = p + 2 + es.length * 12 + 4;
+    dv.setUint16(p, es.length, true); p += 2;
+    for (const [tag, t, v] of es) {
+      const n = v.length * SZ[t]; let w = p + 8;
+      dv.setUint16(p, tag, true); dv.setUint16(p + 2, t, true); dv.setUint32(p + 4, v.length, true);
+      if (n > 4) { dv.setUint32(p + 8, data, true); w = data; data += n + (n & 1); }
+      v.forEach((x, i) => { if (t === 5) { dv.setUint32(w + i * 8, x[0], true); dv.setUint32(w + i * 8 + 4, x[1], true); } else if (t === 4) dv.setUint32(w + i * 4, x, true); else dv.setUint8(w + i, x); });
+      p += 12;
+    }
+    dv.setUint32(p, 0, true);
+  });
+  const tiff = new Uint8Array(dv.buffer), L = 8 + tiff.length, seg = new Uint8Array(2 + L);
+  seg.set([0xFF, 0xE1, L >> 8, L & 255, 0x45, 0x78, 0x69, 0x66, 0, 0]); seg.set(tiff, 10);
+  return seg;
+}
+function geotag(dataUrl, meta) {
+  const b = b64bytes(dataUrl), seg = exifSegment(meta), out = new Uint8Array(b.length + seg.length);
+  out.set(b.subarray(0, 2)); out.set(seg, 2); out.set(b.subarray(2), 2 + seg.length);
+  let bin = ""; for (let i = 0; i < out.length; i += 0x8000) bin += String.fromCharCode.apply(null, out.subarray(i, i + 0x8000));
+  return "data:image/jpeg;base64," + btoa(bin);
 }
 async function fileToImage(file) {
   if ("createImageBitmap" in window) { try { return await createImageBitmap(file); } catch (e) { } }
@@ -771,8 +828,10 @@ async function fileToImage(file) {
 async function storePhoto(file, stamp) {
   const img = await fileToImage(file);
   const ageMin = (Date.now() - (file.lastModified || Date.now())) / 60000;
-  const dataUrl = await stampImage(img, stamp);
-  const p = { id: uid("ph_"), dataUrl, time: Date.now(), gps: stamp.gps || null, live: ageMin < 15, ageMin: Math.round(ageMin), outlet: stamp.outlet, name: photoName(stamp.outlet, Date.now()) };
+  // Photos from the in-app camera carry the moment and the GPS fix of the shot itself.
+  stamp = { ...stamp, time: file.shotAt || stamp.time, gps: file.gps || stamp.gps || null };
+  const dataUrl = geotag(await stampImage(img, stamp), { desc: `${stamp.brand} - ${stamp.outlet}`, time: stamp.time, gps: stamp.gps });
+  const p = { id: uid("ph_"), dataUrl, time: stamp.time, gps: stamp.gps || null, live: ageMin < 15, ageMin: Math.round(ageMin), outlet: stamp.outlet, name: photoName(stamp.outlet, Date.now()) };
   await DB.put("photos", p.id, p); photoCache.set(p.id, p);
   return p;
 }
@@ -1183,7 +1242,7 @@ function subtitle(v) {
   return ({
     dashboard: u.role === "admin" ? "Every vendor's activations, sampling and trade activities" : u.role === "supervisor" ? "Your ambassadors, where they're covering, and who's on location now" : `${vend.name}: activations running now`,
     folders: u.role === "admin" ? "Every entry ambassadors have logged, filed by vendor and day" : u.role === "supervisor" ? "Entries and photos logged by your ambassadors" : `Entries logged by ${vend.name} ambassadors`,
-    crew: `${vend.name} ambassadors assigned to you`,
+    crew: `Your ${vend.name} ambassadors: add them by hand or from an Excel file`,
     alerts: "Activating agencies, ambassadors and coverage, as it happens",
     outlets: u.role === "admin" ? "Upload activating outlets and assign them to vendors" : `Outlets assigned to ${vend.name}`,
     vendors: "Register vendors and give their managers and ambassadors sign-ins",
@@ -1522,7 +1581,7 @@ function openEntry(id) {
         <div><label>Consumers reached</label><b class="num">${n(e.reached)}</b></div>
         <div><label>Started</label><b class="num">${hm(e.start)}</b></div>
         <div><label>${isLive(e) ? "Running for" : "Ended"}</label><b class="num">${isLive(e) ? dur(Date.now() - e.start) : hm(e.end) + " (" + dur(e.end - e.start) + ")"}</b></div>
-        <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px;display:flex;gap:14px;flex-wrap:wrap"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a><button type="button" class="linkbtn" data-sv="${e.gps.lat},${e.gps.lng}" data-svname="${esc(e.outletName)}">Street view</button></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
+        <div class="wide"><label>Recorded location</label>${e.gps ? `<b class="num">${e.gps.lat.toFixed(5)}, ${e.gps.lng.toFixed(5)}</b> <span class="dim">±${Math.round(e.gps.acc || 0)} m at ${hm(e.gps.time || e.start)}</span>${dist != null ? `<div style="font-size:12.5px;margin-top:4px;color:${dist > .5 ? "var(--warn)" : "var(--good)"}">${dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km"} from the outlet's listed address${dist > .5 ? ". Worth checking." : ""}</div>` : ""}<div style="margin-top:6px;display:flex;gap:14px;flex-wrap:wrap"><a href="https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}" target="_blank" rel="noopener" style="color:var(--accent-text);font-weight:600">Open in Google Maps</a><button type="button" class="linkbtn" data-sv="${e.gps.lat},${e.gps.lng}" data-svname="${esc(e.outletName)}">Street view</button> <button class="btn sm" type="button" data-bing="${e.gps.lat},${e.gps.lng}" data-bingname="${esc(e.outletName)}" data-bingk="e${e.id}">Bing Maps</button></div>` : `<b>Not recorded</b><div class="dim" style="font-size:12px">The ambassador's phone didn't share a location.</div>`}</div>
         ${canFile(e.vendorId) ? `<div class="wide"><label for="drFolder">Folder</label><select class="inline" id="drFolder" style="margin-top:4px;max-width:100%"><option value="">Not in a folder (filed by day only)</option>${foldersOf(e.vendorId).map(f => `<option value="${f.id}" ${e.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : e.folderId && folderOf(e.folderId) ? `<div class="wide"><label>Folder</label><b>${esc(folderOf(e.folderId).name)}</b></div>` : ""}
         ${o ? `<div class="wide"><label>Outlet</label><b>${esc(o.name)}</b><div class="dim" style="font-size:12.5px">${esc([o.address, o.area, o.channel].filter(Boolean).join(" · "))}</div></div>` : ""}
         ${e.notes ? `<div class="wide"><label>Notes</label><b style="font-weight:500">${esc(e.notes)}</b></div>` : ""}
@@ -1960,7 +2019,7 @@ function baForm(vendorId) {
       if (email && !/^\S+@\S+\.\S+$/.test(email)) return err("That email doesn't look right.");
       if (email && S.users.some(u => !u.disabled && (u.email || "").toLowerCase() === email)) return err("That email already has a sign-in.");
       const vid = vendorId || $("#bf-v").value;
-      S.users.push({ id: uid("u_"), role: "ba", name, login: id, email, phone, state, vendorId: vid, pw: await sha(pin) });
+      S.users.push({ id: uid("u_"), role: "ba", name, login: id, email, phone, state, vendorId: vid, pw: await sha(pin), supervisorId: me().role === "supervisor" ? me().id : null });
       await save("users"); closeModal(); toast(`${name} added. Sign-in: ${id} with PIN ${pin}`); refresh();
     };
   });
@@ -2011,7 +2070,7 @@ function parseUserRows(rows, forVendor) {
 function bulkUsers(forVendor) {
   const v = forVendor && vendorOf(forVendor);
   openModal(`<h3>Bulk upload brand ambassadors</h3>
-    <div class="muted">Upload an Excel or CSV file with these columns, in this order: <b>${USER_HEAD.join(", ")}</b>. Everyone gets a sign-in straight away: a BA ID and a 4-digit PIN. They can sign in with the BA ID, their email or their phone number.${v ? ` Everyone in the file is added to ${esc(v.name)}.` : " The agency name must match a registered vendor."}</div>
+    <div class="muted">Upload an Excel or CSV file with these columns, in this order: <b>${USER_HEAD.join(", ")}</b>. Everyone gets a sign-in straight away: a BA ID and a 4-digit PIN. They can sign in with the BA ID, their email or their phone number.${v ? ` Everyone in the file is added to ${esc(v.name)}${me().role === "supervisor" ? " and to your team" : ""}.` : " The agency name must match a registered vendor."}</div>
     <label class="drop" id="buDrop" for="buFile">${UP_SVG.replace('width="15" height="15"', 'width="26" height="26"')}<b>Drop the file here, or click to choose it</b><span class="muted">.xlsx, .xls or .csv</span><input id="buFile" type="file" accept=".csv,.xlsx,.xls,.txt" hidden></label>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sm" type="button" id="buTplX">Download template (Excel)</button><button class="btn sm" type="button" id="buTplC">Download template (CSV)</button></div>
     <div class="err" id="buErr" role="alert"></div>
@@ -2053,7 +2112,7 @@ function previewUsers(items, forVendor) {
       const made = [];
       for (const i of items.filter(x => !blocking(x).length)) {
         const pin = String(1000 + Math.floor(Math.random() * 9000)), login = "BA-" + ++no;
-        S.users.push({ id: uid("u_"), role: "ba", name: i.name, login, email: i.email, phone: i.phone, state: i.state, vendorId: forVendor || i.vendorId, pw: await sha(pin), createdBy: me().id, createdAt: Date.now(), bulk: true });
+        S.users.push({ id: uid("u_"), role: "ba", name: i.name, login, email: i.email, phone: i.phone, state: i.state, vendorId: forVendor || i.vendorId, pw: await sha(pin), createdBy: me().id, createdAt: Date.now(), bulk: true, supervisorId: me().role === "supervisor" ? me().id : null });
         made.push({ "Full name": i.name, Agency: vendorOf(forVendor || i.vendorId).name, State: i.state, "BA ID": login, PIN: pin, Email: i.email, "Phone number": i.phone, "Sign in at": location.origin + location.pathname });
       }
       await save("users"); refresh();
@@ -2176,15 +2235,25 @@ function renderAlerts() {
 /* ---------- supervisor: my ambassadors ---------- */
 function renderCrew() {
   const u = me(), el = $("#v-crew"), all = scopeEntries(), team = teamOf(u);
-  el.innerHTML = `<div class="twrap"><table><thead><tr><th>Ambassador</th><th>Status now</th><th>Assigned outlets</th><th>Today</th><th>Last 7 days</th><th>Contact</th></tr></thead><tbody>
+  const free = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId && !x.disabled && !x.supervisorId);
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="cAdd">Add a brand ambassador</button><button class="btn" type="button" id="cBulk">${UP_SVG}Upload ambassadors (Excel)</button>${free.length ? `<button class="btn" type="button" id="cPick">Add from my agency (${free.length})</button>` : ""}<span style="flex:1"></span><span class="chip">${team.length} on your team</span></div>
+    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>Status now</th><th>Assigned outlets</th><th>Today</th><th>Last 7 days</th><th>Contact</th></tr></thead><tbody>
     ${team.map(b => { const s = baStatus(b, all), outs = S.outlets.filter(o => (o.baIds || []).includes(b.id)), wk = all.filter(e => e.baId === b.id && e.start >= Date.now() - 7 * 864e5);
       return `<tr ${s.live ? `data-entry="${s.live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.login)}${b.state ? " · " + esc(b.state) : ""}</small></div></div></td>
       <td><span class="pill ${s.cls}">${esc(s.label)}</span></td>
       <td>${outs.length ? outs.slice(0, 3).map(o => esc(o.name)).join(", ") + (outs.length > 3 ? ` +${outs.length - 3} more` : "") : `<span class="dim">None yet</span>`}</td>
       <td class="num">${s.td.length ? `${s.td.length} · ${n(s.td.reduce((a, e) => a + (+e.sold || 0), 0))} cases` : "–"}</td>
       <td class="num">${wk.length} entries · ${n(wk.reduce((a, e) => a + (+e.sold || 0), 0))} cases</td>
-      <td onclick="event.stopPropagation()">${b.phone ? `<a class="btn sm" href="tel:${esc(b.phone.replace(/\s/g, ""))}">Call</a> <a class="btn sm" href="https://wa.me/${esc(b.phone.replace(/\D/g, "").replace(/^0/, "234"))}" target="_blank" rel="noopener">WhatsApp</a>` : "–"}</td></tr>`; }).join("") || `<tr><td colspan="6"><div class="empty" style="border:0">No ambassadors are assigned to you yet. Your vendor manager assigns them on their Ambassadors page.</div></td></tr>`}
+      <td onclick="event.stopPropagation()">${b.phone ? `<a class="btn sm" href="tel:${esc(b.phone.replace(/\s/g, ""))}">Call</a> <a class="btn sm" href="https://wa.me/${esc(b.phone.replace(/\D/g, "").replace(/^0/, "234"))}" target="_blank" rel="noopener">WhatsApp</a>` : "–"}</td></tr>`; }).join("") || `<tr><td colspan="6"><div class="empty" style="border:0">No ambassadors on your team yet. Add them one by one, upload an Excel file, or ask your vendor manager to assign them.</div></td></tr>`}
     </tbody></table></div>`;
+  $("#cAdd").onclick = () => baForm(u.vendorId);
+  $("#cBulk").onclick = () => bulkUsers(u.vendorId);
+  if ($("#cPick")) $("#cPick").onclick = () => openModal(`<h3>Add ambassadors from ${esc((vendorOf(u.vendorId) || {}).name || "your agency")}</h3><p class="muted" style="margin:0">These ambassadors don't have a supervisor yet. Tick the ones on your team.</p>
+    <div class="chks" id="pkList">${free.map(b => `<label class="chk"><input type="checkbox" value="${b.id}"><span>${esc(b.name)} <small class="dim">${esc(b.login)}${b.state ? " · " + esc(b.state) : ""}</small></span></label>`).join("")}</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="pkNo">Cancel</button><button class="btn primary" type="button" id="pkGo">Add to my team</button></div>`, m => {
+    $("#pkNo", m).onclick = closeModal;
+    $("#pkGo", m).onclick = async () => { const ids = [...$("#pkList", m).querySelectorAll("input:checked")].map(i => i.value); if (!ids.length) return closeModal(); ids.forEach(id => userOf(id).supervisorId = u.id); await save("users"); closeModal(); toast(`${ids.length} added to your team`); refresh(); };
+  });
 }
 
 /* ---------- brand ambassador: log an activation ---------- */
@@ -2200,17 +2269,18 @@ function openCamera(onDone) {
   const fallback = msg => `<div class="cam-msg"><b style="font-size:17px">${msg}</b><span style="opacity:.75">Use your phone's camera app instead. The photo comes straight back here.</span>
     <label class="cbtn done" style="display:inline-flex;align-items:center;height:48px;padding:0 22px">Open camera app<input class="vh" type="file" accept="image/*" capture="environment" id="camNative"></label>
     <button class="cbtn" type="button" data-x>Cancel</button></div>`;
-  let stream = null, facing = "environment";
+  let stream = null, facing = "environment", fix = null, watch = null;
+  if (navigator.geolocation) watch = navigator.geolocation.watchPosition(p => { fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, time: Date.now() }; const g = el.querySelector("#camGps"); if (g) { g.textContent = `${fix.lat.toFixed(5)}, ${fix.lng.toFixed(5)} ±${Math.round(fix.acc)} m`; g.classList.add("ok"); } }, () => { const g = el.querySelector("#camGps"); if (g) g.textContent = "No location: allow location to geotag"; }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
   const stop = () => { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
-  const close = () => { stop(); el.remove(); removeEventListener("keydown", onKey); if (shots.length) onDone(shots); };
+  const close = () => { stop(); if (watch != null) navigator.geolocation.clearWatch(watch); el.remove(); removeEventListener("keydown", onKey); if (shots.length) onDone(shots); };
   const onKey = e => { if (e.key === "Escape") close(); };
   addEventListener("keydown", onKey);
   document.body.appendChild(el);
   el.addEventListener("click", e => { if (e.target.closest("[data-x]")) close(); });
-  el.addEventListener("change", e => { if (e.target.id === "camNative") { shots.push(...e.target.files); close(); } });
+  el.addEventListener("change", e => { if (e.target.id === "camNative") { for (const f of e.target.files) { f.shotAt = Date.now(); f.gps = fix ? { ...fix } : null; shots.push(f); } close(); } });
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { el.innerHTML = fallback("This browser can't open the camera inside the app."); return; }
   el.innerHTML = `<video playsinline autoplay muted></video><div class="flash"></div>
-    <div class="cam-top"><span id="camCount">Live photo</span><button class="cbtn" type="button" data-x>Close</button></div>
+    <div class="cam-top"><div style="display:flex;flex-direction:column;gap:2px"><span id="camCount">Live photo</span><span class="camgps" id="camGps">Getting location…</span></div><button class="cbtn" type="button" data-x>Close</button></div>
     <div class="thumbs" id="camThumbs"></div>
     <div class="cam-bar"><button class="cbtn" type="button" id="camFlip" aria-label="Switch camera">Flip</button><button class="shutter" type="button" id="camShoot" aria-label="Take photo"></button><button class="cbtn done" type="button" id="camDone">Done</button></div>`;
   const video = el.querySelector("video");
@@ -2233,7 +2303,7 @@ function openCamera(onDone) {
     if (navigator.vibrate) navigator.vibrate(30);
     c.toBlob(b => {
       if (!b) return;
-      const f = new File([b], `live-${Date.now()}.jpg`, { type: "image/jpeg", lastModified: Date.now() }); shots.push(f);
+      const t = Date.now(), f = new File([b], `live-${t}.jpg`, { type: "image/jpeg", lastModified: t }); f.shotAt = t; f.gps = fix && Date.now() - fix.time < 60000 ? { ...fix } : null; shots.push(f);
       const im = document.createElement("img"); im.src = URL.createObjectURL(b); im.alt = "Photo " + shots.length; el.querySelector("#camThumbs").appendChild(im);
       el.querySelector("#camCount").textContent = `${shots.length} photo${shots.length > 1 ? "s" : ""} taken`;
     }, "image/jpeg", .9);
@@ -2323,7 +2393,7 @@ function renderLog() {
   };
   $("#getLoc").onclick = () => { keep(); $("#getLoc").textContent = "Finding you…"; locate((g, msg) => { draft.gps = g || draft.gps; draft.locMsg = msg || ""; if (g && !draft.outletId) { const nr = outlets.filter(o => o.lat != null).map(o => ({ o, d: km(g, o) })).sort((a, b) => a.d - b.d)[0]; if (nr && nr.d < .3) draft.outletId = nr.o.id; } if (msg) toast(msg, true); renderLog(); }); };
   $("#lgPh").onchange = e => { keep(); for (const f of e.target.files) draft.files.push({ file: f, url: URL.createObjectURL(f), live: (Date.now() - (f.lastModified || Date.now())) < 15 * 60000 }); renderLog(); };
-  $("[data-cam=lg]").onclick = () => { keep(); openCamera(files => { for (const f of files) draft.files.push({ file: f, url: URL.createObjectURL(f), live: true }); renderLog(); }); };
+  $("[data-cam=lg]").onclick = () => { keep(); openCamera(files => { for (const f of files) { draft.files.push({ file: f, url: URL.createObjectURL(f), live: true }); if (f.gps && !draft.gps) draft.gps = f.gps; } renderLog(); }); };
   $("#logForm").onsubmit = async e => {
     e.preventDefault(); keep();
     const err = t => { $("#lg-err").textContent = t; };
@@ -2372,7 +2442,7 @@ function streetView(lat, lng, name) {
   const ll = `${(+lat).toFixed(6)},${(+lng).toFixed(6)}`;
   const el = document.createElement("div"); el.className = "svpanel"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Street view");
   el.innerHTML = `<div class="svbox"><header><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="5" r="2.5" fill="currentColor"/><path d="M9 9h6l-1 6h-4zM10 15l-1 6M14 15l1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${esc(name || "Street view")} <span class="dim num" style="font-weight:500">${ll}</span></b>
-    <a class="btn sm" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${ll}" target="_blank" rel="noopener">Open in Google Maps</a><button class="iconbtn" type="button" aria-label="Close street view">✕</button></header>
+    <a class="btn sm" href="${bingUrl(lat, lng, "x", 19)}" target="_blank" rel="noopener">Bing Streetside</a><a class="btn sm" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${ll}" target="_blank" rel="noopener">Open in Google Maps</a><button class="iconbtn" type="button" aria-label="Close street view">✕</button></header>
     <iframe title="Street view" src="https://www.google.com/maps?layer=c&cbll=${ll}&cbp=12,0,0,0,0&output=svembed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     <div class="svnote">Drag to look around. If the view stays blank, Google has no street imagery right here, or this preview blocks embedded maps: use Open in Google Maps.</div></div>`;
   const close = () => { el.remove(); removeEventListener("keydown", esc_); };
@@ -2381,6 +2451,38 @@ function streetView(lat, lng, name) {
   addEventListener("keydown", esc_); document.body.appendChild(el);
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-sv]"); if (b) { const [a, c] = b.dataset.sv.split(","); streetView(a, c, b.dataset.svname); } });
+
+/* ---------- Bing Maps ----------
+   Microsoft's keyless Bing Maps embed: road, aerial and bird's eye (the angled
+   3D view), pan and zoom, with every place in the user's scope in a side list.
+   Streetside and Bing's full 3D open on bing.com, because the embed can't show
+   them. Microsoft no longer issues free Bing Maps developer keys, so this
+   needs no key. */
+const bingUrl = (lat, lng, style, lvl) => `https://www.bing.com/maps?cp=${(+lat).toFixed(6)}~${(+lng).toFixed(6)}&lvl=${lvl || 18}&style=${style}`;
+function bingMap(focus) {
+  const live = scopeEntries().filter(e => isLive(e) && (e.gps || outletOf(e.outletId))), outs = scopeOutlets().filter(o => o.lat != null);
+  const places = [...live.map(e => { const p = posOf(e), ba = userOf(e.baId) || { name: "" }; return { k: "e" + e.id, lat: p.lat, lng: p.lng, name: e.outletName, sub: `${ba.name} · ${e.brand} · live`, live: true }; }),
+    ...outs.filter(o => !live.some(e => e.outletId === o.id)).map(o => ({ k: "o" + o.id, lat: o.lat, lng: o.lng, name: o.name, sub: [o.area, o.segment].filter(Boolean).join(" · ") }))];
+  let cur = focus || places[0] || { lat: HUB.lat, lng: HUB.lng, name: "Lagos" }, sty = "a", lvl = focus ? 18 : 12;
+  const el = document.createElement("div"); el.className = "svpanel bingp"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Bing Maps");
+  const src = () => `https://www.bing.com/maps/embed?h=700&w=1000&cp=${(+cur.lat).toFixed(6)}~${(+cur.lng).toFixed(6)}&lvl=${lvl}&typ=d&sty=${sty}&src=SHELL&FORM=MBEDV8`;
+  const draw = () => {
+    el.innerHTML = `<div class="svbox"><header><b>Bing Maps · ${esc(cur.name || "")} <span class="dim num" style="font-weight:500">${(+cur.lat).toFixed(5)}, ${(+cur.lng).toFixed(5)}</span></b>
+      <div class="seg" id="bgSty">${[["r", "Road"], ["a", "Aerial"], ["h", "Labels"], ["o", "Bird's eye 3D"]].map(([k, l]) => `<button type="button" data-s="${k}" aria-pressed="${sty === k}">${l}</button>`).join("")}</div>
+      <button class="iconbtn" type="button" aria-label="Close Bing Maps">✕</button></header>
+      <div class="bgbody"><div class="bglist">${places.map(p => `<button type="button" data-k="${p.k}" class="${p.k === cur.k ? "on" : ""}"><span><b>${esc(p.name)}</b>${p.live ? ` <span class="pill p-live" style="font-size:10px;padding:0 6px">Live</span>` : ""}</span><small>${esc(p.sub || "")}</small></button>`).join("") || `<div class="empty">No places with coordinates yet.</div>`}</div>
+      <iframe title="Bing Maps" src="${src()}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+      <div class="svnote bgacts"><a class="btn sm" href="${bingUrl(cur.lat, cur.lng, "x", 19)}" target="_blank" rel="noopener">Bing Streetside</a><a class="btn sm" href="${bingUrl(cur.lat, cur.lng, "o", 19)}" target="_blank" rel="noopener">Bing 3D / bird's eye</a><a class="btn sm" href="${bingUrl(cur.lat, cur.lng, "a", 18)}" target="_blank" rel="noopener">Open in Bing Maps</a><button class="btn sm" type="button" data-sv="${cur.lat},${cur.lng}" data-svname="${esc(cur.name || "")}">Google Street View</button><span>Drag and scroll to explore. Streetside and bird's eye only exist where Microsoft has imagery.</span></div></div>`;
+    el.querySelector("header .iconbtn").onclick = close;
+    el.querySelector("#bgSty").onclick = e => { const b = e.target.closest("button"); if (b) { sty = b.dataset.s; if (sty === "o") lvl = Math.max(lvl, 18); draw(); } };
+    el.querySelector(".bglist").onclick = e => { const b = e.target.closest("[data-k]"); if (b) { cur = places.find(p => p.k === b.dataset.k); lvl = 18; draw(); } };
+  };
+  const close = () => { el.remove(); removeEventListener("keydown", esc_); };
+  const esc_ = e => { if (e.key === "Escape") close(); };
+  el.onclick = e => { if (e.target === el) close(); };
+  addEventListener("keydown", esc_); document.body.appendChild(el); draw();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-bing]"); if (b) { const [a, c] = b.dataset.bing.split(","); bingMap({ lat: +a, lng: +c, name: b.dataset.bingname || "", k: b.dataset.bingk || "" }); } });
 
 /* =====================================================================
    3D: map of Nigeria for the dashboard
@@ -2676,6 +2778,12 @@ const city = (() => {
     want.target.set(p.x, topOf(name), p.z); want.radius = fit(62); want.phi = .66; lastInteract = performance.now();
   }
   $("#mapViews").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setView(b.dataset.mv); });
+  $("#bingBtn").onclick = () => {
+    const b = focusId && beacons.find(x => x.id === focusId), en = b && S.entries.find(x => x.id === b.id);
+    if (b) return bingMap({ lat: b.lat, lng: b.lng, name: en ? en.outletName : "", k: "e" + b.id });
+    if (rig.radius < 45) return bingMap({ lat: -rig.target.z / MAP_S + MAP_C.lat, lng: rig.target.x / (MAP_S * .988) + MAP_C.lng, name: "Map centre" });
+    bingMap(null);
+  };
   const svBtn = $("#svBtn");
   svBtn.onclick = () => {
     const b = focusId && beacons.find(x => x.id === focusId);
