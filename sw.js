@@ -1,6 +1,6 @@
 // Trade Activate service worker: keeps the app opening when the network is weak.
 // The page is fetched fresh when online and served from cache when not.
-const CACHE = "trade-activate-v3";
+const CACHE = "trade-activate-v4";
 const SHELL = [
   "./",
   "./index.html",

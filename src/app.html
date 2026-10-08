@@ -151,8 +151,9 @@ h1,h2,h3,h4{text-wrap:balance}
 .login-panel{position:relative;display:flex;align-items:center;justify-content:center;padding:24px}
 .login-card{width:100%;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(18px);border:1px solid var(--line-2);border-radius:22px;padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px}
 .login-card h2{font-family:var(--display);margin:0;font-size:24px;letter-spacing:-.02em}
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.roles button{border:1px solid var(--line-2);background:var(--panel-2);border-radius:12px;padding:10px 6px;font-weight:700;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted)}
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+@media (max-width:440px){.roles{grid-template-columns:repeat(2,1fr)}}
+.roles button{border:1px solid var(--line-2);background:var(--panel-2);border-radius:12px;padding:10px 4px;font-weight:700;font-size:11.5px;line-height:1.2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted)}
 .roles button svg{width:20px;height:20px}
 .roles button[aria-pressed="true"]{border-color:var(--accent);color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
 .demo{border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
@@ -343,6 +344,50 @@ td .seg-pill+small,td select+small{display:block}
 .ogal button{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);padding:0;display:flex;flex-direction:column;text-align:left}
 .ogal img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--raise)}
 .ogal span{font-size:11px;font-family:var(--mono);padding:6px 8px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+a.btn{text-decoration:none;color:var(--fg)}
+.myout .mo-list{display:flex;flex-direction:column;gap:8px}
+.myout .mo{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2);flex-wrap:wrap}
+.myout .mo.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel))}
+.myout .mo-t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.myout .mo-t small{color:var(--muted);font-size:12px}
+.myout .mo-a{display:flex;gap:6px}
+.alset.on{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+.alk{grid-template-columns:repeat(4,1fr)}
+@media (max-width:760px){.alk{grid-template-columns:repeat(2,1fr)}}
+.feed{display:flex;flex-direction:column;max-height:560px;overflow:auto}
+.feed .fi,.agrow{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13.5px}
+.agrow{cursor:default}
+.feed .fi:last-child,.agrow:last-child{border-bottom:0}
+.feed .ft{font-family:var(--mono);font-size:11.5px;color:var(--muted);min-width:68px;padding-top:2px}
+.feed .bdot,.agrow .bdot{margin-top:6px;flex:none}
+.fx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fx small{color:var(--muted);font-size:12px}
+.supgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.supc{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel);flex-wrap:wrap}
+.supc .nm{display:flex;flex-direction:column;flex:1;min-width:140px}
+.supc .nm small{color:var(--muted);font-size:12px}
+.supc .acts{display:flex;gap:6px}
+.chks{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.chk{display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500}
+.teamp .tstats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.teamp .tstats>div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.teamp .tstats label{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.teamp .tstats b{font-family:var(--display);font-size:24px}
+.teamp .tstats b small{font-size:12px;color:var(--muted);font-weight:600}
+.teamp .tstats .good b{color:var(--good)}
+.teamp .tstats .warn b{color:var(--warn)}
+.teamp .tsub{margin:14px 0 8px;font-size:13px;color:var(--muted)}
+.teamp .areas{display:flex;flex-wrap:wrap;gap:8px}
+.teamp .area{display:flex;flex-direction:column;padding:7px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2)}
+.teamp .area small{color:var(--muted);font-size:11.5px}
+.teamp .area.live{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
+.teamp .area.act{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.teamp .tlist{display:flex;flex-direction:column;gap:6px}
+.teamp .trow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);flex-wrap:wrap}
+.teamp .trow[data-entry]{cursor:pointer}
+.teamp .trow .nm{display:flex;flex-direction:column;flex:1;min-width:140px}
+.teamp .trow .nm small{color:var(--muted);font-size:12px}
+@media (max-width:760px){.teamp .tstats{grid-template-columns:repeat(2,1fr)}}
 tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
 .vactions{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
 .stats3 small{display:block;font-size:11px;font-weight:500}
@@ -375,7 +420,23 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
 .shot .tag{position:absolute;left:4px;bottom:4px;font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff}
 .addshot{aspect-ratio:1;border-radius:10px;border:2px dashed var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;background:none}
 .addshot svg{width:24px;height:24px}
-.addshot input{display:none}
+.addshot input,.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none}
+.addshot{position:relative}
+.gallerylink{font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer;position:relative;align-self:flex-start}
+.cam{position:fixed;inset:0;z-index:90;background:#000;display:flex;flex-direction:column;color:#fff}
+.cam video{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+.cam .cam-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:max(12px,env(safe-area-inset-top)) 14px 12px;background:linear-gradient(#000a,#0000);font-weight:700;font-size:14px}
+.cam .cam-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px max(18px,env(safe-area-inset-bottom));background:#000}
+.cam .shutter{width:74px;height:74px;border-radius:50%;border:5px solid #fff;background:var(--grad);background-size:200% 200%;box-shadow:0 0 0 4px #0008,0 0 28px var(--glow);cursor:pointer;transition:transform .12s}
+.cam .shutter:active{transform:scale(.9)}
+.cam .cbtn{min-width:64px;height:44px;border-radius:22px;border:1px solid #fff5;background:#ffffff1a;color:#fff;font-weight:700;font-size:13px;padding:0 14px;cursor:pointer}
+.cam .cbtn.done{background:#FFD300;color:#1F1600;border-color:transparent}
+.cam .thumbs{display:flex;gap:6px;overflow-x:auto;padding:0 14px 10px;background:#000;min-height:0}
+.cam .thumbs img{width:54px;height:54px;object-fit:cover;border-radius:8px;border:2px solid #FFD300;flex:none}
+.cam .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
+.cam .flash.on{opacity:.85;transition:none}
+.cam .cam-msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;line-height:1.5}
+.cam .cam-msg label{position:relative}
 .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .cases div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .cases label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;display:block}
@@ -522,6 +583,8 @@ tr.bad td{background:color-mix(in srgb,var(--warn) 7%,transparent)}
       <div class="view" id="v-outlets"></div>
       <div class="view" id="v-vendors"></div>
       <div class="view" id="v-team"></div>
+      <div class="view" id="v-crew"></div>
+      <div class="view" id="v-alerts"></div>
       <div class="view" id="v-data"></div>
       <div class="view" id="v-log"></div>
       <div class="view" id="v-history"></div>
@@ -866,7 +929,7 @@ async function seedDemo() {
   entries.forEach(e => { const f = folders.find(x => x.vendorId === e.vendorId && x.brand === e.brand); if (f) e.folderId = f.id; });
   folders.forEach(f => delete f.brand);
   Object.assign(S, { vendors, users, outlets, entries, folders });
-  await seedNational(); await seedStaffing(); await seedSegments();
+  await seedNational(); await seedStaffing(); await seedSegments(); await seedSupervisors();
   await save(...COLLS);
   await DB.put("kv", "seeded", 2); await DB.put("kv", "artVersion", 1);
 }
@@ -883,6 +946,16 @@ async function seedStaffing() {
     S.outlets.filter(o => o.source === "Demo list" && o.vendorId).forEach(o => { const bas = S.users.filter(u => u.role === "ba" && u.vendorId === o.vendorId && !u.disabled); if (!bas.length) return; const i = k[o.vendorId] = (k[o.vendorId] || 0) + 1; o.baIds = [bas[(i - 1) % bas.length].id]; });
   }
   await DB.put("kv", "staffVersion", 1);
+}
+// Example supervisors: one per demo vendor, looking after all of that vendor's ambassadors.
+async function seedSupervisors() {
+  const pw = await sha("Super@123");
+  [["v_pin", "Kemi Bello", "kemi@pinnacle.ng", "0803 555 0190"], ["v_blu", "Uche Okoro", "uche@bluewave.ng", "0805 555 0191"], ["v_kor", "Aisha Lawal", "aisha@kora.ng", "0809 555 0192"]].forEach(([vid, name, login, phone]) => {
+    if (!S.vendors.some(v => v.id === vid) || S.users.some(u => u.login === login)) return;
+    const id = "u_sup_" + vid; S.users.push({ id, role: "supervisor", name, login, phone, vendorId: vid, pw });
+    S.users.filter(u => u.role === "ba" && u.vendorId === vid && !u.supervisorId).forEach(u => u.supervisorId = id);
+  });
+  await DB.put("kv", "supVersion", 1);
 }
 // Example outlets and activations outside Lagos, so the Nigeria map has something to show.
 // Also runs once on browsers that were seeded before the national map arrived.
@@ -923,6 +996,58 @@ async function seedNational() {
   await DB.put("kv", "geoVersion", 1);
 }
 
+/* ---------- admin email alerts ----------
+   Each phone keeps its own data, so the alert has to leave the ambassador's
+   phone the moment an activation starts or ends. Fill in ONE of these:
+   - EmailJS (free at emailjs.com): service ID, template ID and public key.
+     The template should use {{to_email}}, {{subject}} and {{message}}.
+   - webhook: any URL that accepts a JSON POST (Power Automate, Zapier, Make)
+     and emails it on. Both can be set. Alerts that can't send right away
+     (no signal) are queued and retried when the phone is back online. */
+const ALERTS = {
+  to: "jay@tradeactivate.app",
+  emailjs: { serviceId: "", templateId: "", publicKey: "" },
+  webhook: ""
+};
+const alertsReady = () => !!((ALERTS.emailjs.serviceId && ALERTS.emailjs.templateId && ALERTS.emailjs.publicKey) || ALERTS.webhook);
+async function sendAlert(a) {
+  let ok = false;
+  if (ALERTS.emailjs.serviceId && ALERTS.emailjs.templateId && ALERTS.emailjs.publicKey) {
+    try { const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ service_id: ALERTS.emailjs.serviceId, template_id: ALERTS.emailjs.templateId, user_id: ALERTS.emailjs.publicKey, template_params: { to_email: ALERTS.to, subject: a.subject, message: a.message } }) }); ok = r.ok; } catch (e) { }
+  }
+  if (ALERTS.webhook) {
+    // text/plain keeps this a "simple" request, so it works with hooks that don't answer CORS preflight.
+    try { await fetch(ALERTS.webhook, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ to: ALERTS.to, ...a }) }); ok = true; } catch (e) { }
+  }
+  return ok;
+}
+let alertQueue = [];
+async function flushAlerts() {
+  if (!alertsReady() || !alertQueue.length || !navigator.onLine) return;
+  const left = [];
+  for (const a of alertQueue) if (!(await sendAlert(a))) left.push(a);
+  alertQueue = left; await DB.put("kv", "alertQueue", alertQueue);
+}
+addEventListener("online", () => flushAlerts());
+const entryState = e => { const o = outletOf(e.outletId), p = e.gps || o; return (p && p.lat != null && stateAt(p.lat, p.lng)) || (userOf(e.baId) || {}).state || ""; };
+const entryArea = e => { const o = outletOf(e.outletId); return [o && o.area, entryState(e)].filter(Boolean).filter((x, i, a) => a.indexOf(x) === i).join(", "); };
+// Called on the ambassador's phone when an activation starts or ends.
+async function notifyAdmin(kind, e) {
+  if (!alertsReady()) return;
+  const ba = userOf(e.baId) || { name: "An ambassador", login: "" }, v = vendorOf(e.vendorId) || { name: "An agency" }, sup = userOf(ba.supervisorId);
+  const when = new Date(kind === "ended" ? e.end : e.start).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const loc = e.gps ? (locIssue(e) ? `${locIssue(e)} (check needed)` : "On location") : "No location shared";
+  const a = {
+    subject: `${v.name}: ${e.type} ${kind} at ${e.outletName}`,
+    message: [`${v.name} ${kind === "started" ? "started" : kind} ${/^[aeiou]/i.test(e.type) ? "an" : "a"} ${e.type.toLowerCase()} at ${when}.`, ``,
+      `Agency: ${v.name}`, `Brand ambassador: ${ba.name}${ba.login ? ` (${ba.login})` : ""}`, sup ? `Supervisor: ${sup.name}` : "", `Outlet: ${e.outletName}`, `Coverage area: ${entryArea(e) || "Not known"}`, `Location check: ${loc}`, `Brand: ${e.brand}`,
+      kind === "ended" ? `Cases sold: ${e.sold} of ${e.opening} opening · Consumers reached: ${e.reached}` : "",
+      e.gps ? `Map: https://www.google.com/maps?q=${e.gps.lat},${e.gps.lng}` : ""].filter(x => x !== "").join("\n"),
+    kind, agency: v.name, ba: ba.name, baId: ba.login, outlet: e.outletName, area: entryArea(e), state: entryState(e), brand: e.brand, type: e.type, time: new Date(kind === "ended" ? e.end : e.start).toISOString(), lat: e.gps ? e.gps.lat : null, lng: e.gps ? e.gps.lng : null
+  };
+  alertQueue.push(a); await DB.put("kv", "alertQueue", alertQueue); flushAlerts();
+}
+
 /* ---------- auth & session ---------- */
 const sessionStore = { get() { try { return localStorage.getItem("ta.session"); } catch (e) { return null; } }, set(v) { try { v ? localStorage.setItem("ta.session", v) : localStorage.removeItem("ta.session"); } catch (e) { } } };
 let currentId = null;
@@ -936,11 +1061,13 @@ const outletOf = id => S.outlets.find(o => o.id === id);
 const ROLE_INFO = {
   admin: { label: "Admin", id: "Email", pw: "Password", demo: [["Trade marketing admin", "admin@tradeactivate.app", "Admin@123"]] },
   manager: { label: "Vendor Manager", id: "Email", pw: "Password", demo: [["Pinnacle Activations", "tobi@pinnacle.ng", "Manager@123"], ["BlueWave Experiential", "nkechi@bluewave.ng", "Manager@123"], ["Kora Field Marketing", "musa@kora.ng", "Manager@123"]] },
+  supervisor: { label: "Supervisor", id: "Email", pw: "Password", demo: [["Kemi Bello · Pinnacle", "kemi@pinnacle.ng", "Super@123"], ["Aisha Lawal · Kora", "aisha@kora.ng", "Super@123"]] },
   ba: { label: "Brand Ambassador", id: "BA ID, email or phone", pw: "PIN", demo: [["Adaeze Okafor · Pinnacle", "BA-1001", "1234"], ["Damilola Ogun · Kora", "BA-1009", "1234"]] }
 };
 const ROLE_ICON = {
   admin: '<path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   manager: '<rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" fill="none" stroke="currentColor" stroke-width="2"/>',
+  supervisor: '<rect x="5" y="4" width="14" height="17" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4V3h6v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12.5l2.2 2.2 4.8-4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   ba: '<circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
 };
 let loginRole = "admin";
@@ -1029,19 +1156,23 @@ const ICON = {
   log: '<rect x="3" y="6" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6l1.5-2h5L16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
   history: '<path d="M3 12a9 9 0 1 0 3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 4v4h4M12 8v4l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
 };
-ICON.team = ICON.vendors;
+ICON.team = ICON.vendors; ICON.crew = ICON.vendors;
+ICON.alerts = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
 ICON.data = '<rect x="4" y="12" width="3.5" height="8" rx="1" fill="currentColor"/><rect x="10.25" y="7" width="3.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="3" width="3.5" height="17" rx="1" fill="currentColor"/>';
 const NAV = {
-  admin: [["dashboard", "Live dashboard"], ["folders", "Vendor folders"], ["outlets", "Outlets"], ["vendors", "Vendors & users"], ["data", "Data & Power BI"]],
+  admin: [["dashboard", "Live dashboard"], ["folders", "Vendor folders"], ["outlets", "Outlets"], ["vendors", "Vendors & users"], ["alerts", "Notifications"], ["data", "Data & Power BI"]],
   manager: [["dashboard", "Live dashboard"], ["folders", "Our folder"], ["outlets", "Our outlets"], ["team", "Ambassadors"]],
+  supervisor: [["dashboard", "Team dashboard"], ["crew", "My ambassadors"], ["folders", "Team photos"]],
   ba: [["log", "My activation"], ["history", "History"]]
 };
 let view = "dashboard";
 function subtitle(v) {
   const u = me(), vend = vendorOf(u.vendorId) || { name: "" };
   return ({
-    dashboard: u.role === "admin" ? "Every vendor's activations, sampling and trade activities" : `${vend.name}: activations running now`,
-    folders: u.role === "admin" ? "Every entry ambassadors have logged, filed by vendor and day" : `Entries logged by ${vend.name} ambassadors`,
+    dashboard: u.role === "admin" ? "Every vendor's activations, sampling and trade activities" : u.role === "supervisor" ? "Your ambassadors, where they're covering, and who's on location now" : `${vend.name}: activations running now`,
+    folders: u.role === "admin" ? "Every entry ambassadors have logged, filed by vendor and day" : u.role === "supervisor" ? "Entries and photos logged by your ambassadors" : `Entries logged by ${vend.name} ambassadors`,
+    crew: `${vend.name} ambassadors assigned to you`,
+    alerts: "Activating agencies, ambassadors and coverage, as it happens",
     outlets: u.role === "admin" ? "Upload activating outlets and assign them to vendors" : `Outlets assigned to ${vend.name}`,
     vendors: "Register vendors and give their managers and ambassadors sign-ins",
     team: `${vend.name} brand ambassadors`,
@@ -1058,7 +1189,7 @@ function renderShell() {
 }
 function renderNav() {
   const u = me();
-  const counts = { folders: scopeEntries().length, outlets: scopeOutlets().length, vendors: liveVendors().length, team: S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId).length, history: S.entries.filter(e => e.baId === u.id).length };
+  const counts = { folders: scopeEntries().length, outlets: scopeOutlets().length, vendors: liveVendors().length, team: S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId).length, crew: u.role === "supervisor" ? teamOf(u).length : 0, alerts: u.role === "admin" ? S.entries.filter(e => dayKey(e.start) === dayKey(Date.now())).length : 0, history: S.entries.filter(e => e.baId === u.id).length };
   $("#nav").innerHTML = NAV[u.role].map(([k, label]) => `<button type="button" data-v="${k}" ${k === view ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg><span>${label}</span>${counts[k] ? `<span class="count">${counts[k]}</span>` : ""}</button>`).join("");
 }
 $("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(b.dataset.v); });
@@ -1074,15 +1205,17 @@ function go(v) {
   if (v === "dashboard") city.resize();
 }
 function renderView() {
-  ({ dashboard: renderDashboard, folders: renderFolders, outlets: renderOutlets, vendors: renderVendors, data: renderData, team: renderTeam, log: renderLog, history: renderHistory })[view]();
+  ({ dashboard: renderDashboard, folders: renderFolders, outlets: renderOutlets, vendors: renderVendors, data: renderData, team: renderTeam, crew: renderCrew, alerts: renderAlerts, log: renderLog, history: renderHistory })[view]();
 }
 function refresh() { if (!me()) return; renderNav(); renderView(); }
 const tick = () => { const d = new Date(); $("#clock").textContent = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) + " · " + hm(+d); };
 tick(); setInterval(() => { tick(); if (me() && (view === "log" || view === "dashboard")) $$("[data-since]").forEach(el => el.textContent = dur(Date.now() - +el.dataset.since)); }, 15000);
 
 /* ---------- scopes ---------- */
-function scopeEntries() { const u = me(); if (!u) return []; if (u.role === "admin") return S.entries; if (u.role === "manager") return S.entries.filter(e => e.vendorId === u.vendorId); return S.entries.filter(e => e.baId === u.id); }
-function scopeOutlets() { const u = me(); if (!u) return []; if (u.role === "admin") return S.outlets; return S.outlets.filter(o => o.vendorId === u.vendorId); }
+// A supervisor's team: the active ambassadors assigned to them.
+const teamOf = sup => S.users.filter(x => x.role === "ba" && x.supervisorId === sup.id && !x.disabled);
+function scopeEntries() { const u = me(); if (!u) return []; if (u.role === "admin") return S.entries; if (u.role === "supervisor") { const ids = new Set(teamOf(u).map(x => x.id)); return S.entries.filter(e => ids.has(e.baId)); } if (u.role === "manager") return S.entries.filter(e => e.vendorId === u.vendorId); return S.entries.filter(e => e.baId === u.id); }
+function scopeOutlets() { const u = me(); if (!u) return []; if (u.role === "admin") return S.outlets; if (u.role === "supervisor") { const ids = new Set(teamOf(u).map(x => x.id)); return S.outlets.filter(o => o.vendorId === u.vendorId && (o.baIds || []).some(i => ids.has(i))); } return S.outlets.filter(o => o.vendorId === u.vendorId); }
 const isLive = e => !e.end;
 // A location check is due when the phone shared no location, or when it was
 // more than 500 m from the outlet's listed position.
@@ -1126,7 +1259,7 @@ function renderDashboard() {
   const reached = todays.reduce((a, e) => a + (+e.reached || 0), 0);
   const nPhotos = todays.reduce((a, e) => a + e.photos.length, 0);
   const outletsToday = new Set(todays.map(e => e.outletId || e.outletName)).size;
-  $("#stageTitle").innerHTML = `<em>${live.length}</em> ${live.length === 1 ? "activity is" : "activities are"} running right now`;
+  $("#stageTitle").innerHTML = u.role === "supervisor" ? (() => { const a = new Set(live.map(e => e.baId)).size, t = teamOf(u).length; return `<em>${a}</em> of your ${t} ambassador${t === 1 ? " is" : "s are"} active right now`; })() : `<em>${live.length}</em> ${live.length === 1 ? "activity is" : "activities are"} running right now`;
   const vendorsInScope = u.role === "admin" ? liveVendors() : [vendorOf(u.vendorId)];
   const brandsInScope = u.role === "admin" ? BRANDS.map(b => b.name) : vendorOf(u.vendorId).brands;
   const byType = TYPES.map(t => ({ t, c: all.filter(e => isLive(e) && e.type === t && (dash.brand === "All" || e.brand === dash.brand) && (dash.vendor === "All" || e.vendorId === dash.vendor)).length }));
@@ -1150,12 +1283,13 @@ function renderDashboard() {
     <div class="kpis">
       ${[
         ["k1", "Running now", live.length, byType.map(x => `${x.c} ${x.t === "Trade Activity" ? "trade" : x.t.toLowerCase()}`).join(" · "), week.map(d => d.n)],
-        ["k2", "Ambassadors on ground", new Set(live.map(e => e.baId)).size, `of ${S.users.filter(x => x.role === "ba" && !x.disabled && vendorsInScope.some(v => v && v.id === x.vendorId)).length} registered`, week.map(d => d.bas)],
+        ["k2", "Ambassadors on ground", new Set(live.map(e => e.baId)).size, u.role === "supervisor" ? `of ${teamOf(u).length} assigned to you` : `of ${S.users.filter(x => x.role === "ba" && !x.disabled && vendorsInScope.some(v => v && v.id === x.vendorId)).length} registered`, week.map(d => d.bas)],
         ["k3", "Cases sold today", sold, `${n(reached)} consumers reached`, week.map(d => d.sold)],
         ["k4", "Outlets activated today", outletsToday, `of ${scopeOutlets().length} assigned outlets`, week.map(d => d.outlets)],
         ["k5", "Live photos today", nPhotos, "stamped with time, place and outlet", week.map(d => d.photos)]
       ].map(([k, label, v, d, sp]) => `<div class="kpi ${k}"><label>${label}</label><div class="v" data-count="${v}" data-key="${u.role}${k}">${n(v)}</div><div class="d">${d}</div>${sparkSVG(sp, `var(--${k})`)}<span class="sr">Last 7 days: ${sp.join(", ")}</span></div>`).join("")}
     </div>
+    ${u.role === "supervisor" ? teamPanel(u, all, todays) : ""}
     <div class="pulse">
       <div class="card"><div class="card-h"><h3>Activity mix right now</h3></div>
         <div class="mix">${donutSVG(byType.map(x => ({ label: x.t, v: x.c, col: css(TVAR(x.t)) })))}<div class="legend2">${byType.map(x => `<div><i style="background:var(${TVAR(x.t)})"></i><span>${x.t}</span><b>${x.c}</b></div>`).join("")}</div></div></div>
@@ -1189,6 +1323,25 @@ function renderDashboard() {
   $("#dExport").onclick = () => exportReport(pass);
   hydrate($("#dashBody"));
   city.setMarkers(live, scopeOutlets());
+}
+// Where each of a supervisor's ambassadors is right now, and the areas the team covers.
+function baStatus(b, all) {
+  const live = all.find(e => e.baId === b.id && isLive(e)), today = dayKey(Date.now()), td = all.filter(e => e.baId === b.id && dayKey(e.start) === today);
+  if (live) { const iss = locIssue(live); return { k: iss ? "away" : "on", live, td, label: iss ? `${iss} · ${live.outletName}` : `On location · ${live.outletName}`, cls: iss ? "p-warn" : "p-live" }; }
+  if (td.length) return { k: "done", td, label: `Finished at ${hm(Math.max(...td.map(e => e.end || e.start)))}`, cls: "p-closed" };
+  return { k: "off", td, label: "Not active today", cls: "p-closed" };
+}
+function teamPanel(u, all, todays) {
+  const team = teamOf(u), st = team.map(b => ({ b, s: baStatus(b, all) })), outs = scopeOutlets();
+  const on = st.filter(x => x.s.k === "on").length, away = st.filter(x => x.s.k === "away").length;
+  const areas = Object.values(outs.reduce((m, o) => { const k = o.area || "Other"; const r = m[k] || (m[k] = { a: k, n: 0, act: 0, live: 0 }); r.n++; if (todays.some(e => e.outletId === o.id)) r.act++; if (all.some(e => e.outletId === o.id && isLive(e))) r.live++; return m; }, {})).sort((a, b) => b.live - a.live || b.n - a.n);
+  const order = { on: 0, away: 1, done: 2, off: 3 };
+  return `<div class="card teamp"><div class="card-h"><h3>Your team right now</h3><div class="right"><span class="chip"><span class="dot"></span>Live from ambassadors' phones</span></div></div>
+    <div class="tstats"><div><label>Ambassadors assigned</label><b>${team.length}</b></div><div><label>Active now</label><b>${on + away}</b></div><div class="good"><label>On location</label><b>${on}</b></div><div class="${away ? "warn" : ""}"><label>Away or no location</label><b>${away}</b></div><div><label>Outlets covered today</label><b>${new Set(todays.map(e => e.outletId).filter(Boolean)).size}<small> of ${outs.length}</small></b></div></div>
+    <h4 class="tsub">Coverage areas</h4>
+    <div class="areas">${areas.map(a => `<span class="area ${a.live ? "live" : a.act ? "act" : ""}"><b>${esc(a.a)}</b><small>${a.n} outlet${a.n === 1 ? "" : "s"}${a.live ? ` · ${a.live} live` : a.act ? ` · ${a.act} done today` : ""}</small></span>`).join("") || `<span class="muted">No outlets are assigned to your ambassadors yet.</span>`}</div>
+    <h4 class="tsub">Ambassadors</h4>
+    <div class="tlist">${st.sort((a, b) => order[a.s.k] - order[b.s.k] || a.b.name.localeCompare(b.b.name)).map(({ b, s }) => `<div class="trow" ${s.live ? `data-entry="${s.live.id}" tabindex="0" role="button"` : ""}>${avatar(b)}<div class="nm"><b>${esc(b.name)}</b><small>${esc(b.login)}${b.phone ? ` · ${esc(b.phone)}` : ""}</small></div><span class="pill ${s.cls}">${esc(s.label)}</span>${s.live ? `<small class="dim">for <span data-since="${s.live.start}">${dur(Date.now() - s.live.start)}</span></small>` : ""}</div>`).join("") || `<div class="empty">No ambassadors are assigned to you yet. Ask your vendor manager to assign your team.</div>`}</div></div>`;
 }
 function liveRow(e) {
   const ba = userOf(e.baId) || { name: "Unknown", id: "x" }, v = vendorOf(e.vendorId) || { name: "" };
@@ -1645,14 +1798,14 @@ function showPreview(res, forVendor) {
 /* ---------- vendors & users (admin) ---------- */
 function renderVendors() {
   const el = $("#v-vendors");
-  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><button class="btn" type="button" id="bulkUsers">${UP_SVG}Bulk upload ambassadors</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="addVendor">Register a vendor</button><button class="btn" type="button" id="addBA">Add a brand ambassador</button><button class="btn" type="button" id="bulkUsers">${UP_SVG}Bulk upload ambassadors</button><button class="btn" type="button" id="addSup">Add a supervisor</button><span style="flex:1"></span><button class="btn sm danger" type="button" id="resetDemo">Reset example data</button></div>
     <div class="vcards">${liveVendors().map(v => {
       const mgr = S.users.filter(u => u.role === "manager" && u.vendorId === v.id && !u.disabled), bas = S.users.filter(u => u.role === "ba" && u.vendorId === v.id && !u.disabled);
       const es = S.entries.filter(e => e.vendorId === v.id);
       return `<article class="vcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4><i class="bdot" style="background:${v.color};margin-right:8px"></i>${esc(v.name)}</h4>${es.some(isLive) ? `<span class="pill p-live">${es.filter(isLive).length} running</span>` : ""}</div>
         <div class="muted" style="font-size:12.5px">${esc(v.contact)} · ${esc(v.phone)} · ${esc(v.email)}</div>
         <div class="chips">${v.brands.map(b => `<span class="bchip sm">${bmark(b)}${esc(b)}</span>`).join("")}</div>
-        <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b><small class="dim">${S.outlets.filter(o => o.vendorId === v.id && basOf(o).length).length} staffed</small></div><div><label>Ambassadors</label><b>${bas.length}</b></div><div><label>Entries</label><b>${es.length}</b></div></div>
+        <div class="stats3"><div><label>Outlets</label><b>${S.outlets.filter(o => o.vendorId === v.id).length}</b><small class="dim">${S.outlets.filter(o => o.vendorId === v.id && basOf(o).length).length} staffed</small></div><div><label>Ambassadors</label><b>${bas.length}</b><small class="dim">${supsOf(v.id).length} supervisor${supsOf(v.id).length === 1 ? "" : "s"}</small></div><div><label>Entries</label><b>${es.length}</b></div></div>
         <div style="font-size:12.5px"><span class="dim">Manager sign-in:</span> ${mgr.map(m => `<span class="num">${esc(m.login)}</span>`).join(", ") || "none"}</div>
         <div class="vactions"><button class="btn sm" type="button" data-vedit="${v.id}">Edit</button><button class="btn sm" type="button" data-vout="${v.id}">Outlets</button><button class="btn sm" type="button" data-vup="${v.id}">Upload outlet list</button><button class="btn sm danger" type="button" data-vdel="${v.id}">Delete</button></div></article>`;
     }).join("")}</div>
@@ -1672,6 +1825,7 @@ function renderVendors() {
   };
   $("#addBA").onclick = () => baForm(null);
   $("#bulkUsers").onclick = () => bulkUsers(null);
+  $("#addSup").onclick = () => supForm(null, null);
   $("#resetDemo").onclick = () => openModal(`<h3>Reset to the example data?</h3><p class="muted">This deletes every vendor, outlet, account, entry and photo stored in this browser and puts the example data back. It can't be undone.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="rsNo">Keep my data</button><button class="btn primary" type="button" id="rsYes">Reset</button></div>`, m => {
     $("#rsNo", m).onclick = closeModal;
     $("#rsYes", m).onclick = async () => { await DB.clear(); photoCache.clear(); await seedDemo(); closeModal(); toast("Example data restored"); refresh(); paintSamplePhotos(); };
@@ -1908,19 +2062,172 @@ function previewUsers(items, forVendor) {
 /* ---------- team (manager) ---------- */
 function renderTeam() {
   const u = me(), el = $("#v-team");
-  const bas = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId);
-  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="tAdd">Add a brand ambassador</button><button class="btn" type="button" id="tBulk">${UP_SVG}Bulk upload ambassadors</button></div>
-    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>State</th><th>Sign-in</th><th>Status</th><th>Today</th><th>Cases sold (all time)</th><th>Entries</th></tr></thead><tbody>
+  const bas = S.users.filter(x => x.role === "ba" && x.vendorId === u.vendorId), sups = supsOf(u.vendorId);
+  el.innerHTML = `<div class="toolbar"><button class="btn primary" type="button" id="tAdd">Add a brand ambassador</button><button class="btn" type="button" id="tBulk">${UP_SVG}Bulk upload ambassadors</button><button class="btn" type="button" id="tSup">Add a supervisor</button></div>
+    ${supCards(sups)}
+    <div class="twrap"><table><thead><tr><th>Ambassador</th><th>State</th><th>Sign-in</th><th>Supervisor</th><th>Status</th><th>Today</th><th>Cases sold (all time)</th><th>Entries</th></tr></thead><tbody>
     ${bas.map(b => { const es = S.entries.filter(e => e.baId === b.id), live = es.find(isLive), td = es.filter(e => dayKey(e.start) === dayKey(Date.now()));
       return `<tr ${live ? `data-entry="${live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.email || b.phone || "")}</small></div></div></td><td>${esc(b.state || "–")}</td><td class="num">${esc(b.login)}</td>
-      <td>${live ? `<span class="pill p-live">At ${esc(live.outletName)}</span>` : `<span class="pill p-closed">Not running</span>`}</td><td class="num">${td.length ? n(td.reduce((a, e) => a + (+e.sold || 0), 0)) + " cases" : "–"}</td><td class="num">${n(es.reduce((a, e) => a + (+e.sold || 0), 0))}</td><td class="num">${es.length}</td></tr>`; }).join("") || `<tr><td colspan="7"><div class="empty" style="border:0">No ambassadors yet. Add your first one.</div></td></tr>`}
+      <td onclick="event.stopPropagation()"><select class="inline" data-sup="${b.id}" aria-label="Supervisor for ${esc(b.name)}"><option value="">None</option>${sups.map(x => `<option value="${x.id}" ${b.supervisorId === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></td>
+      <td>${live ? `<span class="pill p-live">At ${esc(live.outletName)}</span>` : `<span class="pill p-closed">Not running</span>`}</td><td class="num">${td.length ? n(td.reduce((a, e) => a + (+e.sold || 0), 0)) + " cases" : "–"}</td><td class="num">${n(es.reduce((a, e) => a + (+e.sold || 0), 0))}</td><td class="num">${es.length}</td></tr>`; }).join("") || `<tr><td colspan="8"><div class="empty" style="border:0">No ambassadors yet. Add your first one.</div></td></tr>`}
     </tbody></table></div>`;
   $("#tAdd").onclick = () => baForm(u.vendorId);
   $("#tBulk").onclick = () => bulkUsers(u.vendorId);
+  $("#tSup").onclick = () => supForm(u.vendorId, null);
+  wireSupCards(el);
+  el.querySelectorAll("[data-sup]").forEach(sel => sel.onchange = async () => { const b = userOf(sel.dataset.sup); b.supervisorId = sel.value || null; await save("users"); toast(sel.value ? `${b.name} now reports to ${userOf(sel.value).name}` : `${b.name} has no supervisor now`); refresh(); });
+}
+
+/* ---------- supervisors ----------
+   A supervisor belongs to one agency and tracks the ambassadors assigned to them. */
+const supsOf = vid => S.users.filter(x => x.role === "supervisor" && x.vendorId === vid && !x.disabled);
+function supCards(sups) {
+  if (!sups.length) return `<div class="card"><div class="empty" style="padding:14px">No supervisors yet. Add one so they can track their ambassadors live.</div></div>`;
+  return `<div class="supgrid">${sups.map(x => { const t = teamOf(x), live = t.filter(b => S.entries.some(e => e.baId === b.id && isLive(e))).length; return `<div class="supc">${avatar(x)}<div class="nm"><b>${esc(x.name)}</b><small>${esc(x.login)}${x.phone ? ` · ${esc(x.phone)}` : ""}</small><small>${t.length} ambassador${t.length === 1 ? "" : "s"}${live ? ` · ${live} active now` : ""}</small></div><div class="acts"><button class="btn sm" type="button" data-supedit="${x.id}">Edit</button><button class="btn sm danger" type="button" data-supdel="${x.id}">Remove</button></div></div>`; }).join("")}</div>`;
+}
+function wireSupCards(el) {
+  el.querySelectorAll("[data-supedit]").forEach(b => b.onclick = () => { const x = userOf(b.dataset.supedit); supForm(x.vendorId, x); });
+  el.querySelectorAll("[data-supdel]").forEach(b => b.onclick = () => { const x = userOf(b.dataset.supdel); openModal(`<h3>Remove ${esc(x.name)}?</h3><p class="muted">Their sign-in stops working and their ambassadors are left without a supervisor. Entries are kept.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="sdNo">Keep</button><button class="btn primary" type="button" id="sdYes">Remove</button></div>`, m => {
+    $("#sdNo", m).onclick = closeModal;
+    $("#sdYes", m).onclick = async () => { x.disabled = true; teamOf(x).forEach(b => b.supervisorId = null); await save("users"); closeModal(); toast(`${x.name} removed`); refresh(); };
+  }); });
+}
+function supForm(vendorId, ed) {
+  const bas = vid => S.users.filter(x => x.role === "ba" && x.vendorId === vid && !x.disabled);
+  const baBoxes = vid => bas(vid).map(b => { const other = b.supervisorId && (!ed || b.supervisorId !== ed.id) ? userOf(b.supervisorId) : null; return `<label class="chk"><input type="checkbox" value="${b.id}" ${ed && b.supervisorId === ed.id ? "checked" : ""}><span>${esc(b.name)} <small class="dim">${esc(b.login)}${other ? ` · now with ${esc(other.name)}` : ""}</small></span></label>`; }).join("") || `<span class="muted">This agency has no ambassadors yet.</span>`;
+  openModal(`<h3>${ed ? "Edit supervisor" : "Add a supervisor"}</h3>
+    <form id="sf" class="fgrid" novalidate>
+      <div class="field full"><label for="sf-name">Full name</label><input id="sf-name" required value="${esc(ed ? ed.name : "")}"></div>
+      <div class="field"><label for="sf-email">Email (their sign-in)</label><input id="sf-email" type="email" inputmode="email" value="${esc(ed ? ed.login : "")}"></div>
+      <div class="field"><label for="sf-phone">Phone number</label><input id="sf-phone" inputmode="tel" value="${esc(ed ? ed.phone || "" : "")}"></div>
+      ${vendorId ? "" : `<div class="field"><label for="sf-v">Agency</label><select id="sf-v">${liveVendors().map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("")}</select></div>`}
+      <div class="field"><label for="sf-pw">${ed ? "New password (leave blank to keep)" : "Password"}</label><input id="sf-pw" value="${ed ? "" : "Super@" + Math.floor(100 + Math.random() * 900)}"></div>
+      <div class="field full"><label>Ambassadors they supervise</label><div class="chks" id="sf-bas">${baBoxes(vendorId || (liveVendors()[0] || {}).id)}</div></div>
+      <div class="err full" id="sf-err" role="alert"></div>
+      <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="sfCancel">Cancel</button><button class="btn primary" type="submit">${ed ? "Save" : "Add supervisor"}</button></div>
+    </form>`, m => {
+    $("#sfCancel", m).onclick = closeModal;
+    if ($("#sf-v", m)) $("#sf-v", m).onchange = e => $("#sf-bas", m).innerHTML = baBoxes(e.target.value);
+    $("#sf", m).onsubmit = async e => {
+      e.preventDefault();
+      const name = $("#sf-name").value.trim(), email = $("#sf-email").value.trim().toLowerCase(), phone = $("#sf-phone").value.trim(), pw = $("#sf-pw").value;
+      const err = t => $("#sf-err").textContent = t;
+      if (!name) return err("Add the supervisor's name.");
+      if (!/^\S+@\S+\.\S+$/.test(email)) return err("Add a valid email. It's their sign-in.");
+      if (S.users.some(x => x !== ed && !x.disabled && (x.login.toLowerCase() === email || (x.email || "").toLowerCase() === email))) return err("That email already has a sign-in.");
+      if (!ed && pw.length < 6) return err("The password needs at least 6 characters.");
+      if (ed && pw && pw.length < 6) return err("The new password needs at least 6 characters.");
+      const vid = vendorId || $("#sf-v").value;
+      const x = ed || { id: uid("u_"), role: "supervisor", vendorId: vid, createdBy: me().id };
+      Object.assign(x, { name, login: email, phone }); if (pw) x.pw = await sha(pw);
+      if (!ed) S.users.push(x);
+      const picked = new Set([...$("#sf-bas").querySelectorAll("input:checked")].map(i => i.value));
+      S.users.filter(b => b.role === "ba" && b.vendorId === x.vendorId).forEach(b => { if (picked.has(b.id)) b.supervisorId = x.id; else if (b.supervisorId === x.id) b.supervisorId = null; });
+      await save("users"); closeModal(); toast(ed ? `${name} updated` : `${name} added. Sign-in: ${email}${pw ? " / " + pw : ""}`); refresh();
+    };
+  });
+}
+
+/* ---------- admin: notifications ---------- */
+function daySummary(day) {
+  const es = S.entries.filter(e => dayKey(e.start) === day), live = es.filter(isLive);
+  const ag = liveVendors().map(v => { const ve = es.filter(e => e.vendorId === v.id); return { v, n: ve.length, bas: new Set(ve.map(e => e.baId)).size, live: ve.filter(isLive).length, areas: [...new Set(ve.map(entryArea).filter(Boolean))] }; }).filter(x => x.n);
+  const states = Object.entries(es.reduce((m, e) => { const k = entryState(e) || "Unknown"; m[k] = (m[k] || 0) + 1; return m; }, {})).sort((a, b) => b[1] - a[1]);
+  return { es, live, ag, states, bas: new Set(es.map(e => e.baId)).size, liveBas: new Set(live.map(e => e.baId)).size, outlets: new Set(es.map(e => e.outletId || e.outletName)).size, areas: [...new Set(es.map(entryArea).filter(Boolean))] };
+}
+function summaryText(sm, day) {
+  return [`Trade Activate summary for ${fmtDay(day)}`, ``, `Activating agencies: ${sm.ag.length}`, `Brand ambassadors out: ${sm.bas} (${sm.liveBas} active now)`, `Outlets activated: ${sm.outlets}`, `Coverage: ${sm.states.map(([s, c]) => `${s} (${c})`).join(", ") || "none yet"}`, ``,
+    ...sm.ag.map(x => `${x.v.name}: ${x.bas} ambassador${x.bas === 1 ? "" : "s"}, ${x.n} ${x.n === 1 ? "activity" : "activities"}${x.live ? `, ${x.live} live now` : ""}. Areas: ${x.areas.join("; ") || "not known"}`)].join("\n");
+}
+function renderAlerts() {
+  const el = $("#v-alerts"), day = dayKey(Date.now()), sm = daySummary(day);
+  const feed = S.entries.filter(e => e.start >= Date.now() - 2 * 864e5).flatMap(e => [{ e, t: e.start, k: "started" }, ...(e.end && e.end !== e.start ? [{ e, t: e.end, k: "ended" }] : [])]).sort((a, b) => b.t - a.t).slice(0, 60);
+  el.innerHTML = `<div class="card alset ${alertsReady() ? "on" : ""}"><div class="card-h"><h3>Email alerts</h3><div class="right">${alertsReady() ? `<span class="pill p-live">On · sending to ${esc(ALERTS.to)}</span>` : `<span class="pill p-warn">Not connected yet</span>`}</div></div>
+      <p class="muted" style="margin:0">${alertsReady() ? `Every time an ambassador starts or ends an activation, their phone emails ${esc(ALERTS.to)} with the agency, ambassador, outlet, coverage area and location check. If a phone has no signal, the alert waits and sends when it's back online.` : `Alerts go to <b>${esc(ALERTS.to)}</b> once an email service is connected. Create a free EmailJS account (or a Power Automate / Zapier webhook) and send the keys to Jarvis to switch this on. Until then, this page and the summary button below still work.`}</p>
+      <div class="toolbar" style="margin:12px 0 0">${alertsReady() ? `<button class="btn sm" type="button" id="alTest">Send a test alert</button>` : ""}<button class="btn sm primary" type="button" id="alSum">Email today's summary</button><button class="btn sm" type="button" id="alCopy">Copy summary</button></div></div>
+    <div class="kpis alk">${[["Activating agencies", sm.ag.length, `of ${liveVendors().length} registered`], ["Ambassadors out today", sm.bas, `${sm.liveBas} active now`], ["Outlets activated", sm.outlets, "today"], ["States covered", sm.states.filter(([s]) => s !== "Unknown").length, sm.states.slice(0, 3).map(([s]) => s).join(", ") || "none yet"]].map(([l, v, d], i) => `<div class="kpi k${i + 1}"><label>${l}</label><div class="v">${n(v)}</div><div class="d">${esc(d)}</div></div>`).join("")}</div>
+    <div class="split">
+      <div class="card"><div class="card-h"><h3>Live feed</h3><div class="right"><span class="chip"><span class="dot"></span>Last 48 hours</span></div></div>
+        <div class="feed">${feed.map(({ e, t, k }) => { const ba = userOf(e.baId) || { name: "Unknown", id: "x" }, v = vendorOf(e.vendorId) || { name: "", color: "#888" }; return `<div class="fi" data-entry="${e.id}" tabindex="0" role="button"><span class="ft">${dayKey(t) === day ? hm(t) : new Date(t).toLocaleDateString("en-GB", { weekday: "short" }) + " " + hm(t)}</span><i class="bdot" style="background:${v.color}"></i><div class="fx"><span><b>${esc(v.name)}</b> · ${esc(ba.name)} ${k === "ended" ? "ended" : isLive(e) ? "started" : "logged"} ${esc(e.type.toLowerCase())} at <b>${esc(e.outletName)}</b></span><small>${esc(entryArea(e) || "Area not known")} · ${esc(e.brand)}${k === "ended" ? ` · ${n(e.sold)} cases` : ""}${locIssue(e) ? ` · <span class="pill p-warn" style="font-size:10.5px;padding:1px 7px">${locIssue(e)}</span>` : ""}</small></div></div>`; }).join("") || `<div class="empty">Nothing in the last 48 hours.</div>`}</div></div>
+      <div class="card"><div class="card-h"><h3>Activating agencies today</h3></div>
+        ${sm.ag.map(x => `<div class="agrow"><i class="bdot" style="background:${x.v.color}"></i><div class="fx"><b>${esc(x.v.name)}</b><small>${x.bas} ambassador${x.bas === 1 ? "" : "s"} · ${x.n} ${x.n === 1 ? "activity" : "activities"}${x.live ? ` · ${x.live} live` : ""}</small><small>${esc(x.areas.join(" · ") || "Area not known")}</small></div></div>`).join("") || `<div class="empty">No agency has activated today yet.</div>`}
+      </div></div>`;
+  const text = summaryText(sm, day);
+  $("#alCopy").onclick = async () => { try { await navigator.clipboard.writeText(text); toast("Summary copied"); } catch (e) { toast("Couldn't copy here", true); } };
+  $("#alSum").onclick = async () => {
+    if (alertsReady()) { const ok = await sendAlert({ subject: `Trade Activate summary, ${fmtDay(day)}`, message: text, kind: "summary" }); toast(ok ? `Summary sent to ${ALERTS.to}` : "Couldn't send. Check the connection and try again.", !ok); }
+    else location.href = `mailto:${encodeURIComponent(ALERTS.to)}?subject=${encodeURIComponent("Trade Activate summary, " + fmtDay(day))}&body=${encodeURIComponent(text)}`;
+  };
+  if ($("#alTest")) $("#alTest").onclick = async () => { const ok = await sendAlert({ subject: "Trade Activate test alert", message: "Email alerts are working. You'll get one each time an ambassador starts or ends an activation.", kind: "test" }); toast(ok ? `Test sent to ${ALERTS.to}` : "Couldn't send. Check the keys in ALERTS.", !ok); };
+}
+
+/* ---------- supervisor: my ambassadors ---------- */
+function renderCrew() {
+  const u = me(), el = $("#v-crew"), all = scopeEntries(), team = teamOf(u);
+  el.innerHTML = `<div class="twrap"><table><thead><tr><th>Ambassador</th><th>Status now</th><th>Assigned outlets</th><th>Today</th><th>Last 7 days</th><th>Contact</th></tr></thead><tbody>
+    ${team.map(b => { const s = baStatus(b, all), outs = S.outlets.filter(o => (o.baIds || []).includes(b.id)), wk = all.filter(e => e.baId === b.id && e.start >= Date.now() - 7 * 864e5);
+      return `<tr ${s.live ? `data-entry="${s.live.id}" style="cursor:pointer"` : ""}><td><div style="display:flex;gap:10px;align-items:center">${avatar(b)}<div><b>${esc(b.name)}</b><small>${esc(b.login)}${b.state ? " · " + esc(b.state) : ""}</small></div></div></td>
+      <td><span class="pill ${s.cls}">${esc(s.label)}</span></td>
+      <td>${outs.length ? outs.slice(0, 3).map(o => esc(o.name)).join(", ") + (outs.length > 3 ? ` +${outs.length - 3} more` : "") : `<span class="dim">None yet</span>`}</td>
+      <td class="num">${s.td.length ? `${s.td.length} · ${n(s.td.reduce((a, e) => a + (+e.sold || 0), 0))} cases` : "–"}</td>
+      <td class="num">${wk.length} entries · ${n(wk.reduce((a, e) => a + (+e.sold || 0), 0))} cases</td>
+      <td onclick="event.stopPropagation()">${b.phone ? `<a class="btn sm" href="tel:${esc(b.phone.replace(/\s/g, ""))}">Call</a> <a class="btn sm" href="https://wa.me/${esc(b.phone.replace(/\D/g, "").replace(/^0/, "234"))}" target="_blank" rel="noopener">WhatsApp</a>` : "–"}</td></tr>`; }).join("") || `<tr><td colspan="6"><div class="empty" style="border:0">No ambassadors are assigned to you yet. Your vendor manager assigns them on their Ambassadors page.</div></td></tr>`}
+    </tbody></table></div>`;
 }
 
 /* ---------- brand ambassador: log an activation ---------- */
 const draft = { outletId: "", type: "Activation", brand: "", opening: 0, sold: 0, reached: 0, notes: "", gps: null, files: [], status: "running", locMsg: "" };
+/* ---------- in-app camera ----------
+   Opens the phone's back camera full screen inside the app, so ambassadors take
+   live photos without leaving it. If the browser can't open the camera (no
+   permission, an old phone, or an embedded preview), it offers the phone's own
+   camera app instead. onDone receives the photos as File objects. */
+function openCamera(onDone) {
+  const shots = [];
+  const el = document.createElement("div"); el.className = "cam"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Camera");
+  const fallback = msg => `<div class="cam-msg"><b style="font-size:17px">${msg}</b><span style="opacity:.75">Use your phone's camera app instead. The photo comes straight back here.</span>
+    <label class="cbtn done" style="display:inline-flex;align-items:center;height:48px;padding:0 22px">Open camera app<input class="vh" type="file" accept="image/*" capture="environment" id="camNative"></label>
+    <button class="cbtn" type="button" data-x>Cancel</button></div>`;
+  let stream = null, facing = "environment";
+  const stop = () => { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
+  const close = () => { stop(); el.remove(); removeEventListener("keydown", onKey); if (shots.length) onDone(shots); };
+  const onKey = e => { if (e.key === "Escape") close(); };
+  addEventListener("keydown", onKey);
+  document.body.appendChild(el);
+  el.addEventListener("click", e => { if (e.target.closest("[data-x]")) close(); });
+  el.addEventListener("change", e => { if (e.target.id === "camNative") { shots.push(...e.target.files); close(); } });
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { el.innerHTML = fallback("This browser can't open the camera inside the app."); return; }
+  el.innerHTML = `<video playsinline autoplay muted></video><div class="flash"></div>
+    <div class="cam-top"><span id="camCount">Live photo</span><button class="cbtn" type="button" data-x>Close</button></div>
+    <div class="thumbs" id="camThumbs"></div>
+    <div class="cam-bar"><button class="cbtn" type="button" id="camFlip" aria-label="Switch camera">Flip</button><button class="shutter" type="button" id="camShoot" aria-label="Take photo"></button><button class="cbtn done" type="button" id="camDone">Done</button></div>`;
+  const video = el.querySelector("video");
+  const start = async () => {
+    stop();
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false });
+      video.srcObject = stream; await video.play().catch(() => { });
+    } catch (err) {
+      el.innerHTML = fallback(err && err.name === "NotAllowedError" ? "Camera access was blocked." : "The camera couldn't start here.");
+    }
+  };
+  el.querySelector("#camFlip").onclick = () => { facing = facing === "environment" ? "user" : "environment"; start(); };
+  el.querySelector("#camDone").onclick = close;
+  el.querySelector("#camShoot").onclick = () => {
+    if (!video.videoWidth) return;
+    const c = document.createElement("canvas"); c.width = video.videoWidth; c.height = video.videoHeight;
+    c.getContext("2d").drawImage(video, 0, 0);
+    const fl = el.querySelector(".flash"); fl.classList.add("on"); setTimeout(() => fl.classList.remove("on"), 60);
+    if (navigator.vibrate) navigator.vibrate(30);
+    c.toBlob(b => {
+      if (!b) return;
+      const f = new File([b], `live-${Date.now()}.jpg`, { type: "image/jpeg", lastModified: Date.now() }); shots.push(f);
+      const im = document.createElement("img"); im.src = URL.createObjectURL(b); im.alt = "Photo " + shots.length; el.querySelector("#camThumbs").appendChild(im);
+      el.querySelector("#camCount").textContent = `${shots.length} photo${shots.length > 1 ? "s" : ""} taken`;
+    }, "image/jpeg", .9);
+  };
+  start();
+}
 function locate(cb) {
   if (!navigator.geolocation) { cb(null, "This device can't share its location."); return; }
   navigator.geolocation.getCurrentPosition(p => cb({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, time: Date.now() }), err => cb(null, err.code === 1 ? "Location access was blocked. Allow location for this site in your browser settings, then try again." : "Couldn't get a location fix. Move outside or near a window and try again."), { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
@@ -1940,7 +2247,7 @@ function renderLog() {
       <div class="livecard" style="--bc:${BC(live.brand)}">
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start"><div><span class="typ ${TCLASS(live.type)}">${esc(live.type)}</span><h3>${esc(live.brand)} at ${esc(live.outletName)}</h3><div class="muted">Started ${hm(live.start)}</div></div><div style="text-align:right"><div class="timer" data-since="${live.start}">${dur(Date.now() - live.start)}</div><span class="pill p-live">Running</span></div></div>
         <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${live.gps ? `<b>Location recorded</b><span>${live.gps.lat.toFixed(5)}, ${live.gps.lng.toFixed(5)} · ±${Math.round(live.gps.acc)} m at ${hm(live.gps.time)}</span>` : `<b>No location yet</b><span>Record it so your manager can see you on the map.</span>`}</div><button class="btn sm" type="button" id="relocate">${live.gps ? "Update location" : "Record location"}</button></div>
-        <div><div class="flabel" style="margin-bottom:8px">Live photos (${live.photos.length})</div><div class="shots">${live.photos.map(p => `<div class="shot"><button type="button" data-photo-open="${p}" style="border:0;padding:0;width:100%;height:100%"><img data-photo="${p}" alt="Activation photo"></button></div>`).join("")}<label class="addshot">${CAM_SVG}Take photo<input type="file" accept="image/*" capture="environment" multiple id="livePh"></label></div></div>
+        <div><div class="flabel" style="margin-bottom:8px">Live photos (${live.photos.length})</div><div class="shots">${live.photos.map(p => `<div class="shot"><button type="button" data-photo-open="${p}" style="border:0;padding:0;width:100%;height:100%"><img data-photo="${p}" alt="Activation photo"></button></div>`).join("")}<button type="button" class="addshot" data-cam="live">${CAM_SVG}Take photo</button></div><label class="gallerylink" style="margin-top:6px;display:inline-block">or add from your gallery<input class="vh" type="file" accept="image/*" multiple id="livePh"></label></div>
         <div class="fgrid">${stepper("lv-sold", live.sold, "Cases sold so far")}${stepper("lv-reached", live.reached, "Consumers reached")}</div>
         <div class="cases"><div><label>Opening</label><b>${n(live.opening)}</b></div><div><label>Sold</label><b id="lvSoldShow">${n(live.sold)}</b></div><div><label>Closing</label><b id="lvClose">${n(Math.max(0, live.opening - live.sold))}</b></div></div>
         <div class="field"><label for="lv-notes">Notes for your manager</label><textarea id="lv-notes" rows="2" placeholder="Stock issues, competitor activity, what consumers said">${esc(live.notes)}</textarea></div>
@@ -1957,25 +2264,28 @@ function renderLog() {
       live.sold = sold; live.reached = +$("#lv-reached").value || 0; live.notes = $("#lv-notes").value.trim(); $("#lv-err").textContent = ""; return true;
     };
     $("#lvSave").onclick = async () => { if (!commit()) return; await save("entries"); toast("Update saved"); renderLog(); };
-    $("#lvEnd").onclick = () => { if (!commit()) return; openModal(`<h3>End this activation?</h3><p class="muted">${esc(live.brand)} at ${esc(live.outletName)}. You sold ${n(live.sold)} of ${n(live.opening)} opening cases and reached ${n(live.reached)} consumers. You can't add photos after it ends.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="enNo">Keep running</button><button class="btn primary" type="button" id="enYes">End activation</button></div>`, m => { $("#enNo", m).onclick = closeModal; $("#enYes", m).onclick = async () => { live.end = Date.now(); await save("entries"); closeModal(); toast("Activation ended and filed in your vendor folder"); renderLog(); renderNav(); }; }); };
+    $("#lvEnd").onclick = () => { if (!commit()) return; openModal(`<h3>End this activation?</h3><p class="muted">${esc(live.brand)} at ${esc(live.outletName)}. You sold ${n(live.sold)} of ${n(live.opening)} opening cases and reached ${n(live.reached)} consumers. You can't add photos after it ends.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn" type="button" id="enNo">Keep running</button><button class="btn primary" type="button" id="enYes">End activation</button></div>`, m => { $("#enNo", m).onclick = closeModal; $("#enYes", m).onclick = async () => { live.end = Date.now(); await save("entries"); notifyAdmin("ended", live); closeModal(); toast("Activation ended and filed in your vendor folder"); renderLog(); renderNav(); }; }); };
     $("#relocate").onclick = () => { $("#relocate").textContent = "Finding you…"; locate(async (g, msg) => { if (g) { live.gps = g; await save("entries"); toast("Location recorded"); } else toast(msg, true); renderLog(); }); };
-    $("#livePh").onchange = async e => {
-      const files = [...e.target.files]; if (!files.length) return;
+    const addLive = async files => {
+      if (!files.length) return;
       toast(`Uploading ${files.length} photo${files.length > 1 ? "s" : ""}…`);
       for (const f of files) { const p = await storePhoto(f, { brand: live.brand, outlet: live.outletName, time: Date.now(), gps: live.gps }); live.photos.push(p.id); }
       commit(); await save("entries"); toast(`${files.length} photo${files.length > 1 ? "s" : ""} added`); renderLog();
     };
+    $("#livePh").onchange = e => addLive([...e.target.files]);
+    $("[data-cam=live]").onclick = () => openCamera(addLive);
     return;
   }
   const outlets = S.outlets.filter(o => o.vendorId === u.vendorId);
   if (!draft.brand || !BRANDS.some(b => b.name === draft.brand)) draft.brand = v.brands[0];
   const near = draft.gps ? outlets.filter(o => o.lat != null).map(o => ({ o, d: km(draft.gps, o) })).sort((a, b) => a.d - b.d)[0] : null;
   el.innerHTML = `<div class="ba-wrap">
-    <div class="hello">${avatar(u, 46)}<div><h2>Hi ${esc(firstName)}, ready to start?</h2><div class="muted">${esc(v.name)} · BA ID ${esc(u.login)}</div></div></div>
+    <div class="hello">${avatar(u, 46)}<div><h2>Hi ${esc(firstName)}, ready to start?</h2><div class="muted">${esc(v.name)} · BA ID ${esc(u.login)}${(() => { const sv = userOf(u.supervisorId); return sv && !sv.disabled ? ` · Supervisor ${esc(sv.name)}${sv.phone ? ` <a href="tel:${esc(sv.phone.replace(/\s/g, ""))}">call</a>` : ""}` : ""; })()}</div></div></div>
+    ${myOutletsCard(u, outlets)}
     <form class="card" id="logForm" novalidate style="display:flex;flex-direction:column;gap:16px">
       <div class="card-h" style="margin:0"><h3>Log an activation</h3></div>
       <div class="locbox"><span class="ic">${PIN_SVG}</span><div>${draft.gps ? `<b>Location recorded</b><span>${draft.gps.lat.toFixed(5)}, ${draft.gps.lng.toFixed(5)} · ±${Math.round(draft.gps.acc)} m</span>${near ? `<div style="font-size:12px;color:var(--muted)">Nearest outlet: ${esc(near.o.name)}, ${near.d < 1 ? Math.round(near.d * 1000) + " m" : near.d.toFixed(1) + " km"} away</div>` : ""}` : `<b>Record your location</b><span style="font-family:var(--body)">${esc(draft.locMsg || "Your manager sees where you are when you start.")}</span>`}</div><button class="btn sm ${draft.gps ? "" : "primary"}" type="button" id="getLoc">${draft.gps ? "Refresh" : "Record location"}</button></div>
-      <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${(() => { const opt = o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`, mine = outlets.filter(o => (o.baIds || []).includes(u.id)), rest = outlets.filter(o => !mine.includes(o)); return mine.length ? `<optgroup label="Your outlets">${mine.map(opt).join("")}</optgroup><optgroup label="Other ${esc(v.name)} outlets">${rest.map(opt).join("")}</optgroup>` : outlets.map(opt).join(""); })()}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>Another outlet (type its name)</option></select></div>
+      <div class="field"><label for="lg-outlet">Outlet</label><select id="lg-outlet"><option value="">Choose your outlet</option>${(() => { const opt = o => `<option value="${o.id}" ${draft.outletId === o.id ? "selected" : ""}>${esc(o.name)} · ${esc(o.area)}</option>`, mine = outlets.filter(o => (o.baIds || []).includes(u.id)); return mine.length ? `<optgroup label="Assigned to you">${mine.map(opt).join("")}</optgroup>` : `<optgroup label="${esc(v.name)} outlets">${outlets.map(opt).join("")}</optgroup>`; })()}<option value="other" ${draft.outletId === "other" ? "selected" : ""}>An outlet not on my list (type its name)</option></select></div>
       ${foldersOf(u.vendorId).length ? `<div class="field"><label for="lg-folder">Folder or campaign (optional)</label><select id="lg-folder"><option value="">None</option>${foldersOf(u.vendorId).map(f => `<option value="${f.id}" ${draft.folderId === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></div>` : ""}
       <div class="field" id="otherWrap" ${draft.outletId === "other" ? "" : "hidden"}><label for="lg-other">Outlet name and area</label><input id="lg-other" value="${esc(draft.otherName || "")}" placeholder="e.g. Iya Basira Spot, Mushin"><label for="lg-seg" style="margin-top:8px">Segment</label>${segSelect("lg-seg", draft.segment || "")}</div>
       ${(() => { const so = outletOf(draft.outletId); return so && so.segment ? `<div class="segnote"><span class="seg-pill">${esc(so.segment)}</span>${esc((SEGMENTS.find(x => x[0] === so.segment) || [])[1] || "")}</div>` : ""; })()}
@@ -1983,7 +2293,7 @@ function renderLog() {
       <div class="field"><span class="flabel">Brand</span><div class="chips" id="lg-brand">${BRANDS.map(b => `<label class="bchip"><input type="radio" name="lgb" value="${esc(b.name)}" ${draft.brand === b.name ? "checked" : ""}>${bmark(b.name)}${esc(b.name)}</label>`).join("")}</div></div>
       <div class="fgrid">${stepper("lg-open", draft.opening, "Opening cases")}${stepper("lg-sold", draft.sold, "Cases sold")}</div>
       ${stepper("lg-reached", draft.reached, "Consumers reached")}
-      <div class="field"><span class="flabel">Live photos of the activation (at least one)</span><div class="shots" id="lgShots">${draft.files.map((f, i) => `<div class="shot"><img src="${f.url}" alt="Selected photo ${i + 1}"><span class="tag">${f.live ? "Live" : "Older photo"}</span><button class="x" type="button" data-rm="${i}" aria-label="Remove photo">✕</button></div>`).join("")}<label class="addshot">${CAM_SVG}Take photo<input type="file" accept="image/*" capture="environment" multiple id="lgPh"></label></div><small class="dim">Each photo is stamped with the time and your location.</small></div>
+      <div class="field"><span class="flabel">Live photos of the activation (at least one)</span><div class="shots" id="lgShots">${draft.files.map((f, i) => `<div class="shot"><img src="${f.url}" alt="Selected photo ${i + 1}"><span class="tag">${f.live ? "Live" : "Older photo"}</span><button class="x" type="button" data-rm="${i}" aria-label="Remove photo">✕</button></div>`).join("")}<button type="button" class="addshot" data-cam="lg">${CAM_SVG}Take photo</button></div><label class="gallerylink">or add from your gallery<input class="vh" type="file" accept="image/*" multiple id="lgPh"></label><small class="dim">Each photo is stamped with the time and your location.</small></div>
       <div class="field"><label for="lg-notes">Notes (optional)</label><textarea id="lg-notes" rows="2">${esc(draft.notes)}</textarea></div>
       <div class="field"><span class="flabel">Status</span><div class="seg" id="lg-status"><button type="button" data-o="running" aria-pressed="${draft.status === "running"}">Still running</button><button type="button" data-o="done" aria-pressed="${draft.status === "done"}">Already finished</button></div></div>
       <div class="err" id="lg-err" role="alert"></div>
@@ -1992,6 +2302,7 @@ function renderLog() {
   const keep = () => { draft.folderId = $("#lg-folder") ? $("#lg-folder").value : ""; draft.outletId = $("#lg-outlet").value; draft.otherName = $("#lg-other").value; draft.segment = $("#lg-seg") ? $("#lg-seg").value : ""; draft.opening = +$("#lg-open").value || 0; draft.sold = +$("#lg-sold").value || 0; draft.reached = +$("#lg-reached").value || 0; draft.notes = $("#lg-notes").value; const b = $("input[name=lgb]:checked"); if (b) draft.brand = b.value; };
   el.oninput = keep;
   $("#lg-outlet").onchange = () => { keep(); renderLog(); };
+  el.querySelectorAll("[data-start-at]").forEach(b => b.onclick = () => { keep(); draft.outletId = b.dataset.startAt; renderLog(); setTimeout(() => { const f = $("#logForm"); if (f) f.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); }, 30); });
   el.onclick = e => {
     const st = e.target.closest("[data-step]"); if (st) { const i = $("#" + st.dataset.step); i.value = Math.max(0, (+i.value || 0) + +st.dataset.d); keep(); return; }
     const t = e.target.closest("#lg-type button"); if (t) { keep(); draft.type = t.dataset.o; renderLog(); return; }
@@ -2000,6 +2311,7 @@ function renderLog() {
   };
   $("#getLoc").onclick = () => { keep(); $("#getLoc").textContent = "Finding you…"; locate((g, msg) => { draft.gps = g || draft.gps; draft.locMsg = msg || ""; if (g && !draft.outletId) { const nr = outlets.filter(o => o.lat != null).map(o => ({ o, d: km(g, o) })).sort((a, b) => a.d - b.d)[0]; if (nr && nr.d < .3) draft.outletId = nr.o.id; } if (msg) toast(msg, true); renderLog(); }); };
   $("#lgPh").onchange = e => { keep(); for (const f of e.target.files) draft.files.push({ file: f, url: URL.createObjectURL(f), live: (Date.now() - (f.lastModified || Date.now())) < 15 * 60000 }); renderLog(); };
+  $("[data-cam=lg]").onclick = () => { keep(); openCamera(files => { for (const f of files) draft.files.push({ file: f, url: URL.createObjectURL(f), live: true }); renderLog(); }); };
   $("#logForm").onsubmit = async e => {
     e.preventDefault(); keep();
     const err = t => { $("#lg-err").textContent = t; };
@@ -2015,11 +2327,21 @@ function renderLog() {
     const gps = draft.gps;
     const entry = { id: uid("e_"), baId: u.id, vendorId: u.vendorId, outletId: o ? o.id : null, outletName, brand: draft.brand, type: draft.type, start, end: draft.status === "done" ? start : null, opening: draft.opening, sold: draft.sold, reached: draft.reached, gps, photos, notes: draft.notes.trim(), folderId: draft.folderId || null, segment: o ? o.segment || "" : draft.segment || "" };
     if (!o && gps) { const newO = { id: uid("o_"), name: outletName, address: "", area: "", channel: "Added by ambassador", segment: draft.segment || "", lat: gps.lat, lng: gps.lng, vendorId: u.vendorId, brands: [draft.brand], uploadedAt: start, source: "Ambassador", located: "gps" }; S.outlets.push(newO); entry.outletId = newO.id; await save("outlets"); }
-    S.entries.push(entry); await save("entries");
+    S.entries.push(entry); await save("entries"); notifyAdmin(entry.end ? "logged" : "started", entry);
     Object.assign(draft, { folderId: "", outletId: "", otherName: "", opening: 0, sold: 0, reached: 0, notes: "", files: [], status: "running" });
     toast(entry.end ? "Activation submitted" : "You're live. Your manager can see you on the map.");
     renderNav(); renderLog();
   };
+}
+// The outlets this ambassador's agency assigned to them, nearest first once their location is recorded.
+function myOutletsCard(u, outlets) {
+  const mine = outlets.filter(o => (o.baIds || []).includes(u.id));
+  if (!mine.length) return `<div class="card myout"><div class="card-h"><h3>Your outlets</h3></div><div class="empty" style="padding:14px">Your agency hasn't assigned you any outlets yet, so all ${esc((vendorOf(u.vendorId) || {}).name || "agency")} outlets are listed below. Ask your vendor manager or supervisor to assign yours.</div></div>`;
+  const today = dayKey(Date.now()), done = new Set(S.entries.filter(e => e.baId === u.id && dayKey(e.start) === today).map(e => e.outletId));
+  const rows = mine.map(o => ({ o, d: draft.gps && o.lat != null ? km(draft.gps, o) : null })).sort((a, b) => (a.d ?? 1e9) - (b.d ?? 1e9) || a.o.name.localeCompare(b.o.name));
+  return `<div class="card myout"><div class="card-h"><h3>Your outlets</h3><div class="right"><span class="chip">${mine.length} assigned by your agency</span></div></div>
+    <div class="mo-list">${rows.map(({ o, d }) => `<div class="mo ${draft.outletId === o.id ? "sel" : ""}"><div class="mo-t"><b>${esc(o.name)}</b><small>${esc(o.area || o.address || "")}${d != null ? ` · ${d < 1 ? Math.round(d * 1000) + " m" : d.toFixed(1) + " km"} away` : ""}</small><div>${o.segment ? `<span class="seg-pill">${esc(o.segment)}</span>` : ""}${done.has(o.id) ? ` <span class="pill p-live">Done today</span>` : ""}</div></div>
+      <div class="mo-a">${o.lat != null ? `<a class="btn sm" href="https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lng}" target="_blank" rel="noopener">Directions</a>` : ""}<button class="btn sm primary" type="button" data-start-at="${o.id}">${draft.outletId === o.id ? "Selected" : "Start here"}</button></div></div>`).join("")}</div></div>`;
 }
 function renderHistory() {
   const u = me(), el = $("#v-history");
@@ -2588,6 +2910,8 @@ const ready = new Promise(r => markReady = r);
   if ((await DB.get("kv", "geoVersion")) !== 1) { await seedNational(); await save("outlets", "entries"); }
   if ((await DB.get("kv", "staffVersion")) !== 1) { await seedStaffing(); await save("outlets"); }
   if ((await DB.get("kv", "segVersion")) !== 1) { await seedSegments(); await save("outlets"); }
+  if ((await DB.get("kv", "supVersion")) !== 1) { await seedSupervisors(); await save("users"); }
+  alertQueue = (await DB.get("kv", "alertQueue")) || []; flushAlerts();
   readyDone = true; markReady();
   setTimeout(paintSamplePhotos, 50);
   const sid = sessionStore.get();

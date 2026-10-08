@@ -45,7 +45,8 @@ On the ambassador's phone:
 | --- | --- | --- |
 | **Admin** (trade marketing) | Email and password | Live dashboard (all vendors), Vendor folders (every vendor), Outlets (upload and assign), Vendors & users (register, edit and delete vendors, share outlets with them, add managers and BAs) |
 | **Vendor Manager** | Email and password | Live dashboard (their vendor only), their vendor folder, the outlets shared with them (and which ambassador covers each), their ambassadors |
-| **Brand Ambassador** | BA ID, email or phone number, plus a PIN | My activation (log form, live card), History |
+| **Supervisor** | Email and password | Team dashboard (their ambassadors only: who is active, who is on location, the areas they cover, on the map), My ambassadors (status, assigned outlets, call or WhatsApp), Team photos |
+| **Brand Ambassador** | BA ID, email or phone number, plus a PIN | My activation (their assigned outlets, log form, live card), History |
 
 ### Owner account
 
@@ -59,6 +60,9 @@ Jay's own admin sign-in is `jay@tradeactivate.app`. The password was shared with
 | Vendor Manager, Pinnacle Activations | `tobi@pinnacle.ng` | `Manager@123` |
 | Vendor Manager, BlueWave Experiential | `nkechi@bluewave.ng` | `Manager@123` |
 | Vendor Manager, Kora Field Marketing | `musa@kora.ng` | `Manager@123` |
+| Supervisor, Pinnacle Activations | `kemi@pinnacle.ng` | `Super@123` |
+| Supervisor, BlueWave Experiential | `uche@bluewave.ng` | `Super@123` |
+| Supervisor, Kora Field Marketing | `aisha@kora.ng` | `Super@123` |
 | Brand Ambassadors | `BA-1001` to `BA-1012` | `1234` |
 
 The example vendors, people, outlets and photos are made up. An admin can wipe them under **Vendors & users → Reset example data**.
@@ -71,11 +75,11 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 - **Vendor folders.** One folder per vendor, holding a folder per day, holding every entry ambassadors logged. You can filter by brand. Vendor managers only see their own folder.
   - **Custom folders.** Admins, and each vendor's manager, can add named folders inside a vendor (a campaign, promo or region), rename or delete them, and file any entry into one from the entry's details. Ambassadors can pick the folder when they log.
 - **Brand ambassador log form.**
-  - Pick the outlet. Outlets their manager assigned to them are listed first, then the rest of the vendor's outlets, or they can type a new one.
+  - **Your outlets.** A card lists the outlets their agency assigned to them, nearest first once location is recorded, with directions and a **Start here** button. The outlet list only shows those outlets (plus "An outlet not on my list"). If nothing is assigned yet, all the agency's outlets are listed and the BA is told to ask their manager or supervisor.
   - Choose the activity type and brand.
   - Enter opening cases, cases sold and consumers reached.
   - Record GPS location. The form shows the nearest assigned outlet.
-  - Take live photos with the phone camera. Every photo is resized and stamped with the brand, outlet, time and coordinates. Photos older than 15 minutes are flagged.
+  - **Take photo** opens the camera inside the app (back camera, full screen, shutter, flip, several shots in a row). If the phone blocks the in-app camera, it offers the phone's own camera app instead, and **or add from your gallery** is still there. Every photo is resized and stamped with the brand, outlet, time and coordinates. Gallery photos older than 15 minutes are flagged.
   - Start it as **Still running**, then add more photos, update cases sold and **End activation** later. Or submit it as **Already finished**.
 - **Colourful live dashboard (admin and vendor manager).** KPI tiles with 7-day sparklines that count up when numbers change, the activity mix right now, cases sold over the last 7 days, cases by segment, a vendors-today scoreboard (admin) or outlet coverage ring (vendor manager), plus filters by activity, brand, segment and vendor.
 - **Segments.** Every outlet has a trade segment: Mainstream, Low End, High End, Key Account, Open Market, Spiritual Home, Out of Home, plus four recommended additions: Modern Trade (supermarkets, malls), HoReCa (hotels, restaurants, cafés), Events & Festivals, and Wholesale (distributors). Set it in the upload's `Segment` column or on the Outlets page; a first guess is made from the channel and area. Activations carry the outlet's segment into reports and Power BI.
@@ -84,6 +88,8 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 - **Vendors & users.** Register a vendor, pick its brands, and create its manager's sign-in. Each vendor card has **Edit** (name, manager, phone, sign-in email, brands, password reset), **Outlets** (tick which outlets the vendor activates), **Upload outlet list** (import a file straight to that vendor) and **Delete**. Deleting a vendor switches off its sign-ins, ends its running activations and returns its outlets to Not assigned; its past entries stay in reports under its name. Add brand ambassadors with a BA ID and PIN. Vendor managers can add their own ambassadors.
 - **Bulk upload ambassadors (admin and vendor manager).** Upload an Excel or CSV file with the columns **Full name, Email, Phone number, State, Agency name** (download the template from the upload window, or see `sample-data/users-sample.csv`). A preview flags bad emails, phone numbers that aren't 11 digits, people who already have a sign-in, and agency names that don't match a registered vendor (the admin can pick the vendor in the preview). Each person gets a BA ID and a random 4-digit PIN straight away, and can sign in with the BA ID, email or phone. Download the sign-in sheet at the end: PINs are stored scrambled, so that is the only time they are shown. When a vendor manager uploads, everyone goes to their own agency.
 - **Ambassadors per outlet (vendor manager).** On Our outlets, a manager assigns one or more of their ambassadors to each shared outlet, one row at a time or by ticking several outlets. A filter shows outlets that have no ambassador yet. The admin's Outlets page and the outlets download show who covers each outlet.
+- **Supervisors.** Each agency can have supervisors who track their own ambassadors. The vendor manager (or admin) adds a supervisor with **Add a supervisor**, ticks the ambassadors they look after, and can change any ambassador's supervisor from the Supervisor column on the Ambassadors page. The supervisor's Team dashboard shows ambassadors assigned, active now, on location (within 500 m of the outlet), away or with no location, outlets covered today, coverage areas, and a live list of each ambassador, with the map showing their outlets and live beams.
+- **Admin notifications and email alerts.** The admin's **Notifications** page has a live feed of every activation started or ended, today's activating agencies (with ambassador count and areas), and totals for agencies, ambassadors out, outlets and states covered. **Email today's summary** sends or drafts the summary email. Real-time emails go out from the ambassador's phone the moment an activation starts or ends (agency, ambassador, supervisor, outlet, coverage area, location check, map link), queued if there's no signal. To switch them on, fill in the `ALERTS` settings near the top of the script in `src/app.html` with an [EmailJS](https://www.emailjs.com/) service ID, template ID and public key (template fields `{{to_email}}`, `{{subject}}`, `{{message}}`), or a webhook URL from Power Automate, Zapier or Make. Alerts go to `jay@tradeactivate.app` by default.
 - **Beta features.**
   - **Top ambassadors today.** A leaderboard on the dashboard ranks BAs by cases sold, with consumers reached.
   - **Location check.** Running activations are flagged when the phone shared no location, or was more than 500 m from the outlet's listed position. Flags show on the dashboard and in the report.
