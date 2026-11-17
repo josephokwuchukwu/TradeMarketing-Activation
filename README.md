@@ -8,6 +8,16 @@ Trade Activate is a web app for trade marketing activations. Vendors (activation
 
 ![Trade Activate sign-in page](docs/screenshots/01-login.jpg)
 
+## What's new: shared backend and refreshed design
+
+- **Shared data across every phone and laptop** (optional): a load balancer, three API servers, a connection pooler, Redis and a Supabase Postgres database, all on free plans. With no server set, the app works exactly as before on each device. See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for what each piece does and the 30-minute setup.
+- **Works offline, syncs later**: entries made without signal wait in an outbox and send themselves; a chip in the top bar shows *Synced · server-2*, *Offline · 3 waiting* and so on. Dashboards update live when someone else saves.
+- **Server status in the app**: Data & Power BI → Cloud sync & servers → *Check servers* shows server 1, 2 and 3 with their database and Redis.
+- **Modern look**: glass panels with soft depth, gradient edges, ambient brand light, smoother page changes and refined navigation, same #FFD300 brand.
+- **Up-to-date libraries**: Three.js r159 (was r128) and SheetJS 0.20.3 (0.18.5 had published security advisories).
+
+![The system behind the app: CDN, load balancer, servers 1-3, Redis, pooler and database](docs/architecture.svg)
+
 ## How it works, start to finish
 
 Trade marketing sets things up once, agencies and their brand ambassadors run activations every day, and everyone sees the results live.
@@ -29,7 +39,7 @@ Trade marketing sets things up once, agencies and their brand ambassadors run ac
 | **Vendor folders** | **Agency's outlets and ambassadors** |
 | ![Vendor folders with zip download](docs/screenshots/04-folders.jpg) | ![Vendor manager assigning ambassadors to outlets](docs/screenshots/07-manager-outlets.jpg) |
 | **Data & Power BI** | |
-| ![Data downloads and Power BI dataset](docs/screenshots/08-data-powerbi.jpg) | |
+| ![Cloud sync and the status of servers 1, 2 and 3, above the data downloads](docs/screenshots/08-data-powerbi.jpg) | |
 
 On the ambassador's phone:
 
@@ -69,7 +79,7 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
 
 ## Features
 
-- **Look.** A bright yellow theme built on #FFD300, with a flowing yellow-to-orange gradient on buttons, a light sweep across the main buttons, a turning logo ring and shimmering headline words, in light and dark mode. Animations switch off for people who turn on reduced motion on their device.
+- **Look.** Glass panels with soft depth and gradient edges over ambient brand light, and a bright yellow theme built on #FFD300, with a flowing yellow-to-orange gradient on buttons, a light sweep across the main buttons, a turning logo ring and shimmering headline words, in light and dark mode. Animations switch off for people who turn on reduced motion on their device.
 - **Sign-in page.** A turning 3D ring of real brand and field photos (drag to spin) behind the sign-in card, with high-resolution pack shots of the range (Hero, Budweiser, Castle Lite, Eagle Lager and Extra Stout, Flying Fish, and Beta Malt and Grand Malt in bottle, can and PET) parading around it, turning to face you and growing as they come to the front.
 - **Live dashboard.** A 3D map of Nigeria built from real boundaries (37 states, the Niger and Benue, Lake Chad, major cities; Natural Earth, public domain). States are tinted by vegetation belt (mangrove and rainforest in the south through Guinea and Sudan savanna to the Sahel), with forests and the main national parks (Cross River, Okomu, Old Oyo, Kainji Lake, Yankari, Gashaka-Gumti and others) shown as trees, and they rise with the week's activity. Activations from the last 7 days show as a heat map (yellow to deep red, stronger for more cases and for live activations) painted on the land, and every state has a name callout. Zoom into a city or open an entry and **Street view here** opens Google Street View for that spot. Hover a state for its numbers, tap it to fly in, or switch between the Nigeria and Lagos views. There is a beam for every activation, sampling session or trade activity that is running now, coloured by activity type. KPIs show what is running, ambassadors on the ground, cases sold today, outlets activated and live photos. You can filter by activity type, brand and (for admins) vendor. Tapping a beam or row opens the entry: photos, recorded location (with a Google Maps link and distance from the outlet), opening cases, cases sold and closing cases.
 - **Vendor folders.** One folder per vendor, holding a folder per day, holding every entry ambassadors logged. You can filter by brand. Vendor managers only see their own folder.
@@ -98,13 +108,13 @@ The example vendors, people, outlets and photos are made up. An admin can wipe t
   - **Download report.** One click exports an Excel file (Activations sheet and a vendor-by-brand Summary sheet) for today, the last 7 or 30 days, or everything, using the dashboard filters.
   - **My account.** Everyone can change their own password, and BAs their PIN.
   - **Install on phone.** The hosted page can be added to a phone's home screen and keeps opening on a weak network (manifest and service worker; hosted page only).
-- **Data & Power BI (admin).** Download activations, a daily summary, outlets, people, vendors and folders as Excel or CSV, for any period and vendor, one at a time or all together. The Power BI dataset is a workbook with an Activations fact table joined by ID to Vendors, Outlets, Ambassadors, Brands, Folders and a Calendar. The pane gives the steps to connect it from OneDrive or SharePoint with scheduled refresh, and a Power Query script. A live Power BI connection with no downloads needs the shared backend described below; Power BI then reads it through its PostgreSQL connector.
+- **Data & Power BI (admin).** Download activations, a daily summary, outlets, people, vendors and folders as Excel or CSV, for any period and vendor, one at a time or all together. The Power BI dataset is a workbook with an Activations fact table joined by ID to Vendors, Outlets, Ambassadors, Brands, Folders and a Calendar. The pane gives the steps to connect it from OneDrive or SharePoint with scheduled refresh, and a Power Query script. With the shared backend switched on, Power BI can instead read the database live through its PostgreSQL connector, with no downloads.
 - **Real brand images.** Product shots of each brand (cut from Jay's pictures) appear on the sign-in screen, in the brand pickers, on the dashboard bars and in entry details. Example entries use real field photos of the brands. The files are in `assets/`.
 - **Light and dark mode.** Use the sun or moon button on the sign-in screen and in the top bar. The choice is remembered on each device. Before you pick, the app follows the device setting.
 
 ## Running it
 
-It is a single static page with no build tooling. It needs no server.
+The app is a single static page with no build tooling, and works with no server. The optional backend is in `server/` (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
 
 ```sh
 ./build.sh                 # writes index.html from src/app.html
@@ -115,29 +125,25 @@ It is hosted with **GitHub Pages** for this repository (Settings → Pages → d
 
 `src/app.html` is the source. `index.html` is generated from it by `build.sh` (it adds the `<!doctype>` and `<head>`). Edit the source, run the build, and commit both.
 
-Three.js (3D) and SheetJS (Excel import) load from cdnjs.
+Three.js r159 (3D) loads from jsDelivr and SheetJS 0.20.3 (Excel) from SheetJS's CDN. `config.js` holds the API address (`apiUrl`); leave it empty to keep data on each device.
 
-## Important: where data is stored today
+## Where data is stored
 
-All data (accounts, outlets, entries, photos) is stored **in the browser of the device using the app** (IndexedDB). That makes it a working prototype, not yet a shared system:
+- **Without a server** (`config.js` `apiUrl` empty, the default): everything is stored in the browser of the device using the app (IndexedDB). An ambassador's entries on their phone won't appear on the admin's laptop; two tabs in the same browser do stay in sync.
+- **With the backend switched on**: each device keeps a working copy and syncs it with the shared Supabase Postgres database through the load balancer and servers. Sign-in is checked by the server (salted scrypt hashes, never sent to phones), and each role only receives its own agency's data. Power BI can then read the database live through its PostgreSQL connector.
 
-- An ambassador's entries on their phone **won't** appear on the admin's laptop.
-- Two tabs in the same browser do stay in sync live. Try a BA in one tab and the admin in another.
-- Passwords are hashed in the browser. This isn't real security.
-
-### Next step: a shared backend
-
-To make it multi-user, replace the `DB` and `save()` layer in `src/app.html` with a hosted backend. The data model is already split the way a database needs it:
+Data model (the same collections on the device and in the database's `records` table):
 
 | Collection | Holds |
 | --- | --- |
 | `vendors` | Name, contact, brands, colour |
-| `users` | Role (`admin`, `manager`, `ba`), sign-in, email, phone, state, `vendorId` |
-| `outlets` | Name, address, area, channel, lat/lng, `vendorId`, brands, `baIds` (assigned ambassadors) |
+| `users` | Role (`admin`, `manager`, `supervisor`, `ba`), sign-in, email, phone, state, `vendorId`, `supervisorId` |
+| `outlets` | Name, address, area, channel, segment, lat/lng, `vendorId`, brands, `baIds` (assigned ambassadors) |
 | `entries` | BA, vendor, outlet, brand, type, start/end, opening/sold cases, consumers reached, GPS, photo ids, notes |
-| `photos` | Stamped JPEG, time, GPS |
+| `folders` | Custom vendor folders |
+| `photos` | Stamped, geotagged JPEG, time, GPS (separate `photos` table) |
 
-A good fit is **Supabase** (Postgres, auth with email/password and phone OTP, file storage for photos, and row-level security so vendor managers only read their own vendor's rows). **Firebase** works the same way.
+**Before real ambassadors use it:** remove or change the demo accounts (`admin@tradeactivate.app`, `tobi@pinnacle.ng`, `BA-1001` …). With cloud sync on, the sign-in page hides them.
 
 ## Project layout
 
@@ -151,6 +157,17 @@ assets/brands/                  small product shot per brand (brand pickers, das
 assets/products/                high-resolution pack shots (.webp) for the sign-in showcase
 docs/screenshots/               screenshots used in this README
 docs/app-flow.svg               start-to-finish wireframe of the app
+docs/architecture.svg           the backend: CDN, load balancer, servers 1-3, Redis, pooler, database
+docs/ARCHITECTURE.md            what each backend piece does, and how to switch it on
+config.js                       API address for this copy of the app (empty = data stays on each device)
+server/                         the API (Node 22, Postgres, Redis) run as server 1, 2 and 3, with tests
+infra/load-balancer/            Cloudflare Worker load balancer (wrangler.toml)
+infra/nginx/                    nginx load balancer + static files for docker compose
+docker-compose.yml              the whole stack on one computer
+render.yaml                     Render blueprint for servers 1, 2 and 3 (free plan)
+scripts/check-servers.mjs       prints the health of the load balancer and every server
+scripts/local-lb.mjs            runs the load balancer locally without Cloudflare
+.github/workflows/              CI (app build + servers/LB tests) and scheduled server health checks
 assets/field/                   brand photos used for the example entries
 assets/login/                   photos on the 3D sign-in ring
 assets/nigeria.json             Nigeria map data: states, rivers, lakes, cities (Natural Earth)

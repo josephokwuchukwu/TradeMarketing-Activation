@@ -1,0 +1,55 @@
+# Runs on every pull request and push to main:
+#   - checks index.html was rebuilt from src/app.html and the app's JavaScript parses
+#   - starts Postgres + Redis, runs server 1, 2, 3 and the load balancer, and tests them together
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  app:
+    name: App builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: index.html is up to date
+        run: |
+          ./build.sh
+          git diff --exit-code index.html || (echo "::error::Run ./build.sh and commit index.html" && exit 1)
+      - name: App JavaScript parses
+        run: |
+          node -e '
+            const s = require("fs").readFileSync("src/app.html", "utf8");
+            const blocks = [...s.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+            for (const b of blocks) new Function(b);
+            console.log("parsed", blocks.length, "script blocks");'
+          node --check sw.js && node --check config.js
+
+  api:
+    name: Servers 1-3, pooler path, Redis, load balancer
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-retries 10
+    defaults:
+      run: { working-directory: server }
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: server/package-lock.json }
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm test

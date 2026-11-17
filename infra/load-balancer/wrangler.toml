@@ -1,0 +1,9 @@
+# Deploy:  npx wrangler login   then   npx wrangler deploy
+# Your load balancer address will be https://trade-activate-lb.<your-account>.workers.dev
+name = "trade-activate-lb"
+main = "worker.js"
+compatibility_date = "2025-10-01"
+
+[vars]
+# The three API servers (Render, Koyeb, Fly ... any mix). Replace with your real addresses.
+API_SERVERS = "https://ta-api-1.onrender.com,https://ta-api-2.onrender.com,https://ta-api-3.onrender.com"
