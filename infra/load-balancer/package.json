@@ -1,0 +1,1 @@
+{ "name": "trade-activate-lb", "private": true, "type": "module", "main": "worker.js" }

@@ -1,0 +1,54 @@
+# Render Blueprint: three copies of the API (server 1, 2, 3) on Render's free plan.
+# Render > New > Blueprint > pick this repository. It asks once for DATABASE_URL and REDIS_URL.
+# Free servers sleep after 15 minutes without traffic and take ~30-60 s to wake; the load balancer
+# retries on another server. Render's free plan gives 750 server-hours a month across ALL services,
+# so the GitHub "Server health" check keeps the three awake only on weekday working hours (~660 h).
+envVarGroups:
+  - name: trade-activate-shared
+    envVars:
+      - key: DATABASE_URL        # Supabase transaction pooler URL (port 6543)
+        sync: false
+      - key: REDIS_URL           # Upstash rediss:// URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://josephokwuchukwu.github.io
+      - key: DB_POOL_MAX
+        value: "5"
+
+services:
+  - type: web
+    name: ta-api-1
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: trade-activate-shared
+      - key: SERVER_ID
+        value: server-1
+  - type: web
+    name: ta-api-2
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: trade-activate-shared
+      - key: SERVER_ID
+        value: server-2
+  - type: web
+    name: ta-api-3
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: trade-activate-shared
+      - key: SERVER_ID
+        value: server-3

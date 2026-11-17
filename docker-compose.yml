@@ -1,0 +1,78 @@
+# The whole Trade Activate stack on one computer, for testing:
+#
+#   phone / laptop ──► nginx :8080 (load balancer + static files, the local "CDN")
+#                        ├─► api-1 ─┐
+#                        ├─► api-2 ─┼─► PgBouncer (connection pooler) ─► Postgres (database)
+#                        └─► api-3 ─┘          └──────► Redis (sessions, cache, live updates)
+#
+# Start:  docker compose up --build      then open http://localhost:8080
+# Check:  node scripts/check-servers.mjs http://localhost:8080
+# In production the same pieces are free hosted services; see docs/ARCHITECTURE.md.
+
+x-api: &api
+  build: ./server
+  restart: unless-stopped
+  environment: &api-env
+    DATABASE_URL: postgres://trade:trade@pgbouncer:6432/trade
+    DATABASE_SSL: "off"
+    REDIS_URL: redis://redis:6379
+    DB_POOL_MAX: "5"
+    CORS_ORIGINS: "*"
+  depends_on:
+    pgbouncer: { condition: service_started }
+    redis: { condition: service_healthy }
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: trade
+      POSTGRES_PASSWORD: trade
+      POSTGRES_DB: trade
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U trade"], interval: 5s, retries: 10 }
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_USER: trade
+      DB_PASSWORD: trade
+      DB_NAME: trade
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: transaction        # same mode as Supabase's pooler on port 6543
+      MAX_CLIENT_CONN: "300"        # connections the API servers may open
+      DEFAULT_POOL_SIZE: "15"       # real connections kept to Postgres
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, retries: 10 }
+
+  api-1:
+    <<: *api
+    environment: { <<: *api-env, SERVER_ID: server-1 }
+  api-2:
+    <<: *api
+    environment: { <<: *api-env, SERVER_ID: server-2 }
+  api-3:
+    <<: *api
+    environment: { <<: *api-env, SERVER_ID: server-3 }
+
+  lb:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["8080:80"]
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./:/usr/share/nginx/html:ro
+    depends_on: [api-1, api-2, api-3]
+
+volumes:
+  pgdata:
