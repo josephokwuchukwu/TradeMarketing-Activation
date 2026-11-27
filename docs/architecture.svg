@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 860" width="1400" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
+<defs>
+<linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#FFF3A0"/><stop offset=".45" stop-color="#FFD300"/><stop offset="1" stop-color="#FF9500"/></linearGradient>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5C4A1A"/></marker>
+<filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity=".12"/></filter>
+<style>
+.box{fill:#fff;stroke:#EADFC6;filter:url(#sh)}
+.t{font-size:17px;font-weight:800;fill:#1F1600}
+.s{font-size:12.5px;fill:#5C5340}
+.k{font-size:11px;font-weight:800;letter-spacing:1.4px;fill:#8A6500}
+.free{font-size:11.5px;font-weight:700;fill:#1B7A45}
+.n{font-size:13px;font-weight:800;fill:#1F1600}
+.ln{stroke:#5C4A1A;stroke-width:2;fill:none;marker-end:url(#ar)}
+.dash{stroke:#B89A4A;stroke-width:1.6;fill:none;stroke-dasharray:6 5;marker-end:url(#ar)}
+</style>
+</defs>
+<rect width="100%" height="100%" fill="#FBF8F0"/>
+<rect width="1400" height="8" fill="url(#g)"/>
+<text x="40" y="60" font-size="30" font-weight="800" fill="#1F1600">Trade Activate: the system behind the app</text>
+<text x="40" y="90" font-size="15" fill="#5C5340">Every piece runs on a free plan. Numbered circles match the list in docs/ARCHITECTURE.md.</text>
+
+<!-- devices -->
+<rect class="box" x="40" y="140" width="250" height="290" rx="18"/>
+<text class="k" x="62" y="170">PEOPLE</text>
+<text class="t" x="62" y="200">Phones &amp; laptops</text>
+<text class="s" x="62" y="226">Brand ambassadors, supervisors,</text>
+<text class="s" x="62" y="244">vendor managers, trade marketing</text>
+<rect x="62" y="264" width="206" height="146" rx="12" fill="#FFF8D6" stroke="#F0D980"/>
+<circle cx="252" cy="285" r="12" fill="url(#g)"/><text x="252" y="290" text-anchor="middle" class="n" font-size="12">1</text>
+<text class="n" x="78" y="290">The app (PWA)</text>
+<text class="s" x="78" y="312">Keeps a copy on the phone</text>
+<text class="s" x="78" y="330">Works with no signal</text>
+<text class="s" x="78" y="348">Outbox sends changes later</text>
+<text class="s" x="78" y="366">Live updates when online</text>
+<text class="s" x="78" y="392" font-style="italic">No server? Still works alone.</text>
+
+<!-- CDN -->
+<rect class="box" x="400" y="140" width="290" height="120" rx="18"/>
+<circle cx="428" cy="172" r="14" fill="url(#g)"/><text x="428" y="177" text-anchor="middle" class="n">7</text>
+<text class="t" x="452" y="178">CDN (static files)</text>
+<text class="s" x="424" y="204">GitHub Pages (Fastly CDN) serves the</text>
+<text class="s" x="424" y="222">page, images, icons; libraries from jsDelivr</text>
+<text class="free" x="424" y="246">Free · optional Cloudflare in front</text>
+
+<!-- LB -->
+<rect class="box" x="400" y="310" width="290" height="120" rx="18"/>
+<circle cx="428" cy="342" r="14" fill="url(#g)"/><text x="428" y="347" text-anchor="middle" class="n">2</text>
+<text class="t" x="452" y="348">Load balancer</text>
+<text class="s" x="424" y="374">Cloudflare Worker: one address, spreads</text>
+<text class="s" x="424" y="392">requests, skips and retries a down server</text>
+<text class="free" x="424" y="416">Free · 100,000 requests a day</text>
+
+<path class="ln" d="M290 210 H396"/>
+<text class="s" x="300" y="200">opens app</text>
+<path class="ln" d="M290 370 H396"/>
+<text class="s" x="300" y="360">sign-in, sync</text>
+
+<!-- servers -->
+<g>
+<rect class="box" x="780" y="140" width="250" height="90" rx="16"/>
+<circle cx="806" cy="170" r="14" fill="url(#g)"/><text x="806" y="175" text-anchor="middle" class="n">3</text>
+<text class="t" x="828" y="176">Server 1</text><text class="s" x="806" y="204">Node API · Render free</text>
+<rect class="box" x="780" y="250" width="250" height="90" rx="16"/>
+<circle cx="806" cy="280" r="14" fill="url(#g)"/><text x="806" y="285" text-anchor="middle" class="n">3</text>
+<text class="t" x="828" y="286">Server 2</text><text class="s" x="806" y="314">Node API · Render free</text>
+<rect class="box" x="780" y="360" width="250" height="90" rx="16"/>
+<circle cx="806" cy="390" r="14" fill="url(#g)"/><text x="806" y="395" text-anchor="middle" class="n">3</text>
+<text class="t" x="828" y="396">Server 3</text><text class="s" x="806" y="424">Node API · Render free</text>
+</g>
+<path class="ln" d="M690 360 C735 360 735 185 776 185"/>
+<path class="ln" d="M690 370 H776 V295"/>
+<path class="ln" d="M690 380 C735 380 735 405 776 405"/>
+
+<!-- redis -->
+<rect class="box" x="1110" y="200" width="250" height="190" rx="18"/>
+<circle cx="1138" cy="232" r="14" fill="url(#g)"/><text x="1138" y="237" text-anchor="middle" class="n">5</text>
+<text class="t" x="1162" y="238">Redis</text>
+<text class="s" x="1134" y="264">Upstash. Shared between servers:</text>
+<text class="s" x="1134" y="284">· sign-in sessions</text>
+<text class="s" x="1134" y="302">· PIN-guessing limits</text>
+<text class="s" x="1134" y="320">· cached downloads</text>
+<text class="s" x="1134" y="338">· live "something changed" alerts</text>
+<text class="free" x="1134" y="370">Free · 500,000 commands a month</text>
+<path class="dash" d="M1030 185 C1070 185 1070 260 1106 260"/>
+<path class="dash" d="M1030 295 H1106"/>
+<path class="dash" d="M1030 405 C1070 405 1070 330 1106 330"/>
+
+<!-- pooler -->
+<rect class="box" x="780" y="520" width="250" height="120" rx="18"/>
+<circle cx="806" cy="552" r="14" fill="url(#g)"/><text x="806" y="557" text-anchor="middle" class="n">4</text>
+<text class="t" x="828" y="558">Connection pooler</text>
+<text class="s" x="806" y="584">Supabase Supavisor (PgBouncer locally)</text>
+<text class="s" x="806" y="602">Many servers share a few connections</text>
+<text class="free" x="806" y="626">Free · included with Supabase</text>
+<path class="ln" d="M905 450 V516"/>
+
+<!-- database -->
+<rect class="box" x="780" y="700" width="580" height="130" rx="18"/>
+<circle cx="806" cy="732" r="14" fill="url(#g)"/><text x="806" y="737" text-anchor="middle" class="n">6</text>
+<text class="t" x="828" y="738">Database: Supabase Postgres</text>
+<text class="s" x="806" y="764">One shared copy of vendors, people, outlets, entries and photos. Works from any device</text>
+<text class="s" x="806" y="782">through the API. Power BI connects to it directly for live reports.</text>
+<text class="free" x="806" y="810">Free · 500 MB, photos included (≈3,000 photos; then move photos to Storage/R2 or upgrade)</text>
+<path class="ln" d="M905 640 V696"/>
+
+<!-- health -->
+<rect class="box" x="40" y="520" width="650" height="140" rx="18"/>
+<text class="k" x="62" y="550">KEEPING SERVERS 1 · 2 · 3 GOOD</text>
+<text class="s" x="62" y="578">· Every server answers /health with its database and Redis status</text>
+<text class="s" x="62" y="598">· The load balancer's /lb/status checks all three at once; the admin's Data &amp; Power BI page shows it</text>
+<text class="s" x="62" y="618">· GitHub Actions tests all three servers + load balancer on every change, and pings the live ones</text>
+<text class="s" x="62" y="638">  every 10 minutes on weekday working hours (Lagos time)</text>
+
+<rect class="box" x="40" y="690" width="650" height="140" rx="18"/>
+<text class="k" x="62" y="720">ON ONE COMPUTER (TESTING)</text>
+<text class="s" x="62" y="748">docker compose up  →  nginx load balancer + static files on :8080, api-1, api-2, api-3,</text>
+<text class="s" x="62" y="768">PgBouncer, Redis and Postgres, the same shape as production.</text>
+<text class="s" x="62" y="796">No Docker? Run three servers with npm and scripts/local-lb.mjs as the balancer.</text>
+</svg>

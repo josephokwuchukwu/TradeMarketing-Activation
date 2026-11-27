@@ -1,0 +1,21 @@
+# Checks the live servers every 10 minutes on weekday working hours (Lagos time) and on demand.
+# It also keeps Render's free servers awake while people are working.
+# Set it up once: repository Settings > Secrets and variables > Actions > Variables >
+#   API_SERVERS = your load balancer address (or the three server addresses, comma separated)
+# Until that is set, this check does nothing.
+name: Server health
+on:
+  schedule:
+    - cron: "*/10 7-16 * * 1-5"   # 08:00-17:59 in Lagos, Monday to Friday
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: vars.API_SERVERS != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/check-servers.mjs ${{ vars.API_SERVERS }}
+        shell: bash

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "sh scripts/vercel-build.sh",
+  "outputDirectory": "public",
+  "installCommand": "npm install --omit=dev",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "server/src/**",
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/index?__p=/health"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index?__p=/api/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/config.js",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ]
+}

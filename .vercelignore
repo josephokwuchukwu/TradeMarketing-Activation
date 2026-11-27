@@ -1,0 +1,8 @@
+server/test
+server/dump.rdb
+server/Dockerfile
+infra
+docker-compose.yml
+render.yaml
+docs/screenshots
+sample-data/*.xlsx

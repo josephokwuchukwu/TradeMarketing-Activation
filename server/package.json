@@ -1,0 +1,18 @@
+{
+  "name": "trade-activate-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Trade Activate API: sign-in, data sync and photo storage shared by every phone and laptop.",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.1"
+  }
+}
