@@ -33,6 +33,13 @@ function cors(req, res) {
 }
 
 async function body(req) {
+  // On Vercel the platform has already read the body into req.body.
+  if (req.body !== undefined) {
+    const b = req.body;
+    if (b == null || b === "") return {};
+    if (typeof b === "object" && !Buffer.isBuffer(b)) return b;
+    try { return JSON.parse(Buffer.isBuffer(b) ? b.toString("utf8") : b); } catch { throw fail(400, "Body is not valid JSON"); }
+  }
   const max = config.maxBodyMb * 1024 * 1024; let size = 0; const chunks = [];
   for await (const c of req) { size += c.length; if (size > max) throw fail(413, "Upload too large"); chunks.push(c); }
   if (!size) return {};
@@ -187,6 +194,7 @@ onChange(msg => {
   }
 });
 function events(user, req, res) {
+  if (!config.liveEvents) { res.writeHead(204, { "x-served-by": config.serverId, "x-live": "poll" }); return res.end(); }
   res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-store", connection: "keep-alive", "x-accel-buffering": "no", "x-served-by": config.serverId });
   res.write(`event: hello\ndata: ${JSON.stringify({ server: config.serverId })}\n\n`);
   const s = { user, res }; streams.add(s);

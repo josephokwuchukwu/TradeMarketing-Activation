@@ -975,13 +975,17 @@ const Cloud = (() => {
   }
   const pullSoon = () => { clearTimeout(pullT); pullT = setTimeout(() => pull(false), 300); };
 
+  let poll = false; // the server can't stream live changes (Vercel): check every 30 s instead
   function live() {
     if (es) es.close(); es = null;
-    if (!("EventSource" in window) || !token) return;
+    if (!("EventSource" in window) || !token || poll) return;
     es = new EventSource(api() + "/api/events?token=" + encodeURIComponent(token));
     es.addEventListener("hello", e => { try { server = JSON.parse(e.data).server || server; } catch (er) { } emit(); });
     es.addEventListener("change", pullSoon);
-    es.onerror = () => { if (state === "synced") setState(navigator.onLine === false ? "offline" : "error"); };
+    es.onerror = () => {
+      if (es && es.readyState === 2 && navigator.onLine !== false && state !== "error") { poll = true; es.close(); es = null; startBeat(); return; }
+      if (state === "synced") setState(navigator.onLine === false ? "offline" : "error");
+    };
     es.onopen = () => { if (state !== "syncing") setState("synced"); pullSoon(); };
   }
   let beat = null;
@@ -989,9 +993,13 @@ const Cloud = (() => {
     if (!on()) { setState("local"); return; }
     await load();
     if (!token) { setState("signedout"); return; }
-    await pull(false); flush(); live();
-    clearInterval(beat); beat = setInterval(() => { flush(); if (!es || es.readyState === 2) { pull(false); live(); } }, 60000);
+    await pull(false); flush(); live(); startBeat();
   }
+  function startBeat() {
+    clearInterval(beat);
+    beat = setInterval(() => { flush(); if (poll) { if (document.visibilityState !== "hidden") pull(false); } else if (!es || es.readyState === 2) { pull(false); live(); } }, poll ? 30000 : 60000);
+  }
+  document.addEventListener("visibilitychange", () => { if (poll && token && on() && document.visibilityState === "visible") { pull(false); flush(); } });
   function stop() { clearInterval(beat); if (es) es.close(); es = null; }
   function expired() {
     stop(); token = null; ls.set("ta.token", null); setState("signedout");

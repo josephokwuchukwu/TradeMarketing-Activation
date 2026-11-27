@@ -62,6 +62,9 @@ create index if not exists photos_vendor_idx on photos (vendor_id);
 -- only this server (which connects as the database owner) can read them.
 alter table records enable row level security;
 alter table photos enable row level security;
+-- Sessions and sign-in limits when there is no Redis (Vercel).
+create table if not exists kv (k text primary key, v text not null, exp timestamptz);
+alter table kv enable row level security;
 `;
 
 export async function migrate() {

@@ -11,6 +11,7 @@ Trade Activate is a web app for trade marketing activations. Vendors (activation
 ## What's new: shared backend and refreshed design
 
 - **Shared data across every phone and laptop** (optional): a load balancer, three API servers, a connection pooler, Redis and a Supabase Postgres database, all on free plans. With no server set, the app works exactly as before on each device. See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for what each piece does and the 30-minute setup.
+- **Going live on Vercel + Supabase + Cloudflare**: Vercel hosts the app and its API from this repository, Supabase holds the data, Cloudflare points your domain at it. Steps in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#going-live-on-vercel--supabase--cloudflare-for-the-web-address).
 - **Works offline, syncs later**: entries made without signal wait in an outbox and send themselves; a chip in the top bar shows *Synced · server-2*, *Offline · 3 waiting* and so on. Dashboards update live when someone else saves.
 - **Server status in the app**: Data & Power BI → Cloud sync & servers → *Check servers* shows server 1, 2 and 3 with their database and Redis.
 - **Modern look**: glass panels with soft depth, gradient edges, ambient brand light, smoother page changes and refined navigation, same #FFD300 brand.

@@ -20,7 +20,7 @@ before(async () => {
   if (!DB) return;
   process.env.OWNER_PW_HASH = sha("Test@123"); // a test owner password instead of the real one
   const c = new pg.Client({ connectionString: DB }); await c.connect();
-  await c.query("drop table if exists records, photos; drop sequence if exists records_seq;"); await c.end();
+  await c.query("drop table if exists records, photos, kv; drop sequence if exists records_seq;"); await c.end();
   for (const [i, port] of PORTS.entries()) {
     const p = spawn(process.execPath, ["src/index.js"], { env: { ...process.env, PORT: String(port), SERVER_ID: `server-${i + 1}`, DATABASE_SSL: "off" }, stdio: ["ignore", "pipe", "pipe"] });
     p.stderr.on("data", d => process.stderr.write(`[s${i + 1}] ${d}`));

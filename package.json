@@ -1,0 +1,11 @@
+{
+  "name": "trade-activate",
+  "private": true,
+  "type": "module",
+  "description": "Trade Activate: the app (index.html) plus its API as a Vercel function (api/index.js → server/src).",
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.1"
+  }
+}

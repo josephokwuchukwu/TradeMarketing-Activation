@@ -93,6 +93,34 @@ Before real ambassadors use it: remove or change the demo accounts. When cloud s
 page already hides the demo accounts, and they only exist on the server if a device that had them is
 uploaded.
 
+## Going live on Vercel + Supabase (+ Cloudflare for the web address)
+
+The simplest live setup needs only three free accounts. Vercel hosts the app **and** the API from this
+repository; Supabase is the database; Cloudflare holds the domain's DNS. No Render, Upstash or Worker needed.
+
+| Piece | On Vercel |
+|---|---|
+| Front end + CDN | Vercel serves `public/` (made by `scripts/vercel-build.sh`) from its global CDN |
+| Servers | `api/index.js` runs the same API code (`server/src`) as a Vercel Function; Vercel starts as many copies as traffic needs |
+| Sessions, sign-in limits | A small `kv` table in Supabase (used automatically when `REDIS_URL` is not set) |
+| Live updates | Functions can't hold a stream open, so the app checks for changes every 30 seconds and whenever it is reopened |
+| Pooler | Supabase transaction pooler (port 6543); each function copy holds at most 2 connections |
+
+Steps:
+
+1. **Supabase** → New project (region: London or Frankfurt). *Connect* → **Transaction pooler** → copy the
+   URI and put your database password in it. That is `DATABASE_URL`.
+2. **Vercel** → Add New → Project → import `TradeMarketing-Activation`. Leave the build settings alone
+   (`vercel.json` sets them). Under *Environment Variables* add `DATABASE_URL`. Deploy.
+3. Open `https://<project>.vercel.app/health`: it should say `"ok": true`. The first request creates the
+   tables and the owner admin (`jay@tradeactivate.app`).
+4. On the vercel.app address the app turns cloud sync on by itself (`config.js` uses the page's own address
+   everywhere except GitHub Pages). Sign in as admin and tap **Upload this device's data** on the device with
+   the real data.
+5. **Cloudflare (your domain).** Vercel → Project → Settings → Domains → add the domain. In Cloudflare DNS add
+   the record Vercel shows (a `CNAME` to `cname.vercel-dns.com`, or an `A` record for the bare domain) with
+   the proxy **off** (grey cloud), so Vercel can issue the HTTPS certificate.
+
 ## Running everything on one computer
 
 ```sh

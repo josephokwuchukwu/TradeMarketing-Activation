@@ -3,9 +3,11 @@
 //   2. rate limits – stops someone guessing PINs by spreading attempts across servers
 //   3. cache       – the full data download is built once and reused until something changes
 //   4. pub/sub     – when a BA saves on server 2, dashboards connected to servers 1 and 3 refresh live
-// Without REDIS_URL it falls back to this server's memory (fine for one server or local testing).
+// Without REDIS_URL it uses Postgres for sessions and rate limits (needed on Vercel, where every request can
+// land on a fresh copy of the server), or this server's memory when there is no database either.
 import { EventEmitter } from "node:events";
 import { config } from "./config.js";
+import { q } from "./db.js";
 
 const CHANNEL = "ta:changes";
 const bus = new EventEmitter(); bus.setMaxListeners(0);
@@ -45,8 +47,34 @@ async function redisStore(url) {
   };
 }
 
+// Sessions and rate limits in a small Postgres table. No live push between servers (the app polls instead)
+// and no snapshot cache (a fresh download is built each time, which is fine for one agency's data).
+function pgStore() {
+  const live = "(exp is null or exp > now())";
+  const ttl = s => s ? new Date(Date.now() + s * 1000) : null;
+  return {
+    kind: "postgres",
+    async get(k) { if (k.startsWith("snap:")) return null; const { rows } = await q(`select v from kv where k = $1 and ${live}`, [k]); return rows[0]?.v ?? null; },
+    async set(k, v, ttlSec) { if (k.startsWith("snap:")) return; await q("insert into kv (k, v, exp) values ($1, $2, $3) on conflict (k) do update set v = excluded.v, exp = excluded.exp", [k, String(v), ttl(ttlSec)]); },
+    async del(k) { await q("delete from kv where k = $1", [k]); },
+    async incr(k, ttlSec) {
+      const { rows } = await q(
+        `insert into kv (k, v, exp) values ($1, '1', $2)
+         on conflict (k) do update set v = case when kv.exp is not null and kv.exp <= now() then '1' else (kv.v::bigint + 1)::text end,
+           exp = case when kv.exp is not null and kv.exp <= now() then excluded.exp else kv.exp end
+         returning v`, [k, ttl(ttlSec)]);
+      if (Math.random() < 0.02) q(`delete from kv where exp is not null and exp < now()`).catch(() => { });
+      return +rows[0].v;
+    },
+    async publish(msg) { bus.emit("msg", msg); },
+    async health() { return { ok: true, kind: "postgres", note: "No Redis: sessions are kept in the database" }; },
+    async close() { }
+  };
+}
+
 export let cache = memoryStore();
 export async function initCache() {
+  if (!config.redisUrl && config.databaseUrl) { cache = pgStore(); console.log("[cache] REDIS_URL not set: sessions in Postgres"); return cache; }
   if (!config.redisUrl) { console.log("[cache] REDIS_URL not set: using in-memory cache"); return cache; }
   try { cache = await redisStore(config.redisUrl); console.log("[cache] connected to Redis"); }
   catch (e) { console.error("[cache] Redis unavailable, using memory:", e.message); }
